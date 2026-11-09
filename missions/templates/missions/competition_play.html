@@ -1,0 +1,530 @@
+{% extends 'parents/base.html' %}
+{% load static %}
+
+{% block title %}{{ competition.title }} — در حال برگزاری{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/competition_play.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<!-- Overlay رنگی -->
+<div class="comp-overlay" id="compOverlay"></div>
+
+<div class="comp-wrapper fade-up">
+
+    <!-- بازگشت -->
+    <div class="mb-3">
+        <a href="{% url 'missions:competition_detail' competition.id %}"
+           class="text-decoration-none small text-muted-custom fw-semibold">
+            <i class="fa-solid fa-arrow-right"></i> بازگشت به اطلاعات مسابقه
+        </a>
+    </div>
+
+    <!-- هدر مسابقه -->
+    <div class="comp-header" id="compHeader">
+        <div class="comp-topbar">
+            <!-- تایمر -->
+            <div class="comp-timer" id="compTimer">
+                <i class="fa-solid fa-clock"></i>
+                <span id="timerText">--:--</span>
+            </div>
+            <!-- امتیاز -->
+            <div class="comp-score-badge">
+                <i class="fa-solid fa-star"></i>
+                <span id="scoreText">{{ initial_score }}</span> امتیاز
+            </div>
+        </div>
+
+        <!-- شمارنده و نوار پیشرفت -->
+        <div class="comp-counter-row">
+            <span class="comp-counter" id="compCounter">
+                سوال ۱ از {{ total_remaining }}
+            </span>
+            <span class="comp-counter" style="color:var(--gold-2);">
+                <i class="fa-solid fa-trophy"></i>
+                {{ competition.title }}
+            </span>
+        </div>
+        <div class="progress-track">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+    </div>
+
+    <!-- کارت‌های سوال -->
+    {% for cq in competition_questions %}
+    <div class="question-card"
+         data-question-id="{{ cq.question.id }}"
+         data-cq-id="{{ cq.id }}"
+         data-index="{{ forloop.counter0 }}"
+         data-points="{{ cq.get_points }}"
+         id="q-card-{{ cq.question.id }}"
+         style="display: none;">
+
+        <div class="question-top">
+            <div class="question-number">{{ forloop.counter }}</div>
+            <span class="points-badge">
+                <i class="fa-solid fa-coins"></i> +{{ cq.get_points }}
+            </span>
+        </div>
+
+        <h3 class="question-text">{{ cq.question.text }}</h3>
+
+        <div class="answers-grid">
+            {% for key, value in cq.question.options_dict.items %}
+            <button class="answer-option"
+                    data-option="{{ key }}"
+                    onclick="submitCompAnswer(this, {{ cq.question.id }})">
+                <span class="option-key">{{ key }}</span>
+                <span>{{ value }}</span>
+            </button>
+            {% endfor %}
+        </div>
+    </div>
+    {% endfor %}
+
+    <!-- دکمه پایان دستی -->
+    <div class="finish-bar" id="finishBar">
+        <button class="finish-btn" onclick="finishManually()">
+            <i class="fa-solid fa-flag-checkered"></i>
+            پایان مسابقه و ثبت نتیجه
+        </button>
+    </div>
+
+    <!-- صفحه نتیجه -->
+    <div class="result-screen" id="resultScreen">
+        <div class="result-emoji" id="resultEmoji">🏆</div>
+        <h2 class="result-title" id="resultTitle">آفرین!</h2>
+        <p class="result-subtitle" id="resultSubtitle">مسابقه به پایان رسید</p>
+
+        <div class="result-stats">
+            <div class="stat-box correct">
+                <div class="stat-value" id="statCorrect">0</div>
+                <div class="stat-label">درست</div>
+            </div>
+            <div class="stat-box wrong">
+                <div class="stat-value" id="statWrong">0</div>
+                <div class="stat-label">غلط</div>
+            </div>
+            <div class="stat-box points">
+                <div class="stat-value" id="statPoints">0</div>
+                <div class="stat-label">امتیاز</div>
+            </div>
+        </div>
+
+        <div class="d-flex gap-2 justify-content-center flex-wrap">
+            <a href="{% url 'missions:competition_detail' competition.id %}" class="btn btn-primary px-4">
+                <i class="fa-solid fa-arrow-right"></i> بازگشت به مسابقه
+            </a>
+            <a href="{% url 'missions:competition_list' %}" class="btn btn-gold px-4">
+                <i class="fa-solid fa-trophy"></i> همه مسابقات
+            </a>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+/* ============================================================
+   🏆 Competition Engine — Mihrab UI
+============================================================ */
+const COMP_ID = {{ competition.id }};
+const TOTAL = {{ total_remaining }};
+const INITIAL_SCORE = {{ initial_score }};
+const INITIAL_CORRECT = {{ initial_correct }};
+const INITIAL_ANSWERED = {{ initial_answered }};
+let TIME_REMAINING = {{ time_remaining }};
+const HAS_TIME_LIMIT = TIME_REMAINING > 0;
+
+let currentIndex = 0;
+let stats = {
+    correct: INITIAL_CORRECT,
+    wrong: INITIAL_ANSWERED - INITIAL_CORRECT,
+    score: INITIAL_SCORE,
+};
+let isTransitioning = false;
+let isFinished = false;
+let timerInterval = null;
+
+const cards = document.querySelectorAll('.question-card');
+const progressFill = document.getElementById('progressFill');
+const compCounter = document.getElementById('compCounter');
+const compTimer = document.getElementById('compTimer');
+const timerText = document.getElementById('timerText');
+const scoreText = document.getElementById('scoreText');
+const resultScreen = document.getElementById('resultScreen');
+const compHeader = document.getElementById('compHeader');
+const finishBar = document.getElementById('finishBar');
+const overlay = document.getElementById('compOverlay');
+
+// تبدیل اعداد
+function toFa(n) {
+    return String(n).replace(/\d/g, d => '۰۱۲۳۴۵۶۷۸۹'[d]);
+}
+
+// فرمت زمان mm:ss
+function formatTime(seconds) {
+    if (seconds < 0) seconds = 0;
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+    return `${toFa(String(m).padStart(2, '0'))}:${toFa(String(s).padStart(2, '0'))}`;
+}
+
+// شمارش معکوس
+function startTimer() {
+    if (!HAS_TIME_LIMIT) {
+        compTimer.style.display = 'none';
+        return;
+    }
+
+    updateTimerDisplay();
+    timerInterval = setInterval(() => {
+        TIME_REMAINING--;
+        updateTimerDisplay();
+
+        if (TIME_REMAINING <= 0) {
+            clearInterval(timerInterval);
+            onTimeUp();
+        }
+    }, 1000);
+}
+
+function updateTimerDisplay() {
+    timerText.textContent = formatTime(TIME_REMAINING);
+
+    // رنگ‌بندی
+    compTimer.classList.remove('warning', 'danger');
+    if (TIME_REMAINING <= 30) {
+        compTimer.classList.add('danger');
+    } else if (TIME_REMAINING <= 120) {
+        compTimer.classList.add('warning');
+    }
+}
+
+// پایان زمان
+function onTimeUp() {
+    if (isFinished) return;
+    playTone(300, 0.5);
+    setTimeout(() => finishManually(true), 500);
+}
+
+// شروع
+function initCompetition() {
+    if (cards.length === 0) {
+        finishManually();
+        return;
+    }
+    currentIndex = 0;
+    updateProgress(0);
+    updateCounter(0);
+    showCard(0);
+    startTimer();
+}
+
+// نمایش کارت
+function showCard(index) {
+    cards.forEach((c, i) => {
+        c.style.display = (i === index) ? 'block' : 'none';
+    });
+    updateCounter(index);
+}
+
+// به‌روزرسانی شمارنده
+function updateCounter(index) {
+    compCounter.textContent = `سوال ${toFa(index + 1)} از ${toFa(TOTAL)}`;
+}
+
+// به‌روزرسانی نوار
+function updateProgress(answeredCount) {
+    const pct = (answeredCount / TOTAL) * 100;
+    progressFill.style.width = pct + '%';
+}
+
+// ثبت پاسخ
+function submitCompAnswer(btn, questionId) {
+    if (isTransitioning || isFinished) return;
+
+    const card = btn.closest('.question-card');
+    const allBtns = card.querySelectorAll('.answer-option');
+    const selectedOption = btn.dataset.option;
+
+    allBtns.forEach(b => b.disabled = true);
+
+    fetch(`/competitions/${COMP_ID}/questions/${questionId}/answer/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': csrftoken,
+            'X-Requested-With': 'XMLHttpRequest',
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: `option=${selectedOption}`
+    })
+    .then(r => r.json().then(data => ({ ok: r.ok, data })))
+    .then(({ ok, data }) => {
+        if (!ok) {
+            showErrorToast(data.message || 'خطا در ثبت پاسخ');
+            allBtns.forEach(b => b.disabled = false);
+            return;
+        }
+        handleAnswerResult(btn, allBtns, card, data);
+    })
+    .catch(() => {
+        showErrorToast('خطای شبکه — دوباره تلاش کن');
+        allBtns.forEach(b => b.disabled = false);
+    });
+}
+
+// مدیریت نتیجه
+function handleAnswerResult(selectedBtn, allBtns, card, data) {
+    isTransitioning = true;
+    const correctOption = String(data.correct_option);
+
+    // به‌روزرسانی امتیاز و آمار
+    stats.score = data.score;
+    stats.correct = data.total_correct;
+    scoreText.textContent = toFa(stats.score);
+
+    // انیمیشن امتیاز
+    scoreText.style.transition = 'all .3s';
+    scoreText.style.transform = 'scale(1.4)';
+    scoreText.style.color = '#10b981';
+    setTimeout(() => {
+        scoreText.style.transform = 'scale(1)';
+        scoreText.style.color = '';
+    }, 400);
+
+    if (data.is_correct) {
+        selectedBtn.classList.add('correct');
+        card.classList.add('correct-glow');
+        overlay.classList.add('correct');
+        playTone(880, 0.15);
+    } else {
+        stats.wrong++;
+        selectedBtn.classList.add('wrong');
+        allBtns.forEach(b => {
+            if (b.dataset.option === correctOption) b.classList.add('correct');
+        });
+        card.classList.add('wrong-glow', 'shake');
+        overlay.classList.add('wrong');
+        playTone(220, 0.3);
+    }
+
+    updateProgress(currentIndex + 1);
+
+    // اگر مسابقه تمام شد (max_questions)
+    if (data.is_completed) {
+        setTimeout(() => finishManually(false, data), 1200);
+        return;
+    }
+
+    // برو به سوال بعدی
+    setTimeout(() => nextQuestion(), data.is_correct ? 1200 : 1600);
+}
+
+// سوال بعدی
+function nextQuestion() {
+    overlay.classList.remove('correct', 'wrong');
+    const currentCard = cards[currentIndex];
+    if (currentCard) currentCard.classList.remove('correct-glow', 'wrong-glow', 'shake');
+
+    currentIndex++;
+
+    if (currentIndex >= TOTAL) {
+        finishManually();
+    } else {
+        isTransitioning = false;
+        showCard(currentIndex);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+}
+
+// پایان دستی
+function finishManually(fromTimer = false, data = null) {
+    if (isFinished) return;
+    isFinished = true;
+
+    // متوقف کردن تایمر
+    if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+    }
+
+    // غیرفعال کردن همه دکمه‌ها
+    document.querySelectorAll('.answer-option').forEach(b => b.disabled = true);
+
+    // درخواست پایان به سرور
+    fetch(`/competitions/${COMP_ID}/finish/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': csrftoken,
+            'X-Requested-With': 'XMLHttpRequest',
+        },
+    })
+    .then(r => r.json().then(d => ({ ok: r.ok, d })))
+    .then(({ ok, d }) => {
+        if (!ok) {
+            showErrorToast(d.message || 'خطا در پایان مسابقه');
+            isFinished = false;
+            return;
+        }
+        showFinalResult({
+            score: d.score || stats.score,
+            total_correct: d.total_correct || stats.correct,
+            fromTimer,
+        });
+    })
+    .catch(() => {
+        showErrorToast('خطای شبکه در ثبت پایان مسابقه');
+        isFinished = false;
+    });
+}
+
+// نمایش نتیجه نهایی
+function showFinalResult(info = {}) {
+    // پنهان کردن هدر و کارت‌ها
+    compHeader.style.display = 'none';
+    finishBar.style.display = 'none';
+    cards.forEach(c => c.style.display = 'none');
+    overlay.classList.remove('correct', 'wrong');
+
+    // محاسبه درصد
+    const totalAnswered = stats.correct + stats.wrong;
+    const pct = totalAnswered > 0 ? (stats.correct / totalAnswered) * 100 : 0;
+
+    const resultEmoji = document.getElementById('resultEmoji');
+    const resultTitle = document.getElementById('resultTitle');
+    const resultSubtitle = document.getElementById('resultSubtitle');
+
+    // تنظیم پیام بر اساس درصد
+    if (info.fromTimer) {
+        resultEmoji.textContent = '⏰';
+        resultTitle.textContent = 'زمان تمام شد!';
+        resultSubtitle.textContent = 'به سوالاتی که پاسخ دادی امتیاز تعلق گرفت';
+    } else if (pct === 100 && totalAnswered > 0) {
+        resultEmoji.textContent = '🏆';
+        resultTitle.textContent = 'عالی بود!';
+        resultSubtitle.textContent = 'همه رو درست جواب دادی! تو یه نابغه‌ای!';
+    } else if (pct >= 70) {
+        resultEmoji.textContent = '🎉';
+        resultTitle.textContent = 'آفرین!';
+        resultSubtitle.textContent = 'عملکرد فوق‌العاده‌ای داشتی!';
+    } else if (pct >= 40) {
+        resultEmoji.textContent = '💪';
+        resultTitle.textContent = 'خوب بود!';
+        resultSubtitle.textContent = 'با کمی تمرین، دفعه بعد بهتر می‌شی!';
+    } else if (totalAnswered > 0) {
+        resultEmoji.textContent = '🌱';
+        resultTitle.textContent = 'شروع خوبی بود';
+        resultSubtitle.textContent = 'هر تلاشی ارزشمنده — دفعه بعد بهتر!';
+    } else {
+        resultEmoji.textContent = '😅';
+        resultTitle.textContent = 'مسابقه تموم شد';
+        resultSubtitle.textContent = 'به هیچ سوالی پاسخ ندادی!';
+    }
+
+    // نمایش آمار
+    document.getElementById('statCorrect').textContent = toFa(stats.correct);
+    document.getElementById('statWrong').textContent = toFa(stats.wrong);
+    document.getElementById('statPoints').textContent = toFa(stats.score);
+
+    // نمایش صفحه نتیجه
+    resultScreen.classList.add('show');
+
+    // صدا
+    if (pct >= 70) {
+        playTone(523, 0.2);
+        setTimeout(() => playTone(659, 0.2), 150);
+        setTimeout(() => playTone(784, 0.35), 300);
+    } else {
+        playTone(440, 0.3);
+    }
+
+    // کانفتی اگر نتیجه عالی بود
+    if (pct >= 70) {
+        createConfetti();
+    }
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// افکت کانفتی
+function createConfetti() {
+    const colors = ['#d4a017', '#4338ca', '#059669', '#dc2626', '#fbbf24'];
+    for (let i = 0; i < 40; i++) {
+        const c = document.createElement('div');
+        c.style.cssText = `
+            position: fixed;
+            top: 30%;
+            left: 50%;
+            width: 10px;
+            height: 10px;
+            background: ${colors[Math.floor(Math.random() * colors.length)]};
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transition: all 1.5s cubic-bezier(0.2, 0.8, 0.4, 1);
+        `;
+        document.body.appendChild(c);
+        const angle = Math.random() * Math.PI * 2;
+        const dist = 100 + Math.random() * 350;
+        setTimeout(() => {
+            c.style.transform = `translate(${Math.cos(angle) * dist}px, ${Math.sin(angle) * dist}px) scale(0)`;
+            c.style.opacity = '0';
+        }, 20);
+        setTimeout(() => c.remove(), 1800);
+    }
+}
+
+// صدای ساده
+function playTone(frequency, duration) {
+    try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.frequency.value = frequency;
+        osc.type = 'sine';
+        gain.gain.setValueAtTime(0.08, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + duration);
+    } catch (e) {}
+}
+
+// Toast
+function showErrorToast(msg) {
+    let box = document.getElementById('toastBox');
+    if (!box) {
+        box = document.createElement('div');
+        box.id = 'toastBox';
+        box.style.cssText = 'position:fixed;top:80px;left:50%;transform:translateX(-50%);z-index:9999;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none;';
+        document.body.appendChild(box);
+    }
+    const t = document.createElement('div');
+    t.style.cssText = `
+        background:linear-gradient(135deg,#dc2626,#b91c1c);color:#fff;
+        padding:14px 24px;border-radius:14px;font-weight:700;font-size:0.9rem;
+        box-shadow:0 8px 30px rgba(220,38,38,0.4);min-width:220px;text-align:center;
+        pointer-events:auto;max-width:90vw;border:1px solid rgba(255,255,255,0.15);
+    `;
+    t.textContent = msg;
+    box.appendChild(t);
+    setTimeout(() => t.remove(), 3000);
+}
+
+// هشدار قبل از خروج
+window.addEventListener('beforeunload', function(e) {
+    if (!isFinished && currentIndex > 0) {
+        e.preventDefault();
+        e.returnValue = '';
+    }
+});
+
+// شروع
+document.addEventListener('DOMContentLoaded', initCompetition);
+</script>
+{% endblock %}

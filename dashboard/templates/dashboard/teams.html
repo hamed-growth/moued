@@ -1,0 +1,49 @@
+{% extends 'dashboard/base.html' %}
+
+{% block title %}داشبورد | تیم‌ها{% endblock %}
+{% block hero_title %}تیم‌ها{% endblock %}
+{% block hero_sub %}مدیریت تیم‌ها و ماموریت‌های تیمی{% endblock %}
+
+{% block dash_content %}
+
+<div class="dash-card fade-up d1">
+    <div class="dash-card-header">
+        <h5><i class="fa-solid fa-user-group"></i> لیست تیم‌ها</h5>
+    </div>
+    <div class="dash-card-body">
+        {% if teams %}
+        <table class="dash-table">
+            <thead>
+                <tr>
+                    <th>نام تیم</th>
+                    <th>مدیر</th>
+                    <th>تعداد اعضا</th>
+                    <th>مجموع امتیاز</th>
+                    <th>تاریخ ایجاد</th>
+                    <th>اقدام</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for t in teams %}
+                <tr>
+                    <td><strong>{{ t.name }}</strong></td>
+                    <td>{% if t.manager %}{{ t.manager.username }}{% else %}—{% endif %}</td>
+                    <td>{{ t.members_count }}</td>
+                    <td><strong style="color:var(--gold-2);">{{ t.total_points_sum|default:0 }}</strong></td>
+                    <td style="font-size:0.78rem;color:var(--ink-3);">{{ t.created_at|date:"Y/m/d" }}</td>
+                    <td>
+                        <a href="{% url 'dashboard:team_detail' t.id %}" class="btn-xs info">
+                            <i class="fa-solid fa-eye"></i> مشاهده
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="empty-dash"><i class="fa-solid fa-user-group"></i><p>تیمی ثبت نشده است.</p></div>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}

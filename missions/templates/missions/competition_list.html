@@ -1,0 +1,210 @@
+{% extends 'parents/base.html' %}
+{% load static %}
+
+{% block title %}مسابقات - سیستم امتیازدهی مسجد{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/competition_list.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<!-- ==================== HERO ==================== -->
+<div class="comp-list-hero fade-up">
+    <h1>
+        <i class="fa-solid fa-trophy"></i>
+        مسابقات
+    </h1>
+    <p>در مسابقات شرکت کن، امتیاز بگیر و در جدول بالا برو</p>
+</div>
+
+<!-- ==================== در حال برگزاری ==================== -->
+<div class="comp-section fade-up d1">
+    <h2 class="comp-section-title">
+        <i class="fa-solid fa-fire" style="color:var(--danger);"></i>
+        در حال برگزاری
+        <span class="badge-count">{{ active_competitions|length }}</span>
+    </h2>
+    <div class="row g-3">
+        {% for comp in active_competitions %}
+        <div class="col-md-6 col-lg-4">
+            <div class="comp-card active {% if comp.is_featured %}featured{% endif %}">
+
+                <div class="comp-card-header">
+                    <h3 class="comp-card-title">{{ comp.title }}</h3>
+                    <span class="comp-status-badge active">
+                        <i class="fa-solid fa-circle" style="font-size:0.4rem;"></i>
+                        فعال
+                    </span>
+                </div>
+
+                <div class="comp-card-meta">
+                    <span>
+                        <i class="fa-solid fa-calendar-days"></i>
+                        تا {{ comp.end_date|date:"Y/m/d — H:i" }}
+                    </span>
+                </div>
+
+                <div class="comp-card-badges">
+                    <span class="comp-mini-badge">
+                        <i class="fa-solid fa-coins"></i>
+                        {{ comp.points_per_correct }} امتیاز
+                    </span>
+                    <span class="comp-mini-badge info">
+                        <i class="fa-solid fa-list-check"></i>
+                        {{ comp.max_questions }} سوال
+                    </span>
+                </div>
+
+                <div class="comp-card-actions">
+                    {% if comp.id in user_reg_ids %}
+                        <!-- ثبت‌نام کرده -->
+                        <div class="comp-registered-badge">
+                            <i class="fa-solid fa-circle-check"></i>
+                            ثبت‌نام کرده‌اید
+                        </div>
+                        <a href="{% url 'missions:competition_detail' comp.id %}" class="comp-btn comp-btn-continue">
+                            <i class="fa-solid fa-play"></i>
+                            شروع / ادامه مسابقه
+                        </a>
+                    {% else %}
+                        <!-- ثبت‌نام نکرده — فقط لینک به صفحه جزئیات -->
+                        <a href="{% url 'missions:competition_detail' comp.id %}" class="comp-btn comp-btn-register">
+                            <i class="fa-solid fa-circle-info"></i>
+                            اطلاعات و ثبت‌نام
+                        </a>
+                    {% endif %}
+                </div>
+
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="comp-empty">
+                <i class="fa-solid fa-trophy"></i>
+                <p>مسابقه فعالی وجود ندارد. به‌زودی...</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- ==================== به زودی ==================== -->
+<div class="comp-section fade-up d2">
+    <h2 class="comp-section-title">
+        <i class="fa-solid fa-hourglass-half" style="color:var(--warning);"></i>
+        به زودی
+        <span class="badge-count">{{ upcoming_competitions|length }}</span>
+    </h2>
+    <div class="row g-3">
+        {% for comp in upcoming_competitions %}
+        <div class="col-md-6 col-lg-4">
+            <div class="comp-card {% if comp.is_featured %}featured{% endif %}">
+
+                <div class="comp-card-header">
+                    <h3 class="comp-card-title">{{ comp.title }}</h3>
+                    <span class="comp-status-badge upcoming">
+                        <i class="fa-solid fa-clock"></i>
+                        به‌زودی
+                    </span>
+                </div>
+
+                <div class="comp-card-meta">
+                    <span>
+                        <i class="fa-solid fa-calendar-days"></i>
+                        شروع: {{ comp.start_date|date:"Y/m/d — H:i" }}
+                    </span>
+                </div>
+
+                <div class="comp-card-badges">
+                    <span class="comp-mini-badge">
+                        <i class="fa-solid fa-coins"></i>
+                        {{ comp.points_per_correct }} امتیاز
+                    </span>
+                    <span class="comp-mini-badge info">
+                        <i class="fa-solid fa-list-check"></i>
+                        {{ comp.max_questions }} سوال
+                    </span>
+                </div>
+
+                <div class="comp-card-actions">
+                    {% if comp.id in user_reg_ids %}
+                        <!-- ثبت‌نام کرده -->
+                        <div class="comp-registered-badge">
+                            <i class="fa-solid fa-circle-check"></i>
+                            ثبت‌نام کرده‌اید
+                        </div>
+                        <button class="comp-btn comp-btn-disabled" disabled>
+                            <i class="fa-solid fa-hourglass-half"></i>
+                            در انتظار شروع
+                        </button>
+                    {% else %}
+                        <!-- ثبت‌نام نکرده — فقط لینک به صفحه جزئیات -->
+                        <a href="{% url 'missions:competition_detail' comp.id %}" class="comp-btn comp-btn-register">
+                            <i class="fa-solid fa-user-plus"></i>
+                            ثبت‌نام زودهنگام
+                        </a>
+                    {% endif %}
+                </div>
+
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="comp-empty">
+                <i class="fa-solid fa-hourglass-half"></i>
+                <p>مسابقه‌ای در آینده نزدیک نیست.</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- ==================== پایان یافته ==================== -->
+<div class="comp-section fade-up d3">
+    <h2 class="comp-section-title">
+        <i class="fa-solid fa-circle-check" style="color:var(--success);"></i>
+        پایان یافته
+        <span class="badge-count">{{ finished_competitions|length }}</span>
+    </h2>
+    <div class="row g-3">
+        {% for comp in finished_competitions %}
+        <div class="col-md-6 col-lg-4">
+            <div class="comp-card finished">
+
+                <div class="comp-card-header">
+                    <h3 class="comp-card-title">{{ comp.title }}</h3>
+                    <span class="comp-status-badge finished">
+                        <i class="fa-solid fa-flag-checkered"></i>
+                        پایان
+                    </span>
+                </div>
+
+                <div class="comp-card-meta">
+                    <span>
+                        <i class="fa-solid fa-calendar-xmark"></i>
+                        پایان: {{ comp.end_date|date:"Y/m/d" }}
+                    </span>
+                </div>
+
+                <div class="comp-card-actions">
+                    <a href="{% url 'missions:competition_detail' comp.id %}" class="comp-btn comp-btn-view">
+                        <i class="fa-solid fa-chart-simple"></i>
+                        مشاهده نتایج
+                    </a>
+                </div>
+
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="comp-empty">
+                <i class="fa-solid fa-flag-checkered"></i>
+                <p>مسابقه‌ای به پایان نرسیده است.</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock %}

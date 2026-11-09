@@ -1,0 +1,57 @@
+{% extends 'dashboard/base.html' %}
+
+{% block title %}داشبورد | سوالات روزانه{% endblock %}
+{% block hero_title %}سوالات روزانه{% endblock %}
+{% block hero_sub %}مدیریت سوالات منتشرشده روزانه{% endblock %}
+
+{% block dash_content %}
+
+<div class="dash-card fade-up d1">
+    <div class="dash-card-header">
+        <h5><i class="fa-solid fa-bolt"></i> لیست سوالات روزانه</h5>
+        <div style="display:flex; gap:8px; align-items:center;">
+            <span class="status-pill info">امروز: {{ today_count }} سوال</span>
+            <a href="/admin/missions/dailyquestion/add/" target="_blank" class="btn-xs success">
+                <i class="fa-solid fa-plus"></i> افزودن
+            </a>
+        </div>
+    </div>
+    <div class="dash-card-body">
+        {% if daily_questions %}
+        <table class="dash-table">
+            <thead>
+                <tr>
+                    <th>تاریخ</th>
+                    <th>سوال</th>
+                    <th>سطح</th>
+                    <th>پاسخ صحیح</th>
+                    <th>پاسخ‌ها</th>
+                    <th>وضعیت</th>
+                    <th>اقدام</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for dq in daily_questions %}
+                <tr>
+                    <td>{{ dq.publish_date|date:"Y/m/d" }}</td>
+                    <td>{{ dq.question.text|truncatechars:60 }}</td>
+                    <td><span class="status-pill info">{{ dq.get_difficulty_display }}</span></td>
+                    <td style="color:var(--gold-2);font-weight:700;">+{{ dq.points }}</td>
+                    <td>{{ dq.answers_count }}</td>
+                    <td>{% if dq.is_active %}<span class="status-pill approved">فعال</span>{% else %}<span class="status-pill rejected">غیرفعال</span>{% endif %}</td>
+                    <td>
+                        <a href="/admin/missions/dailyquestion/{{ dq.id }}/change/" target="_blank" class="btn-xs info">
+                            <i class="fa-solid fa-pen"></i>
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="empty-dash"><i class="fa-solid fa-bolt"></i><p>سوال روزانه‌ای ثبت نشده است.</p></div>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}

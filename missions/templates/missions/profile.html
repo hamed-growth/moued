@@ -1,0 +1,303 @@
+{% extends 'parents/base.html' %}
+{% load static %}
+
+{% block title %}پروفایل — {{ user.username }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/profile.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="profile-wrapper fade-up">
+
+    <!-- ==================== HERO ==================== -->
+    <div class="profile-hero">
+        <div class="row align-items-center g-4">
+            <div class="col-md-5 text-center text-md-end">
+                <div class="avatar-wrap">
+                    <i class="fa-solid fa-user"></i>
+                </div>
+                <h2 class="profile-name">{{ user.get_full_name|default:user.username }}</h2>
+                <p class="profile-username">@{{ user.username }}</p>
+
+                {% if rank <= 3 %}
+                    <span class="rank-badge">
+                        {% if rank == 1 %}
+                            <i class="fa-solid fa-medal" style="color:#FFD700;"></i>
+                        {% elif rank == 2 %}
+                            <i class="fa-solid fa-medal" style="color:#C0C0C0;"></i>
+                        {% else %}
+                            <i class="fa-solid fa-medal" style="color:#CD7F32;"></i>
+                        {% endif %}
+                        رتبه {{ rank }} از {{ total_users }}
+                    </span>
+                {% else %}
+                    <span class="rank-badge">
+                        <i class="fa-solid fa-trophy"></i>
+                        رتبه {{ rank }} از {{ total_users }}
+                    </span>
+                {% endif %}
+
+                <p class="profile-joined">
+                    <i class="fa-solid fa-calendar-days"></i>
+                    عضو از {{ user.date_joined|date:"Y/m/d" }}
+                </p>
+            </div>
+
+            <div class="col-md-7">
+                <div class="profile-stats-mini">
+                    <div class="profile-stat-mini">
+                        <div class="value">{{ total_earned }}</div>
+                        <div class="label">امتیاز کل</div>
+                    </div>
+                    <div class="profile-stat-mini streak">
+                        <div class="value">{{ user.activity_streak }}<i class="fa-solid fa-fire" style="font-size:0.9rem;margin-right:4px;"></i></div>
+                        <div class="label">روز متوالی</div>
+                    </div>
+                    <div class="profile-stat-mini done">
+                        <div class="value">{{ completions_count }}</div>
+                        <div class="label">ماموریت انجام‌شده</div>
+                    </div>
+                    <div class="profile-stat-mini pending">
+                        <div class="value">{{ pending_count }}</div>
+                        <div class="label">در انتظار تأیید</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== کارت‌های آمار بزرگ ==================== -->
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-lg-3">
+            <div class="stat-card-big points">
+                <div class="icon-bubble"><i class="fa-solid fa-coins"></i></div>
+                <div class="label">امتیاز تأییدشده</div>
+                <div class="value">{{ user.total_points }}<small>امتیاز</small></div>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3">
+            <div class="stat-card-big pending">
+                <div class="icon-bubble"><i class="fa-solid fa-hourglass-half"></i></div>
+                <div class="label">امتیاز در انتظار</div>
+                <div class="value">{{ pending_points }}<small>امتیاز</small></div>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3">
+            <div class="stat-card-big streak">
+                <div class="icon-bubble"><i class="fa-solid fa-fire"></i></div>
+                <div class="label">روزهای متوالی</div>
+                <div class="value">{{ user.activity_streak }}<small>روز</small></div>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3">
+            <div class="stat-card-big missions">
+                <div class="icon-bubble"><i class="fa-solid fa-circle-check"></i></div>
+                <div class="label">ماموریت‌های کامل</div>
+                <div class="value">{{ completions_count }}<small>ماموریت</small></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+
+        <!-- ==================== ستون راست ==================== -->
+        <div class="col-lg-8">
+
+            <!-- ===== انتخاب ماه شمسی ===== -->
+            <div class="month-selector-card">
+                <h5>
+                    <i class="fa-solid fa-calendar-days"></i>
+                    امتیازات ماه
+                </h5>
+                <form method="get" style="margin:0;">
+                    <select name="month" class="month-select" onchange="this.form.submit()">
+                        {% for opt in month_options %}
+                            <option value="{{ opt.value }}" {% if opt.value == selected_month %}selected{% endif %}>
+                                {{ opt.label }} — {{ opt.total }} امتیاز
+                            </option>
+                        {% empty %}
+                            <option>ماهی موجود نیست</option>
+                        {% endfor %}
+                    </select>
+                </form>
+            </div>
+
+            <!-- ===== تفکیک امتیازات ماه ===== -->
+            <div class="breakdown-card">
+                <div class="breakdown-header">
+                    <h5>
+                        <i class="fa-solid fa-chart-pie"></i>
+                        {{ selected_month_label|default:"تفکیک امتیازات" }}
+                    </h5>
+                    <span class="breakdown-total">{{ month_total }} امتیاز</span>
+                </div>
+
+                {% if month_breakdown %}
+                    {% for row in month_breakdown %}
+                    <div class="breakdown-item">
+                        <div class="breakdown-row">
+                            <div class="breakdown-label">
+                                <span class="dot" data-type="{{ row.code }}"></span>
+                                <span>{{ row.label }}</span>
+                                <span class="count">({{ row.count }} بار)</span>
+                            </div>
+                            <span class="breakdown-value">+{{ row.total }} امتیاز</span>
+                        </div>
+                        <div class="breakdown-bar">
+                            <div class="breakdown-bar-fill bar-fill"
+                                 data-type="{{ row.code }}"
+                                 data-width="{% widthratio row.total month_total 100 %}"></div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-state">
+                        <i class="fa-solid fa-inbox"></i>
+                        <p>در این ماه امتیازی کسب نکرده‌اید.</p>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- ===== در انتظار تأیید ===== -->
+            {% if pending_requests %}
+            <div class="list-card">
+                <div class="list-card-header">
+                    <h5><i class="fa-solid fa-hourglass-half" style="color:#d97706;"></i> در انتظار تأیید</h5>
+                    <span class="badge-count" style="background:var(--warning-light);color:var(--warning);">{{ pending_count }}</span>
+                </div>
+                <div class="list-card-body">
+                    {% for req in pending_requests %}
+                    <div class="list-item">
+                        <div class="list-item-main">
+                            <div class="list-item-icon warn"><i class="fa-solid fa-hourglass-half"></i></div>
+                            <div style="min-width:0;">
+                                <p class="list-item-title">{{ req.mission.title }}</p>
+                                <p class="list-item-sub"><i class="fa-solid fa-clock"></i> {{ req.requested_at|date:"Y/m/d H:i" }}</p>
+                            </div>
+                        </div>
+                        <span class="list-item-value" style="color:#d97706;">+{{ req.mission.points }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- ===== ماموریت‌های انجام شده ===== -->
+            <div class="list-card">
+                <div class="list-card-header">
+                    <h5><i class="fa-solid fa-circle-check" style="color:var(--success);"></i> ماموریت‌های انجام شده</h5>
+                    <span class="badge-count">{{ completions_count }}</span>
+                </div>
+                <div class="list-card-body">
+                    {% for c in completions %}
+                    <div class="list-item">
+                        <div class="list-item-main">
+                            <div class="list-item-icon success"><i class="fa-solid fa-check"></i></div>
+                            <div style="min-width:0;">
+                                <p class="list-item-title">{{ c.mission.title }}</p>
+                                <p class="list-item-sub"><i class="fa-solid fa-clock"></i> {{ c.completed_at|date:"Y/m/d H:i" }}</p>
+                            </div>
+                        </div>
+                        <span class="list-item-value">+{{ c.mission.points }}</span>
+                    </div>
+                    {% empty %}
+                    <div class="empty-state">
+                        <i class="fa-solid fa-face-smile"></i>
+                        <p>هنوز ماموریتی انجام نداده‌اید.</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ==================== ستون چپ ==================== -->
+        <div class="col-lg-4">
+
+            <!-- ===== رده‌بندی تیم‌ها (ماهانه) ===== -->
+            <div class="list-card">
+                <div class="list-card-header">
+                    <h5><i class="fa-solid fa-users" style="color:var(--night);"></i> رده‌بندی تیم‌ها</h5>
+                    <span class="badge-count">{{ team_leaderboard|length }}</span>
+                </div>
+                <div class="list-card-body">
+                    {% for team in team_leaderboard %}
+                    <div class="team-leaderboard-row {% if team.is_mine %}mine{% endif %}">
+                        <div class="team-rank {% if team.rank == 1 %}gold{% elif team.rank == 2 %}silver{% elif team.rank == 3 %}bronze{% endif %}">
+                            {% if team.rank == 1 %}
+                                <i class="fa-solid fa-medal"></i>
+                            {% elif team.rank == 2 %}
+                                <i class="fa-solid fa-medal"></i>
+                            {% elif team.rank == 3 %}
+                                <i class="fa-solid fa-medal"></i>
+                            {% else %}
+                                {{ team.rank }}
+                            {% endif %}
+                        </div>
+                        <div class="team-info">
+                            <p class="team-name">
+                                {% if team.is_mine %}<span class="you-badge">تیم من</span>{% endif %}
+                                {{ team.name }}
+                            </p>
+                            <p class="team-meta">{{ team.member_count }} عضو</p>
+                        </div>
+                        <div class="team-points">{{ team.total_points }}</div>
+                    </div>
+                    {% empty %}
+                    <div class="empty-state">
+                        <i class="fa-solid fa-users"></i>
+                        <p>تیمی برای رده‌بندی وجود ندارد.</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- ===== مسابقات من ===== -->
+            <div class="list-card">
+                <div class="list-card-header">
+                    <h5><i class="fa-solid fa-trophy" style="color:var(--gold);"></i> مسابقات من</h5>
+                    <span class="badge-count">{{ registrations|length }}</span>
+                </div>
+                <div class="list-card-body">
+                    {% for r in registrations %}
+                    <div class="list-item">
+                        <div class="list-item-main">
+                            <div class="list-item-icon gold"><i class="fa-solid fa-trophy"></i></div>
+                            <div style="min-width:0;">
+                                <p class="list-item-title">{{ r.competition.title|truncatechars:25 }}</p>
+                                <p class="list-item-sub">{{ r.total_correct }} پاسخ صحیح</p>
+                            </div>
+                        </div>
+                        <a href="{% url 'missions:competition_detail' r.competition.id %}"
+                           class="btn btn-sm btn-outline-primary" style="padding:4px 12px;font-size:0.75rem;">
+                            مشاهده
+                        </a>
+                    </div>
+                    {% empty %}
+                    <div class="empty-state">
+                        <i class="fa-solid fa-trophy"></i>
+                        <p>هنوز در مسابقه‌ای شرکت نکرده‌اید.</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('.breakdown-bar-fill').forEach(function (bar) {
+        const w = bar.dataset.width || 0;
+        setTimeout(() => { bar.style.width = w + '%'; }, 100);
+    });
+});
+</script>
+{% endblock %}

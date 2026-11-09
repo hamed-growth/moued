@@ -1,0 +1,62 @@
+{% extends 'dashboard/base.html' %}
+
+{% block title %}داشبورد | تراکنش‌ها{% endblock %}
+{% block hero_title %}تراکنش‌ها{% endblock %}
+{% block hero_sub %}تاریخچه تمام امتیازات و سکه‌ها{% endblock %}
+
+{% block dash_content %}
+
+<div class="dash-card fade-up d1">
+    <div class="dash-card-header">
+        <h5><i class="fa-solid fa-coins"></i> تراکنش‌ها</h5>
+        <form method="get" style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+            <input type="text" name="q" value="{{ q }}" placeholder="کاربر یا عنوان..."
+                   style="padding:7px 14px; border:1.5px solid var(--border-strong); border-radius:8px; font-size:0.85rem; font-family:inherit; width:160px;">
+            <select name="type" style="padding:7px 14px; border:1.5px solid var(--border-strong); border-radius:8px; font-size:0.85rem; font-family:inherit;">
+                <option value="">همه انواع</option>
+                {% for code, label in transaction_types %}
+                    <option value="{{ code }}" {% if type == code %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+            <button type="submit" class="btn-xs gold"><i class="fa-solid fa-search"></i> فیلتر</button>
+        </form>
+    </div>
+    <div class="dash-card-header" style="background:#fff; border-bottom:1px solid var(--border-soft);">
+        <div style="display:flex; gap:20px; font-size:0.85rem;">
+            <span>مجموع امتیاز: <strong style="color:var(--gold-2);">{{ total_points }}</strong></span>
+            <span>مجموع سکه: <strong style="color:var(--success);">{{ total_coins }}</strong></span>
+        </div>
+    </div>
+    <div class="dash-card-body">
+        {% if transactions %}
+        <table class="dash-table">
+            <thead>
+                <tr>
+                    <th>کاربر</th>
+                    <th>نوع</th>
+                    <th>عنوان</th>
+                    <th>امتیاز</th>
+                    <th>سکه</th>
+                    <th>زمان</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for t in transactions %}
+                <tr>
+                    <td><strong>{{ t.user.username }}</strong></td>
+                    <td><span class="status-pill">{{ t.get_transaction_type_display }}</span></td>
+                    <td>{{ t.title }}</td>
+                    <td style="color:var(--gold-2);font-weight:700;">{{ t.points }}</td>
+                    <td style="color:var(--success);font-weight:700;">{{ t.coins }}</td>
+                    <td style="font-size:0.78rem;color:var(--ink-3);">{{ t.created_at|date:"Y/m/d H:i" }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="empty-dash"><i class="fa-solid fa-coins"></i><p>تراکنشی یافت نشد.</p></div>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,286 @@
+{% extends 'parents/base.html' %}
+{% load static %}
+
+{% block title %}{% block dash_title %}داشبورد مدیر{% endblock %}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .dash-wrap { max-width: 1200px; margin: 0 auto; padding-bottom: 40px; }
+
+    .dash-hero {
+        background:
+            radial-gradient(circle at 20% 10%, rgba(212,160,23,0.25) 0%, transparent 45%),
+            radial-gradient(circle at 80% 90%, rgba(67,56,202,0.35) 0%, transparent 45%),
+            linear-gradient(135deg, var(--night) 0%, var(--night-2) 50%, var(--night-3) 100%);
+        color: var(--cream);
+        border-radius: var(--r-xl);
+        padding: 28px 32px;
+        margin-bottom: 24px;
+        position: relative;
+        overflow: hidden;
+        box-shadow: var(--shadow-xl);
+    }
+    .dash-hero h1 {
+        font-weight: 900;
+        font-size: 1.5rem;
+        margin: 0 0 4px;
+        letter-spacing: -0.5px;
+        position: relative;
+        z-index: 2;
+    }
+    .dash-hero h1 i { color: var(--gold); }
+    .dash-hero p {
+        margin: 0;
+        color: rgba(253,251,247,0.7);
+        font-size: 0.85rem;
+        position: relative;
+        z-index: 2;
+    }
+
+    .dash-nav {
+        display: flex;
+        gap: 8px;
+        overflow-x: auto;
+        padding: 8px 0 16px;
+        margin-bottom: 8px;
+        scrollbar-width: thin;
+    }
+    .dash-nav::-webkit-scrollbar { height: 6px; }
+    .dash-nav::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 3px; }
+
+    .dash-tab {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 10px 18px;
+        background: #fff;
+        border: 1.5px solid var(--border-strong);
+        border-radius: var(--r-pill);
+        font-weight: 700;
+        font-size: 0.82rem;
+        color: var(--ink-2);
+        text-decoration: none;
+        transition: all var(--t-fast);
+        white-space: nowrap;
+        position: relative;
+    }
+    .dash-tab:hover {
+        border-color: var(--gold);
+        color: var(--night);
+        background: var(--gold-soft);
+    }
+    .dash-tab.active {
+        background: linear-gradient(135deg, var(--night), var(--night-3));
+        color: var(--gold);
+        border-color: var(--night);
+    }
+    .dash-tab .badge-dot {
+        background: var(--danger);
+        color: #fff;
+        font-size: 0.65rem;
+        font-weight: 800;
+        padding: 2px 7px;
+        border-radius: var(--r-pill);
+        margin-right: 2px;
+    }
+
+    .dash-card {
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: var(--r-lg);
+        box-shadow: var(--shadow-sm);
+        margin-bottom: 20px;
+        overflow: hidden;
+    }
+    .dash-card-header {
+        padding: 16px 22px;
+        border-bottom: 1px solid var(--border-soft);
+        background: var(--cream);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    .dash-card-header h5 {
+        margin: 0;
+        font-weight: 800;
+        color: var(--ink);
+        font-size: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .dash-card-header h5 i { color: var(--gold); }
+    .dash-card-body { padding: 0; }
+
+    .dash-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.88rem;
+    }
+    .dash-table th {
+        background: var(--cream-2);
+        color: var(--ink-2);
+        font-weight: 800;
+        font-size: 0.78rem;
+        text-align: right;
+        padding: 12px 16px;
+        border-bottom: 1px solid var(--border);
+        white-space: nowrap;
+    }
+    .dash-table td {
+        padding: 12px 16px;
+        border-bottom: 1px solid var(--border-soft);
+        color: var(--ink);
+        vertical-align: middle;
+    }
+    .dash-table tr:last-child td { border-bottom: none; }
+    .dash-table tr:hover td { background: var(--cream); }
+
+    .dash-table .actions { display: flex; gap: 6px; flex-wrap: wrap; }
+
+    .btn-xs {
+        padding: 5px 10px;
+        font-size: 0.72rem;
+        border-radius: 8px;
+        font-weight: 700;
+        border: none;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        font-family: inherit;
+        transition: all .15s;
+    }
+    .btn-xs.success { background: var(--success-light); color: var(--success); }
+    .btn-xs.success:hover { background: var(--success); color: #fff; }
+    .btn-xs.danger { background: var(--danger-light); color: var(--danger); }
+    .btn-xs.danger:hover { background: var(--danger); color: #fff; }
+    .btn-xs.gold { background: var(--gold-light); color: var(--gold-2); }
+    .btn-xs.gold:hover { background: var(--gold); color: var(--night); }
+    .btn-xs.info { background: var(--info-light); color: var(--info); }
+    .btn-xs.info:hover { background: var(--info); color: #fff; }
+    .btn-xs.muted { background: var(--cream-2); color: var(--ink-3); }
+    .btn-xs.muted:hover { background: var(--ink-3); color: #fff; }
+
+    .stat-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 14px;
+        margin-bottom: 24px;
+    }
+    .stat-tile {
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: var(--r-lg);
+        padding: 18px;
+        box-shadow: var(--shadow-sm);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    .stat-tile .icon-bubble {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.3rem;
+        flex-shrink: 0;
+    }
+    .stat-tile .icon-bubble.night { background: var(--night-light); color: var(--night); }
+    .stat-tile .icon-bubble.gold { background: var(--gold-light); color: var(--gold-2); }
+    .stat-tile .icon-bubble.success { background: var(--success-light); color: var(--success); }
+    .stat-tile .icon-bubble.warning { background: var(--warning-light); color: var(--warning); }
+    .stat-tile .icon-bubble.danger { background: var(--danger-light); color: var(--danger); }
+    .stat-tile .icon-bubble.info { background: var(--info-light); color: var(--info); }
+    .stat-tile .value { font-size: 1.4rem; font-weight: 900; line-height: 1; color: var(--ink); }
+    .stat-tile .label { font-size: 0.75rem; color: var(--ink-3); font-weight: 600; margin-top: 3px; }
+
+    .status-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 3px 10px;
+        border-radius: var(--r-pill);
+        font-size: 0.72rem;
+        font-weight: 800;
+    }
+    .status-pill.pending { background: var(--warning-light); color: var(--warning); }
+    .status-pill.approved, .status-pill.delivered, .status-pill.active { background: var(--success-light); color: var(--success); }
+    .status-pill.rejected, .status-pill.cancelled { background: var(--danger-light); color: var(--danger); }
+    .status-pill.draft, .status-pill.finished { background: var(--cream-2); color: var(--ink-3); }
+    .status-pill.upcoming { background: var(--info-light); color: var(--info); }
+
+    .empty-dash {
+        padding: 40px 20px;
+        text-align: center;
+        color: var(--ink-3);
+    }
+    .empty-dash i { font-size: 2.5rem; color: var(--ink-4); margin-bottom: 10px; }
+    .empty-dash p { margin: 0; font-weight: 600; font-size: 0.9rem; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dash-wrap">
+
+    <!-- Hero -->
+    <div class="dash-hero fade-up">
+        <h1><i class="fa-solid fa-gauge-high"></i> {% block hero_title %}داشبورد مدیر{% endblock %}</h1>
+        <p>{% block hero_sub %}مدیریت کاربران، تیم‌ها، ماموریت‌ها و مسابقات{% endblock %}</p>
+    </div>
+
+    <!-- Tabs -->
+    <nav class="dash-nav fade-up d1">
+        <a href="{% url 'dashboard:home' %}" class="dash-tab {% if request.resolver_match.url_name == 'home' %}active{% endif %}">
+            <i class="fa-solid fa-house"></i> خانه
+        </a>
+        <a href="{% url 'dashboard:users' %}" class="dash-tab {% if request.resolver_match.url_name == 'users' or request.resolver_match.url_name == 'user_detail' %}active{% endif %}">
+            <i class="fa-solid fa-users"></i> کاربران
+        </a>
+        <a href="{% url 'dashboard:teams' %}" class="dash-tab {% if request.resolver_match.url_name == 'teams' or request.resolver_match.url_name == 'team_detail' %}active{% endif %}">
+            <i class="fa-solid fa-user-group"></i> تیم‌ها
+        </a>
+        <a href="{% url 'dashboard:missions' %}" class="dash-tab {% if request.resolver_match.url_name == 'missions' %}active{% endif %}">
+            <i class="fa-solid fa-list-check"></i> ماموریت‌ها
+        </a>
+        <a href="{% url 'dashboard:mission_requests' %}" class="dash-tab {% if request.resolver_match.url_name == 'mission_requests' %}active{% endif %}">
+            <i class="fa-solid fa-inbox"></i> درخواست‌ها
+            {% if dash_pending_requests %}<span class="badge-dot">{{ dash_pending_requests }}</span>{% endif %}
+        </a>
+        <a href="{% url 'dashboard:competitions' %}" class="dash-tab {% if request.resolver_match.url_name == 'competitions' %}active{% endif %}">
+            <i class="fa-solid fa-trophy"></i> مسابقات
+        </a>
+        <a href="{% url 'dashboard:questions' %}" class="dash-tab {% if request.resolver_match.url_name == 'questions' %}active{% endif %}">
+            <i class="fa-solid fa-circle-question"></i> بانک سوال
+        </a>
+        <a href="{% url 'dashboard:daily_questions' %}" class="dash-tab {% if request.resolver_match.url_name == 'daily_questions' %}active{% endif %}">
+            <i class="fa-solid fa-bolt"></i> سوالات روزانه
+        </a>
+        <a href="{% url 'dashboard:treasure' %}" class="dash-tab {% if request.resolver_match.url_name == 'treasure' %}active{% endif %}">
+            <i class="fa-solid fa-gift"></i> صندوق گنج
+            {% if dash_pending_purchases %}<span class="badge-dot">{{ dash_pending_purchases }}</span>{% endif %}
+        </a>
+        <a href="{% url 'dashboard:transactions' %}" class="dash-tab {% if request.resolver_match.url_name == 'transactions' %}active{% endif %}">
+            <i class="fa-solid fa-coins"></i> تراکنش‌ها
+        </a>
+        <a href="/admin/" class="dash-tab" target="_blank" style="border-color: var(--gold); color: var(--gold-2);">
+            <i class="fa-solid fa-shield-halved"></i> پنل ادمین جنگو
+        </a>
+    </nav>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} border-0 rounded-3 mb-3" style="font-weight:600;">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    {% block dash_content %}{% endblock %}
+</div>
+{% endblock %}
