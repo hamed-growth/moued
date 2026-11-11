@@ -1,0 +1,10 @@
+{
+  "original_database_sha256": "cc0ceae970f104624f65b0ab8ef1c25d817213b03dbedc141169775d64a3d00c",
+  "protected_files_unchanged": 5792,
+  "media_files": 2,
+  "migration_files": 6,
+  "templates_and_static_files": 5776,
+  "archived_test_files_restored_exactly": 11,
+  "http_snapshots_equal": 39,
+  "deleted_original_files": 0
+}

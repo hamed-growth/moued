@@ -1,0 +1,24 @@
+# Local environments and generated Python files
+venv/
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Runtime data, credentials and independent local backups
+*.sqlite3
+*.sqlite3-journal
+*.sqlite3-wal
+*.sqlite3-shm
+media/
+.env
+.env.*
+!.env.example
+*.log
+staticfiles/
+
+# Editor settings
+.idea/
+.vscode/

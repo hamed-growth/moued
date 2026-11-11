@@ -1,0 +1,2267 @@
+{
+  "before": [
+    {
+      "source": "dashboard.admin",
+      "scope": "<module>",
+      "target": "django.contrib",
+      "names": [
+        "admin"
+      ],
+      "line": 1
+    },
+    {
+      "source": "dashboard.apps",
+      "scope": "<module>",
+      "target": "django.apps",
+      "names": [
+        "AppConfig"
+      ],
+      "line": 1
+    },
+    {
+      "source": "dashboard.context_processors",
+      "scope": "dashboard_badges",
+      "target": "missions.models",
+      "names": [
+        "MissionRequest",
+        "TreasurePurchase"
+      ],
+      "line": 10
+    },
+    {
+      "source": "dashboard.decorators",
+      "scope": "<module>",
+      "target": "functools",
+      "names": [
+        "wraps"
+      ],
+      "line": 1
+    },
+    {
+      "source": "dashboard.decorators",
+      "scope": "<module>",
+      "target": "django.shortcuts",
+      "names": [
+        "redirect"
+      ],
+      "line": 2
+    },
+    {
+      "source": "dashboard.decorators",
+      "scope": "<module>",
+      "target": "django.contrib",
+      "names": [
+        "messages"
+      ],
+      "line": 3
+    },
+    {
+      "source": "dashboard.decorators",
+      "scope": "<module>",
+      "target": "django.contrib.auth.decorators",
+      "names": [
+        "login_required"
+      ],
+      "line": 4
+    },
+    {
+      "source": "dashboard.models",
+      "scope": "<module>",
+      "target": "django.db",
+      "names": [
+        "models"
+      ],
+      "line": 1
+    },
+    {
+      "source": "dashboard.urls",
+      "scope": "<module>",
+      "target": "django.urls",
+      "names": [
+        "path"
+      ],
+      "line": 1
+    },
+    {
+      "source": "dashboard.urls",
+      "scope": "<module>",
+      "target": "dashboard",
+      "names": [
+        "views"
+      ],
+      "line": 2
+    },
+    {
+      "source": "dashboard.views",
+      "scope": "<module>",
+      "target": "django.shortcuts",
+      "names": [
+        "render",
+        "get_object_or_404",
+        "redirect"
+      ],
+      "line": 1
+    },
+    {
+      "source": "dashboard.views",
+      "scope": "<module>",
+      "target": "django.contrib",
+      "names": [
+        "messages"
+      ],
+      "line": 2
+    },
+    {
+      "source": "dashboard.views",
+      "scope": "<module>",
+      "target": "django.core.exceptions",
+      "names": [
+        "PermissionDenied"
+      ],
+      "line": 3
+    },
+    {
+      "source": "dashboard.views",
+      "scope": "<module>",
+      "target": "django.db",
+      "names": [
+        "DatabaseError"
+      ],
+      "line": 4
+    },
+    {
+      "source": "dashboard.views",
+      "scope": "<module>",
+      "target": "django.db.models",
+      "names": [
+        "Sum",
+        "Count",
+        "Q",
+        "F"
+      ],
+      "line": 5
+    },
+    {
+      "source": "dashboard.views",
+      "scope": "<module>",
+      "target": "django.http",
+      "names": [
+        "HttpResponse"
+      ],
+      "line": 6
+    },
+    {
+      "source": "dashboard.views",
+      "scope": "<module>",
+      "target": "django.utils",
+      "names": [
+        "timezone"
+      ],
+      "line": 7
+    },
+    {
+      "source": "dashboard.views",
+      "scope": "<module>",
+      "target": "django.views.decorators.http",
+      "names": [
+        "require_POST"
+      ],
+      "line": 8
+    },
+    {
+      "source": "dashboard.views",
+      "scope": "<module>",
+      "target": "datetime",
+      "names": [
+        "timedelta"
+      ],
+      "line": 9
+    },
+    {
+      "source": "dashboard.views",
+      "scope": "<module>",
+      "target": "logging",
+      "line": 10
+    },
+    {
+      "source": "dashboard.views",
+      "scope": "<module>",
+      "target": "missions.models",
+      "names": [
+        "User",
+        "Team",
+        "TeamMember",
+        "PointTransaction",
+        "MissionCategory",
+        "Mission",
+        "TeamMission",
+        "MissionCompletion",
+        "MissionRequest",
+        "Competition",
+        "CompetitionRegistration",
+        "Question",
+        "DailyQuestion",
+        "DailyQuestionAnswer",
+        "TreasureCategory",
+        "TreasureItem",
+        "TreasurePurchase"
+      ],
+      "line": 12
+    },
+    {
+      "source": "dashboard.views",
+      "scope": "<module>",
+      "target": "dashboard.decorators",
+      "names": [
+        "staff_required"
+      ],
+      "line": 19
+    },
+    {
+      "source": "missions.admin",
+      "scope": "<module>",
+      "target": "django",
+      "names": [
+        "forms"
+      ],
+      "line": 1
+    },
+    {
+      "source": "missions.admin",
+      "scope": "<module>",
+      "target": "django.contrib",
+      "names": [
+        "admin"
+      ],
+      "line": 2
+    },
+    {
+      "source": "missions.admin",
+      "scope": "<module>",
+      "target": "django.core.exceptions",
+      "names": [
+        "PermissionDenied"
+      ],
+      "line": 3
+    },
+    {
+      "source": "missions.admin",
+      "scope": "<module>",
+      "target": "django.utils.html",
+      "names": [
+        "format_html"
+      ],
+      "line": 4
+    },
+    {
+      "source": "missions.admin",
+      "scope": "<module>",
+      "target": "django.urls",
+      "names": [
+        "reverse"
+      ],
+      "line": 5
+    },
+    {
+      "source": "missions.admin",
+      "scope": "<module>",
+      "target": "django.utils.safestring",
+      "names": [
+        "mark_safe"
+      ],
+      "line": 6
+    },
+    {
+      "source": "missions.admin",
+      "scope": "<module>",
+      "target": "django.contrib.auth.models",
+      "names": [
+        "Group"
+      ],
+      "line": 7
+    },
+    {
+      "source": "missions.admin",
+      "scope": "<module>",
+      "target": "django.contrib.auth.admin",
+      "names": [
+        "GroupAdmin"
+      ],
+      "line": 8
+    },
+    {
+      "source": "missions.admin",
+      "scope": "<module>",
+      "target": "missions.models",
+      "names": [
+        "*"
+      ],
+      "line": 10
+    },
+    {
+      "source": "missions.apps",
+      "scope": "<module>",
+      "target": "django.apps",
+      "names": [
+        "AppConfig"
+      ],
+      "line": 1
+    },
+    {
+      "source": "missions.forms",
+      "scope": "<module>",
+      "target": "django",
+      "names": [
+        "forms"
+      ],
+      "line": 1
+    },
+    {
+      "source": "missions.forms",
+      "scope": "<module>",
+      "target": "django.contrib.auth.forms",
+      "names": [
+        "UserCreationForm",
+        "AuthenticationForm"
+      ],
+      "line": 2
+    },
+    {
+      "source": "missions.forms",
+      "scope": "<module>",
+      "target": "missions.models",
+      "names": [
+        "User"
+      ],
+      "line": 3
+    },
+    {
+      "source": "missions.models",
+      "scope": "<module>",
+      "target": "django.db",
+      "names": [
+        "models",
+        "transaction"
+      ],
+      "line": 1
+    },
+    {
+      "source": "missions.models",
+      "scope": "<module>",
+      "target": "django.contrib.auth.models",
+      "names": [
+        "AbstractUser"
+      ],
+      "line": 2
+    },
+    {
+      "source": "missions.models",
+      "scope": "<module>",
+      "target": "django.utils",
+      "names": [
+        "timezone"
+      ],
+      "line": 3
+    },
+    {
+      "source": "missions.models",
+      "scope": "<module>",
+      "target": "django.core.exceptions",
+      "names": [
+        "ValidationError"
+      ],
+      "line": 4
+    },
+    {
+      "source": "missions.models",
+      "scope": "<module>",
+      "target": "django.db.models",
+      "names": [
+        "Case",
+        "Sum",
+        "Count",
+        "Q",
+        "F",
+        "Value",
+        "When"
+      ],
+      "line": 5
+    },
+    {
+      "source": "missions.models",
+      "scope": "<module>",
+      "target": "datetime",
+      "names": [
+        "timedelta"
+      ],
+      "line": 6
+    },
+    {
+      "source": "missions.models",
+      "scope": "MissionRequest.approve",
+      "target": "missions.services.mission_review",
+      "names": [
+        "approve_mission_request"
+      ],
+      "line": 428
+    },
+    {
+      "source": "missions.models",
+      "scope": "MissionRequest.reject",
+      "target": "missions.services.mission_review",
+      "names": [
+        "reject_mission_request"
+      ],
+      "line": 434
+    },
+    {
+      "source": "missions.models",
+      "scope": "Competition.finalize",
+      "target": "missions.services.competitions",
+      "names": [
+        "finalize_competition"
+      ],
+      "line": 529
+    },
+    {
+      "source": "missions.models",
+      "scope": "CompetitionRegistration.finish",
+      "target": "missions.services.competitions",
+      "names": [
+        "finish_competition_registration"
+      ],
+      "line": 612
+    },
+    {
+      "source": "missions.urls",
+      "scope": "<module>",
+      "target": "django.urls",
+      "names": [
+        "path"
+      ],
+      "line": 1
+    },
+    {
+      "source": "missions.urls",
+      "scope": "<module>",
+      "target": "missions",
+      "names": [
+        "views"
+      ],
+      "line": 2
+    },
+    {
+      "source": "missions.views",
+      "scope": "<module>",
+      "target": "django.shortcuts",
+      "names": [
+        "render",
+        "redirect",
+        "get_object_or_404"
+      ],
+      "line": 1
+    },
+    {
+      "source": "missions.views",
+      "scope": "<module>",
+      "target": "django.contrib.auth",
+      "names": [
+        "login",
+        "logout",
+        "authenticate"
+      ],
+      "line": 2
+    },
+    {
+      "source": "missions.views",
+      "scope": "<module>",
+      "target": "django.contrib.auth.decorators",
+      "names": [
+        "login_required"
+      ],
+      "line": 3
+    },
+    {
+      "source": "missions.views",
+      "scope": "<module>",
+      "target": "django.contrib",
+      "names": [
+        "messages"
+      ],
+      "line": 4
+    },
+    {
+      "source": "missions.views",
+      "scope": "<module>",
+      "target": "django.db",
+      "names": [
+        "DatabaseError"
+      ],
+      "line": 5
+    },
+    {
+      "source": "missions.views",
+      "scope": "<module>",
+      "target": "django.utils",
+      "names": [
+        "timezone"
+      ],
+      "line": 6
+    },
+    {
+      "source": "missions.views",
+      "scope": "<module>",
+      "target": "django.db.models",
+      "names": [
+        "Q",
+        "Count",
+        "Sum"
+      ],
+      "line": 7
+    },
+    {
+      "source": "missions.views",
+      "scope": "<module>",
+      "target": "django.http",
+      "names": [
+        "Http404",
+        "JsonResponse"
+      ],
+      "line": 8
+    },
+    {
+      "source": "missions.views",
+      "scope": "<module>",
+      "target": "django.views.decorators.http",
+      "names": [
+        "require_POST"
+      ],
+      "line": 9
+    },
+    {
+      "source": "missions.views",
+      "scope": "<module>",
+      "target": "django.db.models.functions",
+      "names": [
+        "TruncMonth"
+      ],
+      "line": 10
+    },
+    {
+      "source": "missions.views",
+      "scope": "<module>",
+      "target": "datetime",
+      "names": [
+        "datetime",
+        "time",
+        "timedelta"
+      ],
+      "line": 11
+    },
+    {
+      "source": "missions.views",
+      "scope": "<module>",
+      "target": "collections",
+      "names": [
+        "OrderedDict"
+      ],
+      "line": 12
+    },
+    {
+      "source": "missions.views",
+      "scope": "<module>",
+      "target": "logging",
+      "line": 13
+    },
+    {
+      "source": "missions.views",
+      "scope": "<module>",
+      "target": "jdatetime",
+      "line": 14
+    },
+    {
+      "source": "missions.views",
+      "scope": "<module>",
+      "target": "missions.forms",
+      "names": [
+        "UserRegisterForm",
+        "UserLoginForm"
+      ],
+      "line": 16
+    },
+    {
+      "source": "missions.views",
+      "scope": "<module>",
+      "target": "missions.models",
+      "names": [
+        "*"
+      ],
+      "line": 17
+    },
+    {
+      "source": "missions.views",
+      "scope": "<module>",
+      "target": "missions.selectors.leagues",
+      "names": [
+        "get_league_rankings",
+        "get_profile_team_leaderboard"
+      ],
+      "line": 18
+    },
+    {
+      "source": "missions.views",
+      "scope": "<module>",
+      "target": "missions.selectors.profiles",
+      "names": [
+        "get_profile_history",
+        "get_profile_rank"
+      ],
+      "line": 19
+    },
+    {
+      "source": "missions.views",
+      "scope": "<module>",
+      "target": "missions.services.treasure",
+      "names": [
+        "InsufficientPoints",
+        "OutOfStock",
+        "purchase_treasure_item"
+      ],
+      "line": 20
+    },
+    {
+      "source": "mouod.asgi",
+      "scope": "<module>",
+      "target": "os",
+      "line": 10
+    },
+    {
+      "source": "mouod.asgi",
+      "scope": "<module>",
+      "target": "django.core.asgi",
+      "names": [
+        "get_asgi_application"
+      ],
+      "line": 12
+    },
+    {
+      "source": "mouod.baseline_settings",
+      "scope": "<module>",
+      "target": "tempfile",
+      "names": [
+        "TemporaryDirectory"
+      ],
+      "line": 2
+    },
+    {
+      "source": "mouod.baseline_settings",
+      "scope": "<module>",
+      "target": "mouod.settings",
+      "names": [
+        "*"
+      ],
+      "line": 4
+    },
+    {
+      "source": "mouod.settings",
+      "scope": "<module>",
+      "target": "os",
+      "line": 13
+    },
+    {
+      "source": "mouod.settings",
+      "scope": "<module>",
+      "target": "pathlib",
+      "names": [
+        "Path"
+      ],
+      "line": 14
+    },
+    {
+      "source": "mouod.urls",
+      "scope": "<module>",
+      "target": "django.contrib",
+      "names": [
+        "admin"
+      ],
+      "line": 17
+    },
+    {
+      "source": "mouod.urls",
+      "scope": "<module>",
+      "target": "django.urls",
+      "names": [
+        "path",
+        "include"
+      ],
+      "line": 18
+    },
+    {
+      "source": "mouod.urls",
+      "scope": "<module>",
+      "target": "django.conf",
+      "names": [
+        "settings"
+      ],
+      "line": 19
+    },
+    {
+      "source": "mouod.urls",
+      "scope": "<module>",
+      "target": "django.conf.urls.static",
+      "names": [
+        "static"
+      ],
+      "line": 20
+    },
+    {
+      "source": "mouod.wsgi",
+      "scope": "<module>",
+      "target": "os",
+      "line": 10
+    },
+    {
+      "source": "mouod.wsgi",
+      "scope": "<module>",
+      "target": "django.core.wsgi",
+      "names": [
+        "get_wsgi_application"
+      ],
+      "line": 12
+    },
+    {
+      "source": "missions.selectors.leagues",
+      "scope": "<module>",
+      "target": "missions.models",
+      "names": [
+        "Team"
+      ],
+      "line": 3
+    },
+    {
+      "source": "missions.selectors.profiles",
+      "scope": "<module>",
+      "target": "django.db.models",
+      "names": [
+        "Count",
+        "Q"
+      ],
+      "line": 3
+    },
+    {
+      "source": "missions.selectors.profiles",
+      "scope": "<module>",
+      "target": "missions.models",
+      "names": [
+        "CompetitionRegistration",
+        "MissionCompletion",
+        "User"
+      ],
+      "line": 5
+    },
+    {
+      "source": "missions.services.competitions",
+      "scope": "<module>",
+      "target": "datetime",
+      "names": [
+        "timedelta"
+      ],
+      "line": 3
+    },
+    {
+      "source": "missions.services.competitions",
+      "scope": "<module>",
+      "target": "django.db",
+      "names": [
+        "transaction"
+      ],
+      "line": 5
+    },
+    {
+      "source": "missions.services.competitions",
+      "scope": "<module>",
+      "target": "django.db.models",
+      "names": [
+        "Case",
+        "F",
+        "Value",
+        "When"
+      ],
+      "line": 6
+    },
+    {
+      "source": "missions.services.competitions",
+      "scope": "<module>",
+      "target": "django.utils",
+      "names": [
+        "timezone"
+      ],
+      "line": 7
+    },
+    {
+      "source": "missions.services.competitions",
+      "scope": "<module>",
+      "target": "missions.models",
+      "names": [
+        "Competition",
+        "CompetitionRegistration",
+        "PointTransaction",
+        "User"
+      ],
+      "line": 9
+    },
+    {
+      "source": "missions.services.mission_review",
+      "scope": "<module>",
+      "target": "django.db",
+      "names": [
+        "transaction"
+      ],
+      "line": 3
+    },
+    {
+      "source": "missions.services.mission_review",
+      "scope": "<module>",
+      "target": "django.utils",
+      "names": [
+        "timezone"
+      ],
+      "line": 4
+    },
+    {
+      "source": "missions.services.mission_review",
+      "scope": "<module>",
+      "target": "missions.models",
+      "names": [
+        "MissionCompletion",
+        "MissionRequest"
+      ],
+      "line": 6
+    },
+    {
+      "source": "missions.services.treasure",
+      "scope": "<module>",
+      "target": "django.db",
+      "names": [
+        "transaction"
+      ],
+      "line": 3
+    },
+    {
+      "source": "missions.services.treasure",
+      "scope": "<module>",
+      "target": "django.db.models",
+      "names": [
+        "F",
+        "Q"
+      ],
+      "line": 4
+    },
+    {
+      "source": "missions.services.treasure",
+      "scope": "<module>",
+      "target": "missions.models",
+      "names": [
+        "PointTransaction",
+        "TreasureItem",
+        "TreasurePurchase",
+        "User"
+      ],
+      "line": 6
+    }
+  ],
+  "after": [
+    {
+      "source": "apps.accounts.selectors.overview",
+      "scope": "<module>",
+      "target": "django.db.models",
+      "names": [
+        "Sum",
+        "Count"
+      ],
+      "line": 2
+    },
+    {
+      "source": "apps.accounts.selectors.overview",
+      "scope": "<module>",
+      "target": "missions.models",
+      "names": [
+        "PointTransaction",
+        "MissionRequest"
+      ],
+      "line": 3
+    },
+    {
+      "source": "apps.accounts.selectors.overview",
+      "scope": "<module>",
+      "target": "apps.accounts.selectors.profiles",
+      "names": [
+        "get_profile_rank",
+        "get_profile_history"
+      ],
+      "line": 4
+    },
+    {
+      "source": "apps.accounts.selectors.overview",
+      "scope": "<module>",
+      "target": "apps.teams.selectors.membership",
+      "names": [
+        "get_user_team"
+      ],
+      "line": 5
+    },
+    {
+      "source": "apps.accounts.selectors.overview",
+      "scope": "<module>",
+      "target": "apps.teams.selectors.leagues",
+      "names": [
+        "get_profile_team_leaderboard"
+      ],
+      "line": 6
+    },
+    {
+      "source": "apps.accounts.selectors.overview",
+      "scope": "<module>",
+      "target": "apps.wallet.selectors.history",
+      "names": [
+        "get_user_months_shamsi"
+      ],
+      "line": 7
+    },
+    {
+      "source": "apps.accounts.selectors.overview",
+      "scope": "<module>",
+      "target": "common.calendar",
+      "names": [
+        "get_shamsi_month_range"
+      ],
+      "line": 8
+    },
+    {
+      "source": "apps.accounts.selectors.profiles",
+      "scope": "<module>",
+      "target": "django.db.models",
+      "names": [
+        "Count",
+        "Q"
+      ],
+      "line": 3
+    },
+    {
+      "source": "apps.accounts.selectors.profiles",
+      "scope": "<module>",
+      "target": "missions.models",
+      "names": [
+        "CompetitionRegistration",
+        "MissionCompletion",
+        "User"
+      ],
+      "line": 5
+    },
+    {
+      "source": "apps.backoffice.selectors.overview",
+      "scope": "<module>",
+      "target": "datetime",
+      "names": [
+        "timedelta"
+      ],
+      "line": 2
+    },
+    {
+      "source": "apps.backoffice.selectors.overview",
+      "scope": "<module>",
+      "target": "django.db.models",
+      "names": [
+        "Sum"
+      ],
+      "line": 3
+    },
+    {
+      "source": "apps.backoffice.selectors.overview",
+      "scope": "<module>",
+      "target": "django.utils",
+      "names": [
+        "timezone"
+      ],
+      "line": 4
+    },
+    {
+      "source": "apps.backoffice.selectors.overview",
+      "scope": "<module>",
+      "target": "missions.models",
+      "names": [
+        "User",
+        "Team",
+        "Mission",
+        "Competition",
+        "MissionRequest",
+        "TreasurePurchase",
+        "PointTransaction"
+      ],
+      "line": 5
+    },
+    {
+      "source": "apps.competitions.selectors.listing",
+      "scope": "<module>",
+      "target": "django.db.models",
+      "names": [
+        "Q"
+      ],
+      "line": 2
+    },
+    {
+      "source": "apps.competitions.selectors.listing",
+      "scope": "<module>",
+      "target": "django.utils",
+      "names": [
+        "timezone"
+      ],
+      "line": 3
+    },
+    {
+      "source": "apps.competitions.selectors.listing",
+      "scope": "<module>",
+      "target": "missions.models",
+      "names": [
+        "Competition",
+        "CompetitionRegistration"
+      ],
+      "line": 4
+    },
+    {
+      "source": "apps.competitions.services.rewards",
+      "scope": "<module>",
+      "target": "datetime",
+      "names": [
+        "timedelta"
+      ],
+      "line": 3
+    },
+    {
+      "source": "apps.competitions.services.rewards",
+      "scope": "<module>",
+      "target": "django.db",
+      "names": [
+        "transaction"
+      ],
+      "line": 5
+    },
+    {
+      "source": "apps.competitions.services.rewards",
+      "scope": "<module>",
+      "target": "django.db.models",
+      "names": [
+        "Case",
+        "F",
+        "Value",
+        "When"
+      ],
+      "line": 6
+    },
+    {
+      "source": "apps.competitions.services.rewards",
+      "scope": "<module>",
+      "target": "django.utils",
+      "names": [
+        "timezone"
+      ],
+      "line": 7
+    },
+    {
+      "source": "apps.competitions.services.rewards",
+      "scope": "<module>",
+      "target": "missions.models",
+      "names": [
+        "Competition",
+        "CompetitionRegistration",
+        "PointTransaction",
+        "User"
+      ],
+      "line": 9
+    },
+    {
+      "source": "apps.missions.selectors.eligibility",
+      "scope": "<module>",
+      "target": "django.db.models",
+      "names": [
+        "Q"
+      ],
+      "line": 2
+    },
+    {
+      "source": "apps.missions.selectors.eligibility",
+      "scope": "<module>",
+      "target": "django.utils",
+      "names": [
+        "timezone"
+      ],
+      "line": 3
+    },
+    {
+      "source": "apps.missions.selectors.eligibility",
+      "scope": "<module>",
+      "target": "missions.models",
+      "names": [
+        "Mission",
+        "MissionCompletion",
+        "MissionRequest"
+      ],
+      "line": 4
+    },
+    {
+      "source": "apps.missions.selectors.eligibility",
+      "scope": "<module>",
+      "target": "apps.teams.selectors.membership",
+      "names": [
+        "get_user_team"
+      ],
+      "line": 5
+    },
+    {
+      "source": "apps.missions.selectors.home",
+      "scope": "<module>",
+      "target": "django.db.models",
+      "names": [
+        "Q"
+      ],
+      "line": 2
+    },
+    {
+      "source": "apps.missions.selectors.home",
+      "scope": "<module>",
+      "target": "django.utils",
+      "names": [
+        "timezone"
+      ],
+      "line": 3
+    },
+    {
+      "source": "apps.missions.selectors.home",
+      "scope": "<module>",
+      "target": "missions.models",
+      "names": [
+        "Mission",
+        "MissionCompletion",
+        "MissionRequest",
+        "DailyQuestion",
+        "DailyQuestionAnswer"
+      ],
+      "line": 4
+    },
+    {
+      "source": "apps.missions.selectors.home",
+      "scope": "<module>",
+      "target": "apps.teams.selectors.membership",
+      "names": [
+        "get_user_team"
+      ],
+      "line": 5
+    },
+    {
+      "source": "apps.missions.services.review",
+      "scope": "<module>",
+      "target": "django.db",
+      "names": [
+        "transaction"
+      ],
+      "line": 3
+    },
+    {
+      "source": "apps.missions.services.review",
+      "scope": "<module>",
+      "target": "django.utils",
+      "names": [
+        "timezone"
+      ],
+      "line": 4
+    },
+    {
+      "source": "apps.missions.services.review",
+      "scope": "<module>",
+      "target": "missions.models",
+      "names": [
+        "MissionCompletion",
+        "MissionRequest"
+      ],
+      "line": 6
+    },
+    {
+      "source": "apps.questions.selectors.daily",
+      "scope": "<module>",
+      "target": "django.utils",
+      "names": [
+        "timezone"
+      ],
+      "line": 2
+    },
+    {
+      "source": "apps.questions.selectors.daily",
+      "scope": "<module>",
+      "target": "missions.models",
+      "names": [
+        "DailyQuestion",
+        "DailyQuestionAnswer"
+      ],
+      "line": 3
+    },
+    {
+      "source": "apps.teams.selectors.leagues",
+      "scope": "<module>",
+      "target": "missions.models",
+      "names": [
+        "Team"
+      ],
+      "line": 3
+    },
+    {
+      "source": "apps.teams.selectors.membership",
+      "scope": "<module>",
+      "target": "missions.models",
+      "names": [
+        "TeamMember"
+      ],
+      "line": 2
+    },
+    {
+      "source": "apps.teams.selectors.overview",
+      "scope": "<module>",
+      "target": "jdatetime",
+      "line": 2
+    },
+    {
+      "source": "apps.teams.selectors.overview",
+      "scope": "<module>",
+      "target": "django.utils",
+      "names": [
+        "timezone"
+      ],
+      "line": 3
+    },
+    {
+      "source": "apps.teams.selectors.overview",
+      "scope": "<module>",
+      "target": "django.db.models",
+      "names": [
+        "Sum"
+      ],
+      "line": 4
+    },
+    {
+      "source": "apps.teams.selectors.overview",
+      "scope": "<module>",
+      "target": "missions.models",
+      "names": [
+        "PointTransaction"
+      ],
+      "line": 5
+    },
+    {
+      "source": "apps.teams.selectors.overview",
+      "scope": "<module>",
+      "target": "apps.teams.selectors.membership",
+      "names": [
+        "get_user_team"
+      ],
+      "line": 6
+    },
+    {
+      "source": "apps.teams.selectors.overview",
+      "scope": "<module>",
+      "target": "apps.teams.selectors.leagues",
+      "names": [
+        "get_league_rankings"
+      ],
+      "line": 7
+    },
+    {
+      "source": "apps.teams.selectors.overview",
+      "scope": "<module>",
+      "target": "apps.wallet.selectors.history",
+      "names": [
+        "get_user_months_shamsi"
+      ],
+      "line": 8
+    },
+    {
+      "source": "apps.teams.selectors.overview",
+      "scope": "<module>",
+      "target": "common.calendar",
+      "names": [
+        "get_shamsi_month_range"
+      ],
+      "line": 9
+    },
+    {
+      "source": "apps.treasure.selectors.storefront",
+      "scope": "<module>",
+      "target": "django.db.models",
+      "names": [
+        "Sum"
+      ],
+      "line": 2
+    },
+    {
+      "source": "apps.treasure.selectors.storefront",
+      "scope": "<module>",
+      "target": "missions.models",
+      "names": [
+        "TreasureItem",
+        "TreasureCategory",
+        "TreasurePurchase"
+      ],
+      "line": 3
+    },
+    {
+      "source": "apps.treasure.services.checkout",
+      "scope": "<module>",
+      "target": "django.db",
+      "names": [
+        "transaction"
+      ],
+      "line": 3
+    },
+    {
+      "source": "apps.treasure.services.checkout",
+      "scope": "<module>",
+      "target": "django.db.models",
+      "names": [
+        "F",
+        "Q"
+      ],
+      "line": 4
+    },
+    {
+      "source": "apps.treasure.services.checkout",
+      "scope": "<module>",
+      "target": "missions.models",
+      "names": [
+        "PointTransaction",
+        "TreasureItem",
+        "TreasurePurchase",
+        "User"
+      ],
+      "line": 6
+    },
+    {
+      "source": "apps.wallet.selectors.history",
+      "scope": "<module>",
+      "target": "collections",
+      "names": [
+        "OrderedDict"
+      ],
+      "line": 2
+    },
+    {
+      "source": "apps.wallet.selectors.history",
+      "scope": "<module>",
+      "target": "jdatetime",
+      "line": 3
+    },
+    {
+      "source": "apps.wallet.selectors.history",
+      "scope": "<module>",
+      "target": "django.db.models",
+      "names": [
+        "Sum"
+      ],
+      "line": 4
+    },
+    {
+      "source": "apps.wallet.selectors.history",
+      "scope": "<module>",
+      "target": "django.db.models.functions",
+      "names": [
+        "TruncMonth"
+      ],
+      "line": 5
+    },
+    {
+      "source": "apps.wallet.selectors.history",
+      "scope": "<module>",
+      "target": "missions.models",
+      "names": [
+        "PointTransaction"
+      ],
+      "line": 6
+    },
+    {
+      "source": "apps.wallet.selectors.history",
+      "scope": "<module>",
+      "target": "common.calendar",
+      "names": [
+        "get_persian_month_name"
+      ],
+      "line": 7
+    },
+    {
+      "source": "common.calendar",
+      "scope": "<module>",
+      "target": "datetime",
+      "names": [
+        "datetime",
+        "time"
+      ],
+      "line": 2
+    },
+    {
+      "source": "common.calendar",
+      "scope": "<module>",
+      "target": "jdatetime",
+      "line": 3
+    },
+    {
+      "source": "dashboard.admin",
+      "scope": "<module>",
+      "target": "django.contrib",
+      "names": [
+        "admin"
+      ],
+      "line": 1
+    },
+    {
+      "source": "dashboard.apps",
+      "scope": "<module>",
+      "target": "django.apps",
+      "names": [
+        "AppConfig"
+      ],
+      "line": 1
+    },
+    {
+      "source": "dashboard.context_processors",
+      "scope": "dashboard_badges",
+      "target": "missions.models",
+      "names": [
+        "MissionRequest",
+        "TreasurePurchase"
+      ],
+      "line": 10
+    },
+    {
+      "source": "dashboard.decorators",
+      "scope": "<module>",
+      "target": "functools",
+      "names": [
+        "wraps"
+      ],
+      "line": 1
+    },
+    {
+      "source": "dashboard.decorators",
+      "scope": "<module>",
+      "target": "django.shortcuts",
+      "names": [
+        "redirect"
+      ],
+      "line": 2
+    },
+    {
+      "source": "dashboard.decorators",
+      "scope": "<module>",
+      "target": "django.contrib",
+      "names": [
+        "messages"
+      ],
+      "line": 3
+    },
+    {
+      "source": "dashboard.decorators",
+      "scope": "<module>",
+      "target": "django.contrib.auth.decorators",
+      "names": [
+        "login_required"
+      ],
+      "line": 4
+    },
+    {
+      "source": "dashboard.models",
+      "scope": "<module>",
+      "target": "django.db",
+      "names": [
+        "models"
+      ],
+      "line": 1
+    },
+    {
+      "source": "dashboard.urls",
+      "scope": "<module>",
+      "target": "django.urls",
+      "names": [
+        "path"
+      ],
+      "line": 1
+    },
+    {
+      "source": "dashboard.urls",
+      "scope": "<module>",
+      "target": "dashboard",
+      "names": [
+        "views"
+      ],
+      "line": 2
+    },
+    {
+      "source": "dashboard.views",
+      "scope": "<module>",
+      "target": "apps.backoffice.selectors.overview",
+      "names": [
+        "get_dashboard_context"
+      ],
+      "line": 1
+    },
+    {
+      "source": "dashboard.views",
+      "scope": "<module>",
+      "target": "django.shortcuts",
+      "names": [
+        "render",
+        "get_object_or_404",
+        "redirect"
+      ],
+      "line": 2
+    },
+    {
+      "source": "dashboard.views",
+      "scope": "<module>",
+      "target": "django.contrib",
+      "names": [
+        "messages"
+      ],
+      "line": 3
+    },
+    {
+      "source": "dashboard.views",
+      "scope": "<module>",
+      "target": "django.core.exceptions",
+      "names": [
+        "PermissionDenied"
+      ],
+      "line": 4
+    },
+    {
+      "source": "dashboard.views",
+      "scope": "<module>",
+      "target": "django.db",
+      "names": [
+        "DatabaseError"
+      ],
+      "line": 5
+    },
+    {
+      "source": "dashboard.views",
+      "scope": "<module>",
+      "target": "django.db.models",
+      "names": [
+        "Sum",
+        "Count",
+        "Q",
+        "F"
+      ],
+      "line": 6
+    },
+    {
+      "source": "dashboard.views",
+      "scope": "<module>",
+      "target": "django.http",
+      "names": [
+        "HttpResponse"
+      ],
+      "line": 7
+    },
+    {
+      "source": "dashboard.views",
+      "scope": "<module>",
+      "target": "django.utils",
+      "names": [
+        "timezone"
+      ],
+      "line": 8
+    },
+    {
+      "source": "dashboard.views",
+      "scope": "<module>",
+      "target": "django.views.decorators.http",
+      "names": [
+        "require_POST"
+      ],
+      "line": 9
+    },
+    {
+      "source": "dashboard.views",
+      "scope": "<module>",
+      "target": "datetime",
+      "names": [
+        "timedelta"
+      ],
+      "line": 10
+    },
+    {
+      "source": "dashboard.views",
+      "scope": "<module>",
+      "target": "logging",
+      "line": 11
+    },
+    {
+      "source": "dashboard.views",
+      "scope": "<module>",
+      "target": "missions.models",
+      "names": [
+        "User",
+        "Team",
+        "TeamMember",
+        "PointTransaction",
+        "MissionCategory",
+        "Mission",
+        "TeamMission",
+        "MissionCompletion",
+        "MissionRequest",
+        "Competition",
+        "CompetitionRegistration",
+        "Question",
+        "DailyQuestion",
+        "DailyQuestionAnswer",
+        "TreasureCategory",
+        "TreasureItem",
+        "TreasurePurchase"
+      ],
+      "line": 13
+    },
+    {
+      "source": "dashboard.views",
+      "scope": "<module>",
+      "target": "dashboard.decorators",
+      "names": [
+        "staff_required"
+      ],
+      "line": 20
+    },
+    {
+      "source": "missions.admin",
+      "scope": "<module>",
+      "target": "django",
+      "names": [
+        "forms"
+      ],
+      "line": 1
+    },
+    {
+      "source": "missions.admin",
+      "scope": "<module>",
+      "target": "django.contrib",
+      "names": [
+        "admin"
+      ],
+      "line": 2
+    },
+    {
+      "source": "missions.admin",
+      "scope": "<module>",
+      "target": "django.core.exceptions",
+      "names": [
+        "PermissionDenied"
+      ],
+      "line": 3
+    },
+    {
+      "source": "missions.admin",
+      "scope": "<module>",
+      "target": "django.utils.html",
+      "names": [
+        "format_html"
+      ],
+      "line": 4
+    },
+    {
+      "source": "missions.admin",
+      "scope": "<module>",
+      "target": "django.urls",
+      "names": [
+        "reverse"
+      ],
+      "line": 5
+    },
+    {
+      "source": "missions.admin",
+      "scope": "<module>",
+      "target": "django.utils.safestring",
+      "names": [
+        "mark_safe"
+      ],
+      "line": 6
+    },
+    {
+      "source": "missions.admin",
+      "scope": "<module>",
+      "target": "django.contrib.auth.models",
+      "names": [
+        "Group"
+      ],
+      "line": 7
+    },
+    {
+      "source": "missions.admin",
+      "scope": "<module>",
+      "target": "django.contrib.auth.admin",
+      "names": [
+        "GroupAdmin"
+      ],
+      "line": 8
+    },
+    {
+      "source": "missions.admin",
+      "scope": "<module>",
+      "target": "missions.models",
+      "names": [
+        "*"
+      ],
+      "line": 10
+    },
+    {
+      "source": "missions.apps",
+      "scope": "<module>",
+      "target": "django.apps",
+      "names": [
+        "AppConfig"
+      ],
+      "line": 1
+    },
+    {
+      "source": "missions.forms",
+      "scope": "<module>",
+      "target": "django",
+      "names": [
+        "forms"
+      ],
+      "line": 1
+    },
+    {
+      "source": "missions.forms",
+      "scope": "<module>",
+      "target": "django.contrib.auth.forms",
+      "names": [
+        "UserCreationForm",
+        "AuthenticationForm"
+      ],
+      "line": 2
+    },
+    {
+      "source": "missions.forms",
+      "scope": "<module>",
+      "target": "missions.models",
+      "names": [
+        "User"
+      ],
+      "line": 3
+    },
+    {
+      "source": "missions.models",
+      "scope": "<module>",
+      "target": "django.db",
+      "names": [
+        "models",
+        "transaction"
+      ],
+      "line": 1
+    },
+    {
+      "source": "missions.models",
+      "scope": "<module>",
+      "target": "django.contrib.auth.models",
+      "names": [
+        "AbstractUser"
+      ],
+      "line": 2
+    },
+    {
+      "source": "missions.models",
+      "scope": "<module>",
+      "target": "django.utils",
+      "names": [
+        "timezone"
+      ],
+      "line": 3
+    },
+    {
+      "source": "missions.models",
+      "scope": "<module>",
+      "target": "django.core.exceptions",
+      "names": [
+        "ValidationError"
+      ],
+      "line": 4
+    },
+    {
+      "source": "missions.models",
+      "scope": "<module>",
+      "target": "django.db.models",
+      "names": [
+        "Case",
+        "Sum",
+        "Count",
+        "Q",
+        "F",
+        "Value",
+        "When"
+      ],
+      "line": 5
+    },
+    {
+      "source": "missions.models",
+      "scope": "<module>",
+      "target": "datetime",
+      "names": [
+        "timedelta"
+      ],
+      "line": 6
+    },
+    {
+      "source": "missions.models",
+      "scope": "MissionRequest.approve",
+      "target": "apps.missions.services.review",
+      "names": [
+        "approve_mission_request"
+      ],
+      "line": 428
+    },
+    {
+      "source": "missions.models",
+      "scope": "MissionRequest.reject",
+      "target": "apps.missions.services.review",
+      "names": [
+        "reject_mission_request"
+      ],
+      "line": 434
+    },
+    {
+      "source": "missions.models",
+      "scope": "Competition.finalize",
+      "target": "apps.competitions.services.rewards",
+      "names": [
+        "finalize_competition"
+      ],
+      "line": 529
+    },
+    {
+      "source": "missions.models",
+      "scope": "CompetitionRegistration.finish",
+      "target": "apps.competitions.services.rewards",
+      "names": [
+        "finish_competition_registration"
+      ],
+      "line": 612
+    },
+    {
+      "source": "missions.urls",
+      "scope": "<module>",
+      "target": "django.urls",
+      "names": [
+        "path"
+      ],
+      "line": 1
+    },
+    {
+      "source": "missions.urls",
+      "scope": "<module>",
+      "target": "missions",
+      "names": [
+        "views"
+      ],
+      "line": 2
+    },
+    {
+      "source": "missions.views",
+      "scope": "<module>",
+      "target": "apps.treasure.selectors.storefront",
+      "names": [
+        "get_storefront_context"
+      ],
+      "line": 1
+    },
+    {
+      "source": "missions.views",
+      "scope": "<module>",
+      "target": "apps.missions.selectors.home",
+      "names": [
+        "get_home_context"
+      ],
+      "line": 2
+    },
+    {
+      "source": "missions.views",
+      "scope": "<module>",
+      "target": "apps.competitions.selectors.listing",
+      "names": [
+        "get_competition_list_context"
+      ],
+      "line": 3
+    },
+    {
+      "source": "missions.views",
+      "scope": "<module>",
+      "target": "apps.questions.selectors.daily",
+      "names": [
+        "get_daily_question_context"
+      ],
+      "line": 4
+    },
+    {
+      "source": "missions.views",
+      "scope": "<module>",
+      "target": "apps.teams.selectors.overview",
+      "names": [
+        "get_league_context"
+      ],
+      "line": 5
+    },
+    {
+      "source": "missions.views",
+      "scope": "<module>",
+      "target": "apps.accounts.selectors.overview",
+      "names": [
+        "get_profile_context"
+      ],
+      "line": 6
+    },
+    {
+      "source": "missions.views",
+      "scope": "<module>",
+      "target": "common.calendar",
+      "names": [
+        "PERSIAN_MONTHS",
+        "get_persian_month_name",
+        "get_shamsi_month_range"
+      ],
+      "line": 7
+    },
+    {
+      "source": "missions.views",
+      "scope": "<module>",
+      "target": "apps.wallet.selectors.history",
+      "names": [
+        "get_user_months_shamsi"
+      ],
+      "line": 8
+    },
+    {
+      "source": "missions.views",
+      "scope": "<module>",
+      "target": "apps.teams.selectors.membership",
+      "names": [
+        "get_user_team"
+      ],
+      "line": 9
+    },
+    {
+      "source": "missions.views",
+      "scope": "<module>",
+      "target": "apps.missions.selectors.eligibility",
+      "names": [
+        "get_user_available_missions",
+        "has_completed_today",
+        "has_pending_request_today"
+      ],
+      "line": 10
+    },
+    {
+      "source": "missions.views",
+      "scope": "<module>",
+      "target": "django.shortcuts",
+      "names": [
+        "render",
+        "redirect",
+        "get_object_or_404"
+      ],
+      "line": 14
+    },
+    {
+      "source": "missions.views",
+      "scope": "<module>",
+      "target": "django.contrib.auth",
+      "names": [
+        "login",
+        "logout"
+      ],
+      "line": 15
+    },
+    {
+      "source": "missions.views",
+      "scope": "<module>",
+      "target": "django.contrib.auth.decorators",
+      "names": [
+        "login_required"
+      ],
+      "line": 16
+    },
+    {
+      "source": "missions.views",
+      "scope": "<module>",
+      "target": "django.contrib",
+      "names": [
+        "messages"
+      ],
+      "line": 17
+    },
+    {
+      "source": "missions.views",
+      "scope": "<module>",
+      "target": "django.db",
+      "names": [
+        "DatabaseError"
+      ],
+      "line": 18
+    },
+    {
+      "source": "missions.views",
+      "scope": "<module>",
+      "target": "django.utils",
+      "names": [
+        "timezone"
+      ],
+      "line": 19
+    },
+    {
+      "source": "missions.views",
+      "scope": "<module>",
+      "target": "django.http",
+      "names": [
+        "Http404",
+        "JsonResponse"
+      ],
+      "line": 20
+    },
+    {
+      "source": "missions.views",
+      "scope": "<module>",
+      "target": "django.views.decorators.http",
+      "names": [
+        "require_POST"
+      ],
+      "line": 21
+    },
+    {
+      "source": "missions.views",
+      "scope": "<module>",
+      "target": "datetime",
+      "names": [
+        "timedelta"
+      ],
+      "line": 22
+    },
+    {
+      "source": "missions.views",
+      "scope": "<module>",
+      "target": "logging",
+      "line": 23
+    },
+    {
+      "source": "missions.views",
+      "scope": "<module>",
+      "target": "missions.forms",
+      "names": [
+        "UserRegisterForm",
+        "UserLoginForm"
+      ],
+      "line": 25
+    },
+    {
+      "source": "missions.views",
+      "scope": "<module>",
+      "target": "missions.models",
+      "names": [
+        "Mission",
+        "MissionRequest",
+        "Competition",
+        "CompetitionQuestion",
+        "CompetitionRegistration",
+        "CompetitionAnswer",
+        "DailyQuestion",
+        "DailyQuestionAnswer",
+        "TreasureItem"
+      ],
+      "line": 26
+    },
+    {
+      "source": "missions.views",
+      "scope": "<module>",
+      "target": "apps.teams.selectors.leagues",
+      "names": [
+        "get_league_rankings",
+        "get_profile_team_leaderboard"
+      ],
+      "line": 37
+    },
+    {
+      "source": "missions.views",
+      "scope": "<module>",
+      "target": "apps.accounts.selectors.profiles",
+      "names": [
+        "get_profile_history",
+        "get_profile_rank"
+      ],
+      "line": 38
+    },
+    {
+      "source": "missions.views",
+      "scope": "<module>",
+      "target": "apps.treasure.services.checkout",
+      "names": [
+        "InsufficientPoints",
+        "OutOfStock",
+        "purchase_treasure_item"
+      ],
+      "line": 39
+    },
+    {
+      "source": "missions.selectors.leagues",
+      "scope": "<module>",
+      "target": "apps.teams.selectors.leagues",
+      "names": [
+        "get_profile_team_leaderboard",
+        "get_league_rankings",
+        "get_ranked_teams"
+      ],
+      "line": 3
+    },
+    {
+      "source": "missions.selectors.profiles",
+      "scope": "<module>",
+      "target": "apps.accounts.selectors.profiles",
+      "names": [
+        "get_profile_rank",
+        "get_profile_history"
+      ],
+      "line": 3
+    },
+    {
+      "source": "missions.services.competitions",
+      "scope": "<module>",
+      "target": "apps.competitions.services.rewards",
+      "names": [
+        "finalize_competition",
+        "finish_competition_registration"
+      ],
+      "line": 3
+    },
+    {
+      "source": "missions.services.mission_review",
+      "scope": "<module>",
+      "target": "apps.missions.services.review",
+      "names": [
+        "approve_mission_request",
+        "reject_mission_request"
+      ],
+      "line": 3
+    },
+    {
+      "source": "missions.services.treasure",
+      "scope": "<module>",
+      "target": "apps.treasure.services.checkout",
+      "names": [
+        "InsufficientPoints",
+        "OutOfStock",
+        "purchase_treasure_item"
+      ],
+      "line": 3
+    },
+    {
+      "source": "mouod.asgi",
+      "scope": "<module>",
+      "target": "os",
+      "line": 10
+    },
+    {
+      "source": "mouod.asgi",
+      "scope": "<module>",
+      "target": "django.core.asgi",
+      "names": [
+        "get_asgi_application"
+      ],
+      "line": 12
+    },
+    {
+      "source": "mouod.baseline_settings",
+      "scope": "<module>",
+      "target": "tempfile",
+      "names": [
+        "TemporaryDirectory"
+      ],
+      "line": 2
+    },
+    {
+      "source": "mouod.baseline_settings",
+      "scope": "<module>",
+      "target": "mouod.settings",
+      "names": [
+        "*"
+      ],
+      "line": 4
+    },
+    {
+      "source": "mouod.settings",
+      "scope": "<module>",
+      "target": "os",
+      "line": 13
+    },
+    {
+      "source": "mouod.settings",
+      "scope": "<module>",
+      "target": "pathlib",
+      "names": [
+        "Path"
+      ],
+      "line": 14
+    },
+    {
+      "source": "mouod.urls",
+      "scope": "<module>",
+      "target": "django.contrib",
+      "names": [
+        "admin"
+      ],
+      "line": 17
+    },
+    {
+      "source": "mouod.urls",
+      "scope": "<module>",
+      "target": "django.urls",
+      "names": [
+        "path",
+        "include"
+      ],
+      "line": 18
+    },
+    {
+      "source": "mouod.urls",
+      "scope": "<module>",
+      "target": "django.conf",
+      "names": [
+        "settings"
+      ],
+      "line": 19
+    },
+    {
+      "source": "mouod.urls",
+      "scope": "<module>",
+      "target": "django.conf.urls.static",
+      "names": [
+        "static"
+      ],
+      "line": 20
+    },
+    {
+      "source": "mouod.wsgi",
+      "scope": "<module>",
+      "target": "os",
+      "line": 10
+    },
+    {
+      "source": "mouod.wsgi",
+      "scope": "<module>",
+      "target": "django.core.wsgi",
+      "names": [
+        "get_wsgi_application"
+      ],
+      "line": 12
+    }
+  ]
+}

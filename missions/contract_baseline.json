@@ -1,0 +1,1345 @@
+{
+  "apps": [
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
+    "missions",
+    "dashboard"
+  ],
+  "auth": "missions.User",
+  "models": {
+    "admin.LogEntry": {
+      "table": "django_admin_log",
+      "fields": {
+        "id": "models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')",
+        "action_time": "models.DateTimeField(default=django.utils.timezone.now, editable=False, verbose_name='زمان اقدام')",
+        "user": "models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL, verbose_name='کاربر')",
+        "content_type": "models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='contenttypes.contenttype', verbose_name='نوع محتوی')",
+        "object_id": "models.TextField(blank=True, null=True, verbose_name='شناسهٔ شیء')",
+        "object_repr": "models.CharField(max_length=200, verbose_name='صورت شیء')",
+        "action_flag": "models.PositiveSmallIntegerField(choices=[(1, 'افزودن'), (2, 'تغییر'), (3, 'کاستن')], verbose_name='نشانه عمل')",
+        "change_message": "models.TextField(blank=True, verbose_name='پیغام تغییر')"
+      },
+      "options": "{'constraints': [], 'db_table': 'django_admin_log', 'indexes': [], 'ordering': ['-action_time'], 'verbose_name': 'مورد اتفاقات', 'verbose_name_plural': 'موارد اتفاقات'}",
+      "bases": "(models.Model,)",
+      "managers": "[('objects', django.contrib.admin.models.LogEntryManager())]"
+    },
+    "auth.Permission": {
+      "table": "auth_permission",
+      "fields": {
+        "id": "models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')",
+        "name": "models.CharField(max_length=255, verbose_name='نام')",
+        "content_type": "models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='contenttypes.contenttype', verbose_name='نوع محتوی')",
+        "codename": "models.CharField(max_length=100, verbose_name='نام کد')"
+      },
+      "options": "{'constraints': [], 'indexes': [], 'ordering': ['content_type__app_label', 'content_type__model', 'codename'], 'unique_together': {('content_type', 'codename')}, 'verbose_name': 'اجازه', 'verbose_name_plural': 'اجازه\\u200cها'}",
+      "bases": "(models.Model,)",
+      "managers": "[('objects', django.contrib.auth.models.PermissionManager())]"
+    },
+    "auth.Group": {
+      "table": "auth_group",
+      "fields": {
+        "id": "models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')",
+        "name": "models.CharField(max_length=150, unique=True, verbose_name='نام')",
+        "permissions": "models.ManyToManyField(blank=True, to='auth.permission', verbose_name='اجازه\\u200cها')"
+      },
+      "options": "{'constraints': [], 'indexes': [], 'verbose_name': 'گروه', 'verbose_name_plural': 'گروه\\u200cها'}",
+      "bases": "(models.Model,)",
+      "managers": "[('objects', django.contrib.auth.models.GroupManager())]"
+    },
+    "contenttypes.ContentType": {
+      "table": "django_content_type",
+      "fields": {
+        "id": "models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')",
+        "app_label": "models.CharField(max_length=100)",
+        "model": "models.CharField(max_length=100, verbose_name='نام پایتونی کلاس مدل')"
+      },
+      "options": "{'constraints': [], 'db_table': 'django_content_type', 'indexes': [], 'unique_together': {('app_label', 'model')}, 'verbose_name': 'نوع محتوی', 'verbose_name_plural': 'نوع\\u200cهای محتوا'}",
+      "bases": "(models.Model,)",
+      "managers": "[('objects', django.contrib.contenttypes.models.ContentTypeManager())]"
+    },
+    "sessions.Session": {
+      "table": "django_session",
+      "fields": {
+        "session_key": "models.CharField(max_length=40, primary_key=True, serialize=False, verbose_name='کلید نشست')",
+        "session_data": "models.TextField(verbose_name='اطلاعات نشست')",
+        "expire_date": "models.DateTimeField(db_index=True, verbose_name='تاریخ انقضاء')"
+      },
+      "options": "{'abstract': False, 'constraints': [], 'db_table': 'django_session', 'indexes': [], 'verbose_name': 'نشست', 'verbose_name_plural': 'نشست\\u200cها'}",
+      "bases": "(models.Model,)",
+      "managers": "[('objects', django.contrib.sessions.models.SessionManager())]"
+    },
+    "missions.User": {
+      "table": "missions_user",
+      "fields": {
+        "id": "models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')",
+        "password": "models.CharField(max_length=128, verbose_name='گذرواژه')",
+        "last_login": "models.DateTimeField(blank=True, null=True, verbose_name='آخرین ورود')",
+        "is_superuser": "models.BooleanField(default=False, help_text='نشان می\\u200cدهد که این کاربر همهٔ اجازه\\u200cها را دارد بدون آنکه به صراحت به او اختصاص داده شده باشد.', verbose_name='ابرکاربر')",
+        "username": "models.CharField(error_messages={'unique': 'کاربری با آن نام کاربری وجود دارد.'}, help_text='الزامی. 150 کاراکتر یا کمتر. فقط شامل حروف، اعداد، و علامات @/./+/-/_', max_length=150, unique=True, validators=[django.contrib.auth.validators.UnicodeUsernameValidator()], verbose_name='نام کاربری')",
+        "first_name": "models.CharField(blank=True, max_length=150, verbose_name='نام')",
+        "last_name": "models.CharField(blank=True, max_length=150, verbose_name='نام خانوادگی')",
+        "email": "models.EmailField(blank=True, max_length=254, verbose_name='آدرس ایمیل')",
+        "is_staff": "models.BooleanField(default=False, help_text='نشان می\\u200cدهد که آیا این کاربر می\\u200cتواند وارد این وبگاه مدیریت شود یا خیر.', verbose_name='وضعیت کارمندی')",
+        "is_active": "models.BooleanField(default=True, help_text='نشان می\\u200cدهد که آیا این کاربر اجازهٔ فعالیت دارد یا خیر. به جای حذف کاربر این تیک را بردارید.', verbose_name='فعال')",
+        "date_joined": "models.DateTimeField(default=django.utils.timezone.now, verbose_name='تاریخ پیوستن')",
+        "is_team_manager": "models.BooleanField(default=False, verbose_name='مدیر تیم است؟')",
+        "total_points": "models.IntegerField(default=0, verbose_name='مجموع امتیازات')",
+        "total_coins": "models.IntegerField(default=0, verbose_name='مجموع سکه\\u200cها')",
+        "last_activity_date": "models.DateField(blank=True, null=True, verbose_name='آخرین روز فعالیت')",
+        "activity_streak": "models.IntegerField(default=0, verbose_name='تعداد روزهای فعالیت متوالی')",
+        "groups": "models.ManyToManyField(blank=True, help_text='گروه\\u200cهایی که این کاربر به آنها تعلق دارد. کاربر تمام اجازه\\u200cهای مرتبط با این گروه\\u200cها را دریافت خواهد کرد.', related_name='user_set', related_query_name='user', to='auth.group', verbose_name='گروه\\u200cها')",
+        "user_permissions": "models.ManyToManyField(blank=True, help_text='اجازه\\u200cهای خاص این کاربر.', related_name='user_set', related_query_name='user', to='auth.permission', verbose_name='اجازه\\u200cهای کاربر')"
+      },
+      "options": "{'constraints': [], 'indexes': [], 'verbose_name': 'کاربر', 'verbose_name_plural': 'کاربران'}",
+      "bases": "(models.Model,)",
+      "managers": "[('objects', django.contrib.auth.models.UserManager())]"
+    },
+    "missions.Team": {
+      "table": "missions_team",
+      "fields": {
+        "id": "models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')",
+        "name": "models.CharField(max_length=100, verbose_name='نام تیم')",
+        "manager": "models.OneToOneField(limit_choices_to={'is_team_manager': True}, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='managed_team', to=settings.AUTH_USER_MODEL, verbose_name='مدیر تیم')",
+        "created_at": "models.DateTimeField(auto_now_add=True, verbose_name='تاریخ ایجاد')"
+      },
+      "options": "{'constraints': [], 'indexes': [], 'verbose_name': 'تیم', 'verbose_name_plural': 'تیم\\u200cها'}",
+      "bases": "(models.Model,)",
+      "managers": "[]"
+    },
+    "missions.TeamMember": {
+      "table": "missions_teammember",
+      "fields": {
+        "id": "models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')",
+        "team": "models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='members', to='missions.team', verbose_name='تیم')",
+        "user": "models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, related_name='team_membership', to=settings.AUTH_USER_MODEL, verbose_name='کاربر')",
+        "joined_at": "models.DateTimeField(auto_now_add=True, verbose_name='تاریخ عضویت')"
+      },
+      "options": "{'constraints': [], 'indexes': [], 'verbose_name': 'عضو تیم', 'verbose_name_plural': 'اعضای تیم'}",
+      "bases": "(models.Model,)",
+      "managers": "[]"
+    },
+    "missions.PointTransaction": {
+      "table": "missions_pointtransaction",
+      "fields": {
+        "id": "models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')",
+        "user": "models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='transactions', to=settings.AUTH_USER_MODEL, verbose_name='کاربر')",
+        "transaction_type": "models.CharField(choices=[('mission', 'ماموریت'), ('competition', 'مسابقه'), ('daily_question', 'سوال روزانه'), ('monthly_competition', 'مسابقه ماهانه'), ('bonus', 'جایزه ویژه'), ('treasure', 'صندوق گنج')], max_length=30, verbose_name='نوع تراکنش')",
+        "title": "models.CharField(max_length=200, verbose_name='عنوان')",
+        "points": "models.IntegerField(default=0, verbose_name='امتیاز کسب شده')",
+        "coins": "models.IntegerField(default=0, verbose_name='سکه کسب شده')",
+        "created_at": "models.DateTimeField(auto_now_add=True, verbose_name='تاریخ کسب')"
+      },
+      "options": "{'constraints': [], 'indexes': [], 'ordering': ['-created_at'], 'verbose_name': 'تراکنش امتیاز', 'verbose_name_plural': 'تراکنش\\u200cهای امتیاز'}",
+      "bases": "(models.Model,)",
+      "managers": "[]"
+    },
+    "missions.MissionCategory": {
+      "table": "missions_missioncategory",
+      "fields": {
+        "id": "models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')",
+        "name": "models.CharField(help_text='مثلاً: عبادی، ورزشی، علمی، فرهنگی', max_length=100, verbose_name='نام دسته\\u200cبندی')",
+        "slug": "models.SlugField(help_text='برای URL — مثلاً: ebadat، sport، elmi', max_length=100, unique=True, verbose_name='شناسه (slug)')",
+        "icon": "models.CharField(default='fa-tag', help_text='مثلاً: fa-mosque، fa-running، fa-book', max_length=50, verbose_name='آیکون (Font Awesome)')",
+        "color": "models.CharField(default='#d4a017', help_text='کد رنگ HEX — مثلاً: #d4a017', max_length=20, verbose_name='رنگ')",
+        "order": "models.PositiveIntegerField(default=0, help_text='عدد کوچکتر = نمایش بالاتر', verbose_name='ترتیب نمایش')",
+        "is_active": "models.BooleanField(default=True, verbose_name='فعال است؟')",
+        "created_at": "models.DateTimeField(auto_now_add=True, verbose_name='تاریخ ایجاد')"
+      },
+      "options": "{'constraints': [], 'indexes': [], 'ordering': ['order', 'name'], 'verbose_name': 'دسته\\u200cبندی ماموریت', 'verbose_name_plural': 'دسته\\u200cبندی\\u200cهای ماموریت'}",
+      "bases": "(models.Model,)",
+      "managers": "[]"
+    },
+    "missions.Mission": {
+      "table": "missions_mission",
+      "fields": {
+        "id": "models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')",
+        "title": "models.CharField(max_length=200, verbose_name='نام ماموریت (مثلاً نماز صبح)')",
+        "description": "models.TextField(blank=True, null=True, verbose_name='توضیحات')",
+        "category": "models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='missions', to='missions.missioncategory', verbose_name='دسته\\u200cبندی')",
+        "points": "models.IntegerField(default=10, verbose_name='امتیاز')",
+        "coins": "models.IntegerField(default=0, verbose_name='سکه')",
+        "has_time_limit": "models.BooleanField(default=False, verbose_name='دارای محدودیت زمانی است؟')",
+        "start_time": "models.TimeField(blank=True, null=True, verbose_name='ساعت شروع')",
+        "end_time": "models.TimeField(blank=True, null=True, verbose_name='ساعت پایان')",
+        "show_on_home": "models.BooleanField(default=False, help_text='اگر فعال باشد، این ماموریت در صفحه خانه نمایش داده می\\u200cشود.', verbose_name='نمایش در صفحه اصلی؟')",
+        "home_order": "models.PositiveIntegerField(default=0, help_text='عدد کوچکتر = نمایش بالاتر', verbose_name='ترتیب نمایش در خانه')",
+        "is_global": "models.BooleanField(default=False, help_text='اگر فعال باشد، این ماموریت در همه تیم\\u200cها به\\u200cصورت خودکار فعال است.', verbose_name='ماموریت مشترک/ثابت است؟')",
+        "is_active": "models.BooleanField(default=True, verbose_name='فعال است؟')",
+        "created_by": "models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='created_missions', to=settings.AUTH_USER_MODEL, verbose_name='سازنده')",
+        "created_at": "models.DateTimeField(auto_now_add=True, verbose_name='تاریخ ایجاد')"
+      },
+      "options": "{'constraints': [], 'indexes': [], 'ordering': ['home_order', '-created_at'], 'verbose_name': 'ماموریت', 'verbose_name_plural': 'ماموریت\\u200cها'}",
+      "bases": "(models.Model,)",
+      "managers": "[]"
+    },
+    "missions.TeamMission": {
+      "table": "missions_teammission",
+      "fields": {
+        "id": "models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')",
+        "team": "models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='team_missions', to='missions.team', verbose_name='تیم')",
+        "mission": "models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='team_assignments', to='missions.mission', verbose_name='ماموریت')",
+        "is_active": "models.BooleanField(default=True, verbose_name='در این تیم فعال است؟')",
+        "points_override": "models.IntegerField(blank=True, help_text='در صورت پر بودن، جایگزین امتیاز پیش\\u200cفرض ماموریت می\\u200cشود.', null=True, verbose_name='امتیاز اختصاصی این تیم')",
+        "coins_override": "models.IntegerField(blank=True, help_text='در صورت پر بودن، جایگزین سکه پیش\\u200cفرض ماموریت می\\u200cشود.', null=True, verbose_name='سکه اختصاصی این تیم')",
+        "order": "models.PositiveIntegerField(default=0, verbose_name='ترتیب نمایش در تیم')",
+        "created_at": "models.DateTimeField(auto_now_add=True, verbose_name='تاریخ ثبت')"
+      },
+      "options": "{'constraints': [], 'indexes': [], 'ordering': ['order', '-created_at'], 'unique_together': {('team', 'mission')}, 'verbose_name': 'ماموریت تیم', 'verbose_name_plural': 'ماموریت\\u200cهای تیم\\u200cها'}",
+      "bases": "(models.Model,)",
+      "managers": "[]"
+    },
+    "missions.MissionCompletion": {
+      "table": "missions_missioncompletion",
+      "fields": {
+        "id": "models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')",
+        "user": "models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='completed_missions', to=settings.AUTH_USER_MODEL, verbose_name='کاربر')",
+        "mission": "models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='missions.mission', verbose_name='ماموریت')",
+        "team": "models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='mission_completions', to='missions.team', verbose_name='تیم')",
+        "completed_at": "models.DateTimeField(auto_now_add=True, verbose_name='تاریخ انجام')",
+        "points_awarded": "models.IntegerField(default=0, verbose_name='امتیاز داده\\u200cشده')",
+        "coins_awarded": "models.IntegerField(default=0, verbose_name='سکه داده\\u200cشده')"
+      },
+      "options": "{'constraints': [], 'indexes': [], 'verbose_name': 'انجام ماموریت', 'verbose_name_plural': 'انجام ماموریت\\u200cها'}",
+      "bases": "(models.Model,)",
+      "managers": "[]"
+    },
+    "missions.MissionRequest": {
+      "table": "missions_missionrequest",
+      "fields": {
+        "id": "models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')",
+        "user": "models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='mission_requests', to=settings.AUTH_USER_MODEL, verbose_name='کاربر')",
+        "mission": "models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='requests', to='missions.mission', verbose_name='ماموریت')",
+        "team": "models.ForeignKey(blank=True, help_text='تیمی که کاربر در آن درخواست داده (برای اعمال override تیمی).', null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='mission_requests', to='missions.team', verbose_name='تیم')",
+        "status": "models.CharField(choices=[('pending', 'در انتظار بررسی'), ('approved', 'تأیید شده'), ('rejected', 'رد شده')], default='pending', max_length=10, verbose_name='وضعیت')",
+        "note": "models.TextField(blank=True, help_text='توضیح اختیاری درباره نحوه انجام ماموریت.', null=True, verbose_name='توضیح کاربر')",
+        "admin_note": "models.TextField(blank=True, help_text='دلیل تأیید یا رد درخواست.', null=True, verbose_name='یادداشت مدیر')",
+        "requested_at": "models.DateTimeField(auto_now_add=True, verbose_name='زمان درخواست')",
+        "reviewed_at": "models.DateTimeField(blank=True, null=True, verbose_name='زمان بررسی')",
+        "reviewed_by": "models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='reviewed_requests', to=settings.AUTH_USER_MODEL, verbose_name='بررسی\\u200cکننده')",
+        "points_awarded": "models.PositiveIntegerField(default=0, verbose_name='امتیاز داده\\u200cشده')",
+        "coins_awarded": "models.PositiveIntegerField(default=0, verbose_name='سکه داده\\u200cشده')"
+      },
+      "options": "{'constraints': [], 'indexes': [], 'ordering': ['-requested_at'], 'verbose_name': 'درخواست انجام ماموریت', 'verbose_name_plural': 'درخواست\\u200cهای انجام ماموریت'}",
+      "bases": "(models.Model,)",
+      "managers": "[]"
+    },
+    "missions.Competition": {
+      "table": "missions_competition",
+      "fields": {
+        "id": "models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')",
+        "title": "models.CharField(max_length=200, verbose_name='نام مسابقه')",
+        "description": "models.TextField(blank=True, null=True, verbose_name='توضیحات')",
+        "start_date": "models.DateTimeField(verbose_name='تاریخ و ساعت شروع')",
+        "end_date": "models.DateTimeField(verbose_name='تاریخ و ساعت پایان')",
+        "points_per_correct": "models.IntegerField(default=10, verbose_name='امتیاز هر پاسخ صحیح')",
+        "max_questions": "models.PositiveIntegerField(default=20, help_text='کاربر در این مسابقه می\\u200cتواند حداکثر به این تعداد سوال پاسخ دهد.', verbose_name='حداکثر تعداد سوال')",
+        "time_limit_minutes": "models.PositiveIntegerField(default=30, help_text='زمان کل مسابقه برای هر کاربر از لحظه شروع.', verbose_name='محدودیت زمانی (دقیقه)')",
+        "first_prize_points": "models.PositiveIntegerField(default=500, verbose_name='جایزه نفر اول (امتیاز)')",
+        "second_prize_points": "models.PositiveIntegerField(default=300, verbose_name='جایزه نفر دوم (امتیاز)')",
+        "third_prize_points": "models.PositiveIntegerField(default=100, verbose_name='جایزه نفر سوم (امتیاز)')",
+        "participation_bonus": "models.PositiveIntegerField(default=20, help_text='به همه شرکت\\u200cکنندگانی که به پایان برسند داده می\\u200cشود.', verbose_name='جایزه شرکت (امتیاز)')",
+        "status": "models.CharField(choices=[('draft', 'پیش\\u200cنویس'), ('upcoming', 'به\\u200cزودی'), ('active', 'در حال برگزاری'), ('finished', 'پایان\\u200cیافته'), ('cancelled', 'لغو شده')], default='upcoming', max_length=15, verbose_name='وضعیت')",
+        "is_featured": "models.BooleanField(default=False, verbose_name='مسابقه ویژه است؟')",
+        "created_at": "models.DateTimeField(auto_now_add=True, verbose_name='تاریخ ایجاد')",
+        "questions": "models.ManyToManyField(related_name='competitions', through='missions.CompetitionQuestion', to='missions.question', verbose_name='سوالات')"
+      },
+      "options": "{'constraints': [], 'indexes': [], 'ordering': ['-start_date', '-created_at'], 'verbose_name': 'مسابقه', 'verbose_name_plural': 'مسابقات'}",
+      "bases": "(models.Model,)",
+      "managers": "[]"
+    },
+    "missions.CompetitionQuestion": {
+      "table": "missions_competitionquestion",
+      "fields": {
+        "id": "models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')",
+        "competition": "models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='competition_questions', to='missions.competition', verbose_name='مسابقه')",
+        "question": "models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='missions.question', verbose_name='سوال')",
+        "order": "models.PositiveIntegerField(default=0, verbose_name='ترتیب')",
+        "points_override": "models.PositiveIntegerField(blank=True, help_text='در صورت پر بودن، جایگزین امتیاز پیش\\u200cفرض مسابقه می\\u200cشود.', null=True, verbose_name='امتیاز اختصاصی')"
+      },
+      "options": "{'constraints': [], 'indexes': [], 'ordering': ['order'], 'unique_together': {('competition', 'question')}, 'verbose_name': 'سوال مسابقه', 'verbose_name_plural': 'سوالات مسابقات'}",
+      "bases": "(models.Model,)",
+      "managers": "[]"
+    },
+    "missions.CompetitionRegistration": {
+      "table": "missions_competitionregistration",
+      "fields": {
+        "id": "models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')",
+        "competition": "models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='registrations', to='missions.competition', verbose_name='مسابقه')",
+        "user": "models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='competition_registrations', to=settings.AUTH_USER_MODEL, verbose_name='کاربر')",
+        "registered_at": "models.DateTimeField(auto_now_add=True, verbose_name='تاریخ ثبت\\u200cنام')",
+        "started_at": "models.DateTimeField(blank=True, null=True, verbose_name='زمان شروع')",
+        "finished_at": "models.DateTimeField(blank=True, null=True, verbose_name='زمان پایان')",
+        "total_correct": "models.IntegerField(default=0, verbose_name='تعداد پاسخ صحیح')",
+        "total_wrong": "models.IntegerField(default=0, verbose_name='تعداد پاسخ غلط')",
+        "total_answered": "models.IntegerField(default=0, verbose_name='مجموع پاسخ\\u200cهای داده\\u200cشده')",
+        "score": "models.IntegerField(default=0, verbose_name='امتیاز نهایی')",
+        "is_completed": "models.BooleanField(default=False, verbose_name='تمام شده؟')",
+        "rank": "models.PositiveIntegerField(blank=True, null=True, verbose_name='رتبه نهایی')"
+      },
+      "options": "{'constraints': [], 'indexes': [], 'ordering': ['-score', 'finished_at'], 'unique_together': {('competition', 'user')}, 'verbose_name': 'ثبت\\u200cنام در مسابقه', 'verbose_name_plural': 'ثبت\\u200cنام\\u200cهای مسابقات'}",
+      "bases": "(models.Model,)",
+      "managers": "[]"
+    },
+    "missions.Question": {
+      "table": "missions_question",
+      "fields": {
+        "id": "models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')",
+        "text": "models.CharField(max_length=500, verbose_name='متن سوال')",
+        "option_1": "models.CharField(max_length=200, verbose_name='گزینه ۱')",
+        "option_2": "models.CharField(max_length=200, verbose_name='گزینه ۲')",
+        "option_3": "models.CharField(max_length=200, verbose_name='گزینه ۳')",
+        "option_4": "models.CharField(max_length=200, verbose_name='گزینه ۴')",
+        "correct_option": "models.IntegerField(choices=[(1, 'گزینه ۱'), (2, 'گزینه ۲'), (3, 'گزینه ۳'), (4, 'گزینه ۴')], verbose_name='گزینه صحیح')"
+      },
+      "options": "{'constraints': [], 'indexes': [], 'verbose_name': 'سوال', 'verbose_name_plural': 'سوالات'}",
+      "bases": "(models.Model,)",
+      "managers": "[]"
+    },
+    "missions.CompetitionAnswer": {
+      "table": "missions_competitionanswer",
+      "fields": {
+        "id": "models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')",
+        "registration": "models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='answers', to='missions.competitionregistration', verbose_name='ثبت\\u200cنام')",
+        "question": "models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='missions.question', verbose_name='سوال')",
+        "selected_option": "models.IntegerField(verbose_name='گزینه انتخاب\\u200cشده')",
+        "is_correct": "models.BooleanField(default=False, verbose_name='صحیح بود؟')",
+        "points_awarded": "models.IntegerField(default=0, verbose_name='امتیاز داده\\u200cشده')",
+        "answered_at": "models.DateTimeField(auto_now_add=True, verbose_name='زمان پاسخ')"
+      },
+      "options": "{'constraints': [], 'indexes': [], 'ordering': ['answered_at'], 'unique_together': {('registration', 'question')}, 'verbose_name': 'پاسخ مسابقه', 'verbose_name_plural': 'پاسخ\\u200cهای مسابقات'}",
+      "bases": "(models.Model,)",
+      "managers": "[]"
+    },
+    "missions.DailyQuestion": {
+      "table": "missions_dailyquestion",
+      "fields": {
+        "id": "models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')",
+        "question": "models.ForeignKey(help_text='یک سوال انتخاب کنید (از بانک سوالات).', on_delete=django.db.models.deletion.CASCADE, related_name='daily_usages', to='missions.question', verbose_name='سوال')",
+        "publish_date": "models.DateField(default=django.utils.timezone.localdate, help_text='سوال در این تاریخ به کاربران نمایش داده می\\u200cشود.', verbose_name='تاریخ انتشار')",
+        "points": "models.PositiveIntegerField(default=10, verbose_name='امتیاز پاسخ صحیح')",
+        "difficulty": "models.CharField(choices=[('easy', 'آسان'), ('medium', 'متوسط'), ('hard', 'سخت')], default='medium', max_length=10, verbose_name='سطح دشواری')",
+        "is_active": "models.BooleanField(default=True, verbose_name='فعال است؟')",
+        "created_at": "models.DateTimeField(auto_now_add=True, verbose_name='تاریخ ایجاد')"
+      },
+      "options": "{'constraints': [], 'indexes': [], 'ordering': ['-publish_date', '-created_at'], 'unique_together': {('question', 'publish_date')}, 'verbose_name': 'سوال روزانه', 'verbose_name_plural': 'سوالات روزانه'}",
+      "bases": "(models.Model,)",
+      "managers": "[]"
+    },
+    "missions.DailyQuestionAnswer": {
+      "table": "missions_dailyquestionanswer",
+      "fields": {
+        "id": "models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')",
+        "user": "models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='daily_answers', to=settings.AUTH_USER_MODEL, verbose_name='کاربر')",
+        "daily_question": "models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='answers', to='missions.dailyquestion', verbose_name='سوال روزانه')",
+        "selected_option": "models.IntegerField(verbose_name='گزینه انتخاب\\u200cشده')",
+        "is_correct": "models.BooleanField(default=False, verbose_name='پاسخ صحیح بود؟')",
+        "points_awarded": "models.PositiveIntegerField(default=0, verbose_name='امتیاز داده\\u200cشده')",
+        "answered_at": "models.DateTimeField(auto_now_add=True, verbose_name='تاریخ پاسخ')"
+      },
+      "options": "{'constraints': [], 'indexes': [], 'ordering': ['-answered_at'], 'unique_together': {('user', 'daily_question')}, 'verbose_name': 'پاسخ سوال روزانه', 'verbose_name_plural': 'پاسخ\\u200cهای سوالات روزانه'}",
+      "bases": "(models.Model,)",
+      "managers": "[]"
+    },
+    "missions.TreasureCategory": {
+      "table": "missions_treasurecategory",
+      "fields": {
+        "id": "models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')",
+        "name": "models.CharField(help_text='مثلاً: کارت هدیه، کتاب، خوراکی', max_length=80, verbose_name='نام دسته\\u200cبندی')",
+        "slug": "models.SlugField(help_text='برای URL — مثلاً: gift-card، book', max_length=80, unique=True, verbose_name='شناسه (slug)')",
+        "icon": "models.CharField(default='fa-tag', help_text='مثلاً: fa-gift، fa-book، fa-utensils', max_length=50, verbose_name='آیکون (Font Awesome)')",
+        "color": "models.CharField(default='#d4a017', help_text='کد رنگ HEX — مثلاً: #d4a017', max_length=20, verbose_name='رنگ')",
+        "order": "models.PositiveIntegerField(default=0, help_text='عدد کوچکتر = نمایش بالاتر', verbose_name='ترتیب نمایش')",
+        "is_active": "models.BooleanField(default=True, verbose_name='فعال است؟')",
+        "created_at": "models.DateTimeField(auto_now_add=True, verbose_name='تاریخ ایجاد')"
+      },
+      "options": "{'constraints': [], 'indexes': [], 'ordering': ['order', 'name'], 'verbose_name': 'دسته\\u200cبندی صندوق گنج', 'verbose_name_plural': 'دسته\\u200cبندی\\u200cهای صندوق گنج'}",
+      "bases": "(models.Model,)",
+      "managers": "[]"
+    },
+    "missions.TreasureItem": {
+      "table": "missions_treasureitem",
+      "fields": {
+        "id": "models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')",
+        "category": "models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='items', to='missions.treasurecategory', verbose_name='دسته\\u200cبندی')",
+        "name": "models.CharField(max_length=150, verbose_name='نام آیتم')",
+        "description": "models.TextField(blank=True, help_text='توضیح کوتاه درباره آیتم.', null=True, verbose_name='توضیحات')",
+        "image": "models.ImageField(help_text='تصویر آیتم را آپلود کنید.', upload_to='treasure/items/', verbose_name='تصویر آیتم')",
+        "price": "models.PositiveIntegerField(default=100, help_text='امتیاز لازم برای خرید این آیتم.', verbose_name='قیمت (امتیاز)')",
+        "stock": "models.PositiveIntegerField(blank=True, help_text='تعداد قابل خرید. اگر خالی باشد = نامحدود.', null=True, verbose_name='موجودی')",
+        "is_featured": "models.BooleanField(default=False, help_text='آیتم\\u200cهای ویژه در بالای فروشگاه نمایش داده می\\u200cشوند.', verbose_name='آیتم ویژه')",
+        "is_active": "models.BooleanField(default=True, verbose_name='فعال است؟')",
+        "created_at": "models.DateTimeField(auto_now_add=True, verbose_name='تاریخ ایجاد')"
+      },
+      "options": "{'constraints': [], 'indexes': [], 'ordering': ['-is_featured', '-created_at'], 'verbose_name': 'آیتم صندوق گنج', 'verbose_name_plural': 'آیتم\\u200cهای صندوق گنج'}",
+      "bases": "(models.Model,)",
+      "managers": "[]"
+    },
+    "missions.TreasurePurchase": {
+      "table": "missions_treasurepurchase",
+      "fields": {
+        "id": "models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')",
+        "user": "models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='treasure_purchases', to=settings.AUTH_USER_MODEL, verbose_name='کاربر')",
+        "item": "models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='purchases', to='missions.treasureitem', verbose_name='آیتم')",
+        "item_name": "models.CharField(help_text='نام آیتم در زمان خرید — در صورت حذف آیتم، این باقی می\\u200cماند.', max_length=150, verbose_name='نام آیتم (در زمان خرید)')",
+        "item_price": "models.PositiveIntegerField(verbose_name='قیمت (در زمان خرید)')",
+        "status": "models.CharField(choices=[('pending', 'در انتظار تحویل'), ('delivered', 'تحویل داده شده'), ('cancelled', 'لغو شده')], default='pending', max_length=15, verbose_name='وضعیت')",
+        "admin_note": "models.TextField(blank=True, help_text='مثلاً توضیح تحویل یا دلیل لغو.', null=True, verbose_name='یادداشت مدیر')",
+        "purchased_at": "models.DateTimeField(auto_now_add=True, verbose_name='زمان خرید')",
+        "delivered_at": "models.DateTimeField(blank=True, null=True, verbose_name='زمان تحویل')"
+      },
+      "options": "{'constraints': [], 'indexes': [], 'ordering': ['-purchased_at'], 'verbose_name': 'خرید از صندوق گنج', 'verbose_name_plural': 'خریدهای صندوق گنج'}",
+      "bases": "(models.Model,)",
+      "managers": "[]"
+    }
+  },
+  "urls": [
+    [
+      "admin/",
+      "admin:index",
+      "django.contrib.admin.sites.AdminSite.index"
+    ],
+    [
+      "admin/login/",
+      "admin:login",
+      "django.contrib.admin.sites.AdminSite.login"
+    ],
+    [
+      "admin/logout/",
+      "admin:logout",
+      "django.contrib.admin.sites.AdminSite.logout"
+    ],
+    [
+      "admin/password_change/",
+      "admin:password_change",
+      "django.contrib.admin.sites.AdminSite.password_change"
+    ],
+    [
+      "admin/password_change/done/",
+      "admin:password_change_done",
+      "django.contrib.admin.sites.AdminSite.password_change_done"
+    ],
+    [
+      "admin/autocomplete/",
+      "admin:autocomplete",
+      "django.contrib.admin.sites.AdminSite.autocomplete_view"
+    ],
+    [
+      "admin/jsi18n/",
+      "admin:jsi18n",
+      "django.contrib.admin.sites.AdminSite.i18n_javascript"
+    ],
+    [
+      "admin/r/<path:content_type_id>/<path:object_id>/",
+      "admin:view_on_site",
+      "django.contrib.contenttypes.views.shortcut"
+    ],
+    [
+      "admin/auth/group/",
+      "admin:auth_group_changelist",
+      "django.contrib.admin.options.ModelAdmin.changelist_view"
+    ],
+    [
+      "admin/auth/group/add/",
+      "admin:auth_group_add",
+      "django.contrib.admin.options.ModelAdmin.add_view"
+    ],
+    [
+      "admin/auth/group/<path:object_id>/history/",
+      "admin:auth_group_history",
+      "django.contrib.admin.options.ModelAdmin.history_view"
+    ],
+    [
+      "admin/auth/group/<path:object_id>/delete/",
+      "admin:auth_group_delete",
+      "django.contrib.admin.options.ModelAdmin.delete_view"
+    ],
+    [
+      "admin/auth/group/<path:object_id>/change/",
+      "admin:auth_group_change",
+      "django.contrib.admin.options.ModelAdmin.change_view"
+    ],
+    [
+      "admin/auth/group/<path:object_id>/",
+      "admin:",
+      "django.views.generic.base.RedirectView"
+    ],
+    [
+      "admin/missions/user/",
+      "admin:missions_user_changelist",
+      "django.contrib.admin.options.ModelAdmin.changelist_view"
+    ],
+    [
+      "admin/missions/user/add/",
+      "admin:missions_user_add",
+      "django.contrib.admin.options.ModelAdmin.add_view"
+    ],
+    [
+      "admin/missions/user/<path:object_id>/history/",
+      "admin:missions_user_history",
+      "django.contrib.admin.options.ModelAdmin.history_view"
+    ],
+    [
+      "admin/missions/user/<path:object_id>/delete/",
+      "admin:missions_user_delete",
+      "django.contrib.admin.options.ModelAdmin.delete_view"
+    ],
+    [
+      "admin/missions/user/<path:object_id>/change/",
+      "admin:missions_user_change",
+      "django.contrib.admin.options.ModelAdmin.change_view"
+    ],
+    [
+      "admin/missions/user/<path:object_id>/",
+      "admin:",
+      "django.views.generic.base.RedirectView"
+    ],
+    [
+      "admin/missions/team/",
+      "admin:missions_team_changelist",
+      "django.contrib.admin.options.ModelAdmin.changelist_view"
+    ],
+    [
+      "admin/missions/team/add/",
+      "admin:missions_team_add",
+      "django.contrib.admin.options.ModelAdmin.add_view"
+    ],
+    [
+      "admin/missions/team/<path:object_id>/history/",
+      "admin:missions_team_history",
+      "django.contrib.admin.options.ModelAdmin.history_view"
+    ],
+    [
+      "admin/missions/team/<path:object_id>/delete/",
+      "admin:missions_team_delete",
+      "django.contrib.admin.options.ModelAdmin.delete_view"
+    ],
+    [
+      "admin/missions/team/<path:object_id>/change/",
+      "admin:missions_team_change",
+      "django.contrib.admin.options.ModelAdmin.change_view"
+    ],
+    [
+      "admin/missions/team/<path:object_id>/",
+      "admin:",
+      "django.views.generic.base.RedirectView"
+    ],
+    [
+      "admin/missions/teammember/",
+      "admin:missions_teammember_changelist",
+      "django.contrib.admin.options.ModelAdmin.changelist_view"
+    ],
+    [
+      "admin/missions/teammember/add/",
+      "admin:missions_teammember_add",
+      "django.contrib.admin.options.ModelAdmin.add_view"
+    ],
+    [
+      "admin/missions/teammember/<path:object_id>/history/",
+      "admin:missions_teammember_history",
+      "django.contrib.admin.options.ModelAdmin.history_view"
+    ],
+    [
+      "admin/missions/teammember/<path:object_id>/delete/",
+      "admin:missions_teammember_delete",
+      "django.contrib.admin.options.ModelAdmin.delete_view"
+    ],
+    [
+      "admin/missions/teammember/<path:object_id>/change/",
+      "admin:missions_teammember_change",
+      "django.contrib.admin.options.ModelAdmin.change_view"
+    ],
+    [
+      "admin/missions/teammember/<path:object_id>/",
+      "admin:",
+      "django.views.generic.base.RedirectView"
+    ],
+    [
+      "admin/missions/pointtransaction/",
+      "admin:missions_pointtransaction_changelist",
+      "django.contrib.admin.options.ModelAdmin.changelist_view"
+    ],
+    [
+      "admin/missions/pointtransaction/add/",
+      "admin:missions_pointtransaction_add",
+      "django.contrib.admin.options.ModelAdmin.add_view"
+    ],
+    [
+      "admin/missions/pointtransaction/<path:object_id>/history/",
+      "admin:missions_pointtransaction_history",
+      "django.contrib.admin.options.ModelAdmin.history_view"
+    ],
+    [
+      "admin/missions/pointtransaction/<path:object_id>/delete/",
+      "admin:missions_pointtransaction_delete",
+      "django.contrib.admin.options.ModelAdmin.delete_view"
+    ],
+    [
+      "admin/missions/pointtransaction/<path:object_id>/change/",
+      "admin:missions_pointtransaction_change",
+      "django.contrib.admin.options.ModelAdmin.change_view"
+    ],
+    [
+      "admin/missions/pointtransaction/<path:object_id>/",
+      "admin:",
+      "django.views.generic.base.RedirectView"
+    ],
+    [
+      "admin/missions/missioncategory/",
+      "admin:missions_missioncategory_changelist",
+      "django.contrib.admin.options.ModelAdmin.changelist_view"
+    ],
+    [
+      "admin/missions/missioncategory/add/",
+      "admin:missions_missioncategory_add",
+      "django.contrib.admin.options.ModelAdmin.add_view"
+    ],
+    [
+      "admin/missions/missioncategory/<path:object_id>/history/",
+      "admin:missions_missioncategory_history",
+      "django.contrib.admin.options.ModelAdmin.history_view"
+    ],
+    [
+      "admin/missions/missioncategory/<path:object_id>/delete/",
+      "admin:missions_missioncategory_delete",
+      "django.contrib.admin.options.ModelAdmin.delete_view"
+    ],
+    [
+      "admin/missions/missioncategory/<path:object_id>/change/",
+      "admin:missions_missioncategory_change",
+      "django.contrib.admin.options.ModelAdmin.change_view"
+    ],
+    [
+      "admin/missions/missioncategory/<path:object_id>/",
+      "admin:",
+      "django.views.generic.base.RedirectView"
+    ],
+    [
+      "admin/missions/mission/",
+      "admin:missions_mission_changelist",
+      "django.contrib.admin.options.ModelAdmin.changelist_view"
+    ],
+    [
+      "admin/missions/mission/add/",
+      "admin:missions_mission_add",
+      "django.contrib.admin.options.ModelAdmin.add_view"
+    ],
+    [
+      "admin/missions/mission/<path:object_id>/history/",
+      "admin:missions_mission_history",
+      "django.contrib.admin.options.ModelAdmin.history_view"
+    ],
+    [
+      "admin/missions/mission/<path:object_id>/delete/",
+      "admin:missions_mission_delete",
+      "django.contrib.admin.options.ModelAdmin.delete_view"
+    ],
+    [
+      "admin/missions/mission/<path:object_id>/change/",
+      "admin:missions_mission_change",
+      "django.contrib.admin.options.ModelAdmin.change_view"
+    ],
+    [
+      "admin/missions/mission/<path:object_id>/",
+      "admin:",
+      "django.views.generic.base.RedirectView"
+    ],
+    [
+      "admin/missions/teammission/",
+      "admin:missions_teammission_changelist",
+      "django.contrib.admin.options.ModelAdmin.changelist_view"
+    ],
+    [
+      "admin/missions/teammission/add/",
+      "admin:missions_teammission_add",
+      "django.contrib.admin.options.ModelAdmin.add_view"
+    ],
+    [
+      "admin/missions/teammission/<path:object_id>/history/",
+      "admin:missions_teammission_history",
+      "django.contrib.admin.options.ModelAdmin.history_view"
+    ],
+    [
+      "admin/missions/teammission/<path:object_id>/delete/",
+      "admin:missions_teammission_delete",
+      "django.contrib.admin.options.ModelAdmin.delete_view"
+    ],
+    [
+      "admin/missions/teammission/<path:object_id>/change/",
+      "admin:missions_teammission_change",
+      "django.contrib.admin.options.ModelAdmin.change_view"
+    ],
+    [
+      "admin/missions/teammission/<path:object_id>/",
+      "admin:",
+      "django.views.generic.base.RedirectView"
+    ],
+    [
+      "admin/missions/missionrequest/",
+      "admin:missions_missionrequest_changelist",
+      "django.contrib.admin.options.ModelAdmin.changelist_view"
+    ],
+    [
+      "admin/missions/missionrequest/add/",
+      "admin:missions_missionrequest_add",
+      "django.contrib.admin.options.ModelAdmin.add_view"
+    ],
+    [
+      "admin/missions/missionrequest/<path:object_id>/history/",
+      "admin:missions_missionrequest_history",
+      "django.contrib.admin.options.ModelAdmin.history_view"
+    ],
+    [
+      "admin/missions/missionrequest/<path:object_id>/delete/",
+      "admin:missions_missionrequest_delete",
+      "django.contrib.admin.options.ModelAdmin.delete_view"
+    ],
+    [
+      "admin/missions/missionrequest/<path:object_id>/change/",
+      "admin:missions_missionrequest_change",
+      "django.contrib.admin.options.ModelAdmin.change_view"
+    ],
+    [
+      "admin/missions/missionrequest/<path:object_id>/",
+      "admin:",
+      "django.views.generic.base.RedirectView"
+    ],
+    [
+      "admin/missions/missioncompletion/",
+      "admin:missions_missioncompletion_changelist",
+      "django.contrib.admin.options.ModelAdmin.changelist_view"
+    ],
+    [
+      "admin/missions/missioncompletion/add/",
+      "admin:missions_missioncompletion_add",
+      "django.contrib.admin.options.ModelAdmin.add_view"
+    ],
+    [
+      "admin/missions/missioncompletion/<path:object_id>/history/",
+      "admin:missions_missioncompletion_history",
+      "django.contrib.admin.options.ModelAdmin.history_view"
+    ],
+    [
+      "admin/missions/missioncompletion/<path:object_id>/delete/",
+      "admin:missions_missioncompletion_delete",
+      "django.contrib.admin.options.ModelAdmin.delete_view"
+    ],
+    [
+      "admin/missions/missioncompletion/<path:object_id>/change/",
+      "admin:missions_missioncompletion_change",
+      "django.contrib.admin.options.ModelAdmin.change_view"
+    ],
+    [
+      "admin/missions/missioncompletion/<path:object_id>/",
+      "admin:",
+      "django.views.generic.base.RedirectView"
+    ],
+    [
+      "admin/missions/question/",
+      "admin:missions_question_changelist",
+      "django.contrib.admin.options.ModelAdmin.changelist_view"
+    ],
+    [
+      "admin/missions/question/add/",
+      "admin:missions_question_add",
+      "django.contrib.admin.options.ModelAdmin.add_view"
+    ],
+    [
+      "admin/missions/question/<path:object_id>/history/",
+      "admin:missions_question_history",
+      "django.contrib.admin.options.ModelAdmin.history_view"
+    ],
+    [
+      "admin/missions/question/<path:object_id>/delete/",
+      "admin:missions_question_delete",
+      "django.contrib.admin.options.ModelAdmin.delete_view"
+    ],
+    [
+      "admin/missions/question/<path:object_id>/change/",
+      "admin:missions_question_change",
+      "django.contrib.admin.options.ModelAdmin.change_view"
+    ],
+    [
+      "admin/missions/question/<path:object_id>/",
+      "admin:",
+      "django.views.generic.base.RedirectView"
+    ],
+    [
+      "admin/missions/dailyquestion/",
+      "admin:missions_dailyquestion_changelist",
+      "django.contrib.admin.options.ModelAdmin.changelist_view"
+    ],
+    [
+      "admin/missions/dailyquestion/add/",
+      "admin:missions_dailyquestion_add",
+      "django.contrib.admin.options.ModelAdmin.add_view"
+    ],
+    [
+      "admin/missions/dailyquestion/<path:object_id>/history/",
+      "admin:missions_dailyquestion_history",
+      "django.contrib.admin.options.ModelAdmin.history_view"
+    ],
+    [
+      "admin/missions/dailyquestion/<path:object_id>/delete/",
+      "admin:missions_dailyquestion_delete",
+      "django.contrib.admin.options.ModelAdmin.delete_view"
+    ],
+    [
+      "admin/missions/dailyquestion/<path:object_id>/change/",
+      "admin:missions_dailyquestion_change",
+      "missions.admin.DailyQuestionAdmin.change_view"
+    ],
+    [
+      "admin/missions/dailyquestion/<path:object_id>/",
+      "admin:",
+      "django.views.generic.base.RedirectView"
+    ],
+    [
+      "admin/missions/dailyquestionanswer/",
+      "admin:missions_dailyquestionanswer_changelist",
+      "django.contrib.admin.options.ModelAdmin.changelist_view"
+    ],
+    [
+      "admin/missions/dailyquestionanswer/add/",
+      "admin:missions_dailyquestionanswer_add",
+      "django.contrib.admin.options.ModelAdmin.add_view"
+    ],
+    [
+      "admin/missions/dailyquestionanswer/<path:object_id>/history/",
+      "admin:missions_dailyquestionanswer_history",
+      "django.contrib.admin.options.ModelAdmin.history_view"
+    ],
+    [
+      "admin/missions/dailyquestionanswer/<path:object_id>/delete/",
+      "admin:missions_dailyquestionanswer_delete",
+      "django.contrib.admin.options.ModelAdmin.delete_view"
+    ],
+    [
+      "admin/missions/dailyquestionanswer/<path:object_id>/change/",
+      "admin:missions_dailyquestionanswer_change",
+      "django.contrib.admin.options.ModelAdmin.change_view"
+    ],
+    [
+      "admin/missions/dailyquestionanswer/<path:object_id>/",
+      "admin:",
+      "django.views.generic.base.RedirectView"
+    ],
+    [
+      "admin/missions/competition/",
+      "admin:missions_competition_changelist",
+      "django.contrib.admin.options.ModelAdmin.changelist_view"
+    ],
+    [
+      "admin/missions/competition/add/",
+      "admin:missions_competition_add",
+      "django.contrib.admin.options.ModelAdmin.add_view"
+    ],
+    [
+      "admin/missions/competition/<path:object_id>/history/",
+      "admin:missions_competition_history",
+      "django.contrib.admin.options.ModelAdmin.history_view"
+    ],
+    [
+      "admin/missions/competition/<path:object_id>/delete/",
+      "admin:missions_competition_delete",
+      "django.contrib.admin.options.ModelAdmin.delete_view"
+    ],
+    [
+      "admin/missions/competition/<path:object_id>/change/",
+      "admin:missions_competition_change",
+      "missions.admin.CompetitionAdmin.change_view"
+    ],
+    [
+      "admin/missions/competition/<path:object_id>/",
+      "admin:",
+      "django.views.generic.base.RedirectView"
+    ],
+    [
+      "admin/missions/competitionquestion/",
+      "admin:missions_competitionquestion_changelist",
+      "django.contrib.admin.options.ModelAdmin.changelist_view"
+    ],
+    [
+      "admin/missions/competitionquestion/add/",
+      "admin:missions_competitionquestion_add",
+      "django.contrib.admin.options.ModelAdmin.add_view"
+    ],
+    [
+      "admin/missions/competitionquestion/<path:object_id>/history/",
+      "admin:missions_competitionquestion_history",
+      "django.contrib.admin.options.ModelAdmin.history_view"
+    ],
+    [
+      "admin/missions/competitionquestion/<path:object_id>/delete/",
+      "admin:missions_competitionquestion_delete",
+      "django.contrib.admin.options.ModelAdmin.delete_view"
+    ],
+    [
+      "admin/missions/competitionquestion/<path:object_id>/change/",
+      "admin:missions_competitionquestion_change",
+      "django.contrib.admin.options.ModelAdmin.change_view"
+    ],
+    [
+      "admin/missions/competitionquestion/<path:object_id>/",
+      "admin:",
+      "django.views.generic.base.RedirectView"
+    ],
+    [
+      "admin/missions/competitionregistration/",
+      "admin:missions_competitionregistration_changelist",
+      "django.contrib.admin.options.ModelAdmin.changelist_view"
+    ],
+    [
+      "admin/missions/competitionregistration/add/",
+      "admin:missions_competitionregistration_add",
+      "django.contrib.admin.options.ModelAdmin.add_view"
+    ],
+    [
+      "admin/missions/competitionregistration/<path:object_id>/history/",
+      "admin:missions_competitionregistration_history",
+      "django.contrib.admin.options.ModelAdmin.history_view"
+    ],
+    [
+      "admin/missions/competitionregistration/<path:object_id>/delete/",
+      "admin:missions_competitionregistration_delete",
+      "django.contrib.admin.options.ModelAdmin.delete_view"
+    ],
+    [
+      "admin/missions/competitionregistration/<path:object_id>/change/",
+      "admin:missions_competitionregistration_change",
+      "django.contrib.admin.options.ModelAdmin.change_view"
+    ],
+    [
+      "admin/missions/competitionregistration/<path:object_id>/",
+      "admin:",
+      "django.views.generic.base.RedirectView"
+    ],
+    [
+      "admin/missions/competitionanswer/",
+      "admin:missions_competitionanswer_changelist",
+      "django.contrib.admin.options.ModelAdmin.changelist_view"
+    ],
+    [
+      "admin/missions/competitionanswer/add/",
+      "admin:missions_competitionanswer_add",
+      "django.contrib.admin.options.ModelAdmin.add_view"
+    ],
+    [
+      "admin/missions/competitionanswer/<path:object_id>/history/",
+      "admin:missions_competitionanswer_history",
+      "django.contrib.admin.options.ModelAdmin.history_view"
+    ],
+    [
+      "admin/missions/competitionanswer/<path:object_id>/delete/",
+      "admin:missions_competitionanswer_delete",
+      "django.contrib.admin.options.ModelAdmin.delete_view"
+    ],
+    [
+      "admin/missions/competitionanswer/<path:object_id>/change/",
+      "admin:missions_competitionanswer_change",
+      "django.contrib.admin.options.ModelAdmin.change_view"
+    ],
+    [
+      "admin/missions/competitionanswer/<path:object_id>/",
+      "admin:",
+      "django.views.generic.base.RedirectView"
+    ],
+    [
+      "admin/missions/treasurecategory/",
+      "admin:missions_treasurecategory_changelist",
+      "django.contrib.admin.options.ModelAdmin.changelist_view"
+    ],
+    [
+      "admin/missions/treasurecategory/add/",
+      "admin:missions_treasurecategory_add",
+      "django.contrib.admin.options.ModelAdmin.add_view"
+    ],
+    [
+      "admin/missions/treasurecategory/<path:object_id>/history/",
+      "admin:missions_treasurecategory_history",
+      "django.contrib.admin.options.ModelAdmin.history_view"
+    ],
+    [
+      "admin/missions/treasurecategory/<path:object_id>/delete/",
+      "admin:missions_treasurecategory_delete",
+      "django.contrib.admin.options.ModelAdmin.delete_view"
+    ],
+    [
+      "admin/missions/treasurecategory/<path:object_id>/change/",
+      "admin:missions_treasurecategory_change",
+      "django.contrib.admin.options.ModelAdmin.change_view"
+    ],
+    [
+      "admin/missions/treasurecategory/<path:object_id>/",
+      "admin:",
+      "django.views.generic.base.RedirectView"
+    ],
+    [
+      "admin/missions/treasureitem/",
+      "admin:missions_treasureitem_changelist",
+      "django.contrib.admin.options.ModelAdmin.changelist_view"
+    ],
+    [
+      "admin/missions/treasureitem/add/",
+      "admin:missions_treasureitem_add",
+      "django.contrib.admin.options.ModelAdmin.add_view"
+    ],
+    [
+      "admin/missions/treasureitem/<path:object_id>/history/",
+      "admin:missions_treasureitem_history",
+      "django.contrib.admin.options.ModelAdmin.history_view"
+    ],
+    [
+      "admin/missions/treasureitem/<path:object_id>/delete/",
+      "admin:missions_treasureitem_delete",
+      "django.contrib.admin.options.ModelAdmin.delete_view"
+    ],
+    [
+      "admin/missions/treasureitem/<path:object_id>/change/",
+      "admin:missions_treasureitem_change",
+      "django.contrib.admin.options.ModelAdmin.change_view"
+    ],
+    [
+      "admin/missions/treasureitem/<path:object_id>/",
+      "admin:",
+      "django.views.generic.base.RedirectView"
+    ],
+    [
+      "admin/missions/treasurepurchase/",
+      "admin:missions_treasurepurchase_changelist",
+      "django.contrib.admin.options.ModelAdmin.changelist_view"
+    ],
+    [
+      "admin/missions/treasurepurchase/add/",
+      "admin:missions_treasurepurchase_add",
+      "django.contrib.admin.options.ModelAdmin.add_view"
+    ],
+    [
+      "admin/missions/treasurepurchase/<path:object_id>/history/",
+      "admin:missions_treasurepurchase_history",
+      "django.contrib.admin.options.ModelAdmin.history_view"
+    ],
+    [
+      "admin/missions/treasurepurchase/<path:object_id>/delete/",
+      "admin:missions_treasurepurchase_delete",
+      "django.contrib.admin.options.ModelAdmin.delete_view"
+    ],
+    [
+      "admin/missions/treasurepurchase/<path:object_id>/change/",
+      "admin:missions_treasurepurchase_change",
+      "django.contrib.admin.options.ModelAdmin.change_view"
+    ],
+    [
+      "admin/missions/treasurepurchase/<path:object_id>/",
+      "admin:",
+      "django.views.generic.base.RedirectView"
+    ],
+    [
+      "admin/^(?P<app_label>auth|missions)/$",
+      "admin:app_list",
+      "django.contrib.admin.sites.AdminSite.app_index"
+    ],
+    [
+      "admin/(?P<url>.*)$",
+      "admin:",
+      "django.contrib.admin.sites.AdminSite.catch_all_view"
+    ],
+    [
+      "",
+      "missions:home",
+      "missions.views.home"
+    ],
+    [
+      "register/",
+      "missions:register",
+      "missions.views.register_view"
+    ],
+    [
+      "login/",
+      "missions:login",
+      "missions.views.login_view"
+    ],
+    [
+      "logout/",
+      "missions:logout",
+      "missions.views.logout_view"
+    ],
+    [
+      "missions/<int:mission_id>/request/",
+      "missions:request_mission",
+      "missions.views.request_mission"
+    ],
+    [
+      "daily/",
+      "missions:daily_questions",
+      "missions.views.daily_questions_page"
+    ],
+    [
+      "daily/<int:dq_id>/answer/",
+      "missions:answer_daily",
+      "missions.views.answer_daily"
+    ],
+    [
+      "competitions/",
+      "missions:competition_list",
+      "missions.views.competition_list"
+    ],
+    [
+      "competitions/<int:competition_id>/",
+      "missions:competition_detail",
+      "missions.views.competition_detail"
+    ],
+    [
+      "competitions/<int:competition_id>/register/",
+      "missions:register_competition",
+      "missions.views.register_competition"
+    ],
+    [
+      "competitions/<int:competition_id>/questions/<int:question_id>/answer/",
+      "missions:submit_answer",
+      "missions.views.submit_answer"
+    ],
+    [
+      "competitions/<int:competition_id>/finish/",
+      "missions:finish_competition",
+      "missions.views.finish_competition"
+    ],
+    [
+      "competitions/<int:competition_id>/play/",
+      "missions:competition_play",
+      "missions.views.competition_play"
+    ],
+    [
+      "competitions/<int:competition_id>/start/",
+      "missions:start_competition",
+      "missions.views.start_competition"
+    ],
+    [
+      "profile/",
+      "missions:profile",
+      "missions.views.profile"
+    ],
+    [
+      "treasure/",
+      "missions:treasure_box",
+      "missions.views.treasure_box"
+    ],
+    [
+      "treasure/buy/<int:item_id>/",
+      "missions:buy_treasure_item",
+      "missions.views.buy_treasure_item"
+    ],
+    [
+      "treasure/",
+      "missions:treasure_box",
+      "missions.views.treasure_box"
+    ],
+    [
+      "archive/",
+      "missions:archive",
+      "missions.views.archive"
+    ],
+    [
+      "leagues/",
+      "missions:league_list",
+      "missions.views.league_list"
+    ],
+    [
+      "dashboard/",
+      "dashboard:home",
+      "dashboard.views.home"
+    ],
+    [
+      "dashboard/users/",
+      "dashboard:users",
+      "dashboard.views.users_list"
+    ],
+    [
+      "dashboard/users/<int:user_id>/",
+      "dashboard:user_detail",
+      "dashboard.views.user_detail"
+    ],
+    [
+      "dashboard/users/<int:user_id>/toggle-staff/",
+      "dashboard:user_toggle_staff",
+      "dashboard.views.user_toggle_staff"
+    ],
+    [
+      "dashboard/users/<int:user_id>/toggle-manager/",
+      "dashboard:user_toggle_manager",
+      "dashboard.views.user_toggle_manager"
+    ],
+    [
+      "dashboard/users/<int:user_id>/toggle-active/",
+      "dashboard:user_toggle_active",
+      "dashboard.views.user_toggle_active"
+    ],
+    [
+      "dashboard/teams/",
+      "dashboard:teams",
+      "dashboard.views.teams_list"
+    ],
+    [
+      "dashboard/teams/<int:team_id>/",
+      "dashboard:team_detail",
+      "dashboard.views.team_detail"
+    ],
+    [
+      "dashboard/teams/<int:team_id>/missions/toggle/<int:mission_id>/",
+      "dashboard:team_mission_toggle",
+      "dashboard.views.team_mission_toggle"
+    ],
+    [
+      "dashboard/missions/",
+      "dashboard:missions",
+      "dashboard.views.missions_list"
+    ],
+    [
+      "dashboard/missions/requests/",
+      "dashboard:mission_requests",
+      "dashboard.views.mission_requests_list"
+    ],
+    [
+      "dashboard/missions/requests/<int:req_id>/approve/",
+      "dashboard:mission_request_approve",
+      "dashboard.views.mission_request_approve"
+    ],
+    [
+      "dashboard/missions/requests/<int:req_id>/reject/",
+      "dashboard:mission_request_reject",
+      "dashboard.views.mission_request_reject"
+    ],
+    [
+      "dashboard/competitions/",
+      "dashboard:competitions",
+      "dashboard.views.competitions_list"
+    ],
+    [
+      "dashboard/competitions/<int:comp_id>/finalize/",
+      "dashboard:competition_finalize",
+      "dashboard.views.competition_finalize"
+    ],
+    [
+      "dashboard/questions/",
+      "dashboard:questions",
+      "dashboard.views.questions_list"
+    ],
+    [
+      "dashboard/daily-questions/",
+      "dashboard:daily_questions",
+      "dashboard.views.daily_questions_list"
+    ],
+    [
+      "dashboard/treasure/",
+      "dashboard:treasure",
+      "dashboard.views.treasure_list"
+    ],
+    [
+      "dashboard/treasure/purchases/<int:purchase_id>/deliver/",
+      "dashboard:treasure_purchase_deliver",
+      "dashboard.views.treasure_purchase_deliver"
+    ],
+    [
+      "dashboard/transactions/",
+      "dashboard:transactions",
+      "dashboard.views.transactions_list"
+    ],
+    [
+      "^media/(?P<path>.*)$",
+      "",
+      "django.views.static.serve"
+    ]
+  ],
+  "admin": [
+    "auth.Group",
+    "missions.Competition",
+    "missions.CompetitionAnswer",
+    "missions.CompetitionQuestion",
+    "missions.CompetitionRegistration",
+    "missions.DailyQuestion",
+    "missions.DailyQuestionAnswer",
+    "missions.Mission",
+    "missions.MissionCategory",
+    "missions.MissionCompletion",
+    "missions.MissionRequest",
+    "missions.PointTransaction",
+    "missions.Question",
+    "missions.Team",
+    "missions.TeamMember",
+    "missions.TeamMission",
+    "missions.TreasureCategory",
+    "missions.TreasureItem",
+    "missions.TreasurePurchase",
+    "missions.User"
+  ],
+  "migrations": {
+    "('admin', '0001_initial')": [
+      "('missions', '__first__')",
+      "('contenttypes', '__first__')"
+    ],
+    "('admin', '0002_logentry_remove_auto_add')": [
+      "('admin', '0001_initial')"
+    ],
+    "('admin', '0003_logentry_add_action_flag_choices')": [
+      "('admin', '0002_logentry_remove_auto_add')"
+    ],
+    "('auth', '0001_initial')": [
+      "('contenttypes', '__first__')"
+    ],
+    "('auth', '0002_alter_permission_name_max_length')": [
+      "('auth', '0001_initial')"
+    ],
+    "('auth', '0003_alter_user_email_max_length')": [
+      "('auth', '0002_alter_permission_name_max_length')"
+    ],
+    "('auth', '0004_alter_user_username_opts')": [
+      "('auth', '0003_alter_user_email_max_length')"
+    ],
+    "('auth', '0005_alter_user_last_login_null')": [
+      "('auth', '0004_alter_user_username_opts')"
+    ],
+    "('auth', '0006_require_contenttypes_0002')": [
+      "('auth', '0005_alter_user_last_login_null')",
+      "('contenttypes', '0002_remove_content_type_name')"
+    ],
+    "('auth', '0007_alter_validators_add_error_messages')": [
+      "('auth', '0006_require_contenttypes_0002')"
+    ],
+    "('auth', '0008_alter_user_username_max_length')": [
+      "('auth', '0007_alter_validators_add_error_messages')"
+    ],
+    "('auth', '0009_alter_user_last_name_max_length')": [
+      "('auth', '0008_alter_user_username_max_length')"
+    ],
+    "('auth', '0010_alter_group_name_max_length')": [
+      "('auth', '0009_alter_user_last_name_max_length')"
+    ],
+    "('auth', '0011_update_proxy_permissions')": [
+      "('auth', '0010_alter_group_name_max_length')",
+      "('contenttypes', '0002_remove_content_type_name')"
+    ],
+    "('auth', '0012_alter_user_first_name_max_length')": [
+      "('auth', '0011_update_proxy_permissions')"
+    ],
+    "('contenttypes', '0001_initial')": [],
+    "('contenttypes', '0002_remove_content_type_name')": [
+      "('contenttypes', '0001_initial')"
+    ],
+    "('missions', '0001_initial')": [
+      "('auth', '0012_alter_user_first_name_max_length')"
+    ],
+    "('missions', '0002_treasureitem_treasurepurchase')": [
+      "('missions', '0001_initial')"
+    ],
+    "('missions', '0003_treasurecategory_alter_treasureitem_category')": [
+      "('missions', '0002_treasureitem_treasurepurchase')"
+    ],
+    "('missions', '0004_missioncategory_mission_coins_mission_description_and_more')": [
+      "('missions', '0003_treasurecategory_alter_treasureitem_category')"
+    ],
+    "('sessions', '0001_initial')": []
+  }
+}

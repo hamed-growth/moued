@@ -425,13 +425,13 @@ class MissionRequest(models.Model):
 
     def approve(self, admin_user=None, admin_note=None):
         """تأیید درخواست و اهدای امتیاز و سکه"""
-        from .services.mission_review import approve_mission_request
+        from apps.missions.services.review import approve_mission_request
 
         return approve_mission_request(self, admin_user=admin_user, admin_note=admin_note)
 
     def reject(self, admin_user=None, admin_note=None):
         """رد درخواست"""
-        from .services.mission_review import reject_mission_request
+        from apps.missions.services.review import reject_mission_request
 
         return reject_mission_request(self, admin_user=admin_user, admin_note=admin_note)
 
@@ -526,7 +526,7 @@ class Competition(models.Model):
         )[:limit]
 
     def finalize(self):
-        from .services.competitions import finalize_competition
+        from apps.competitions.services.rewards import finalize_competition
 
         return finalize_competition(self)
 
@@ -609,7 +609,7 @@ class CompetitionRegistration(models.Model):
         self.save(update_fields=['total_answered', 'total_correct', 'total_wrong', 'score'])
 
     def finish(self):
-        from .services.competitions import finish_competition_registration
+        from apps.competitions.services.rewards import finish_competition_registration
 
         return finish_competition_registration(self)
 

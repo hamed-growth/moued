@@ -1,147 +1,44 @@
+from apps.treasure.selectors.storefront import get_storefront_context
+from apps.missions.selectors.home import get_home_context
+from apps.competitions.selectors.listing import get_competition_list_context
+from apps.questions.selectors.daily import get_daily_question_context
+from apps.teams.selectors.overview import get_league_context
+from apps.accounts.selectors.overview import get_profile_context
+from common.calendar import PERSIAN_MONTHS, get_persian_month_name, get_shamsi_month_range
+from apps.wallet.selectors.history import get_user_months_shamsi
+from apps.teams.selectors.membership import get_user_team
+from apps.missions.selectors.eligibility import (
+    get_user_available_missions, has_completed_today, has_pending_request_today,
+)
+
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth import login, logout, authenticate
+from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db import DatabaseError
 from django.utils import timezone
-from django.db.models import Q, Count, Sum
 from django.http import Http404, JsonResponse
 from django.views.decorators.http import require_POST
-from django.db.models.functions import TruncMonth
-from datetime import datetime, time, timedelta
-from collections import OrderedDict
+from datetime import timedelta
 import logging
-import jdatetime
 
 from .forms import UserRegisterForm, UserLoginForm
-from .models import *
-from .selectors.leagues import get_league_rankings, get_profile_team_leaderboard
-from .selectors.profiles import get_profile_history, get_profile_rank
-from .services.treasure import InsufficientPoints, OutOfStock, purchase_treasure_item
+from .models import (
+    Mission,
+    MissionRequest,
+    Competition,
+    CompetitionQuestion,
+    CompetitionRegistration,
+    CompetitionAnswer,
+    DailyQuestion,
+    DailyQuestionAnswer,
+    TreasureItem,
+)
+from apps.teams.selectors.leagues import get_league_rankings, get_profile_team_leaderboard
+from apps.accounts.selectors.profiles import get_profile_history, get_profile_rank
+from apps.treasure.services.checkout import InsufficientPoints, OutOfStock, purchase_treasure_item
 
 logger = logging.getLogger(__name__)
-
-
-# =====================================================================
-# ابزارهای کمکی — ماه شمسی
-# =====================================================================
-
-PERSIAN_MONTHS = [
-    'فروردین', 'اردیبهشت', 'خرداد',
-    'تیر', 'مرداد', 'شهریور',
-    'مهر', 'آبان', 'آذر',
-    'دی', 'بهمن', 'اسفند'
-]
-
-
-def get_persian_month_name(month_num):
-    if 1 <= month_num <= 12:
-        return PERSIAN_MONTHS[month_num - 1]
-    return ''
-
-
-def get_user_months_shamsi(user, limit=24):
-    rows = (
-        PointTransaction.objects
-        .filter(user=user)
-        .annotate(m=TruncMonth('created_at'))
-        .values('m')
-        .annotate(total=Sum('points'))
-        .order_by('-m')
-    )
-
-    result = OrderedDict()
-    for row in rows[:limit]:
-        g = row['m']
-        if not g:
-            continue
-        try:
-            g_date = g.date() if hasattr(g, 'date') else g
-            j = jdatetime.date.fromgregorian(date=g_date)
-            key = f"{j.year}-{j.month:02d}"
-            if key not in result:
-                result[key] = {
-                    'value': key,
-                    'year': j.year,
-                    'month': j.month,
-                    'label': f"{get_persian_month_name(j.month)} {j.year}",
-                    'total': row['total'] or 0,
-                }
-            else:
-                result[key]['total'] += row['total'] or 0
-        except Exception:
-            continue
-
-    return list(result.values())
-
-
-def get_shamsi_month_range(year_month_str):
-    year, month = map(int, year_month_str.split('-'))
-
-    start_jdate = jdatetime.date(year, month, 1)
-    if month == 12:
-        end_jdate = jdatetime.date(year + 1, 1, 1)
-    else:
-        end_jdate = jdatetime.date(year, month + 1, 1)
-
-    start_gregorian = start_jdate.togregorian()
-    end_gregorian = end_jdate.togregorian()
-
-    start_dt = datetime.combine(start_gregorian, time.min)
-    end_dt = datetime.combine(end_gregorian, time.min)
-
-    label = f"{get_persian_month_name(start_jdate.month)} {year}"
-
-    return start_dt, end_dt, label
-
-
-# =====================================================================
-# ابزارهای کمکی — ماموریت‌ها و ریست شبانه
-# =====================================================================
-
-def get_user_team(user):
-    """تیم کاربر (یا None)"""
-    try:
-        return user.team_membership.team
-    except (TeamMember.DoesNotExist, AttributeError):
-        return None
-
-
-def get_user_available_missions(user):
-    """
-    ماموریت‌های فعال برای کاربر:
-    - ماموریت‌های سراسری (is_global=True)
-    - ماموریت‌های فعال‌شده برای تیم کاربر
-    """
-    team = get_user_team(user)
-    qs = Mission.objects.filter(is_active=True)
-
-    if team:
-        qs = qs.filter(
-            Q(is_global=True) |
-            Q(team_assignments__team=team, team_assignments__is_active=True)
-        ).distinct()
-    else:
-        qs = qs.filter(is_global=True)
-
-    return qs
-
-
-def has_completed_today(user, mission):
-    """آیا کاربر امروز این ماموریت را انجام داده؟ (ریست خودکار بعد از نیمه‌شب)"""
-    today = timezone.localdate()
-    return MissionCompletion.objects.filter(
-        user=user, mission=mission, completed_at__date=today
-    ).exists()
-
-
-def has_pending_request_today(user, mission):
-    """آیا کاربر امروز برای این ماموریت درخواست ثبت کرده؟ (به‌جز رد‌شده‌ها)"""
-    today = timezone.localdate()
-    return MissionRequest.objects.filter(
-        user=user, mission=mission,
-        requested_at__date=today,
-    ).exclude(status='rejected').exists()
 
 
 # =====================================================================
@@ -149,91 +46,7 @@ def has_pending_request_today(user, mission):
 # =====================================================================
 
 def home(request):
-    """
-    صفحه اصلی — ماموریت‌های منتخب + ماموریت‌های درخواست‌شده امروز کاربر.
-    توجه: بعد از نیمه‌شب، به‌صورت خودکار همه ماموریت‌ها «صفر» می‌شوند
-    چون فیلترها بر اساس __date=today هستند.
-    """
-    today = timezone.localdate()
-
-    user_team = None
-    if request.user.is_authenticated:
-        user_team = get_user_team(request.user)
-
-    # ماموریت‌های موجود برای کاربر (بر اساس تیم و ماموریت‌های سراسری)
-    base_qs = Mission.objects.filter(is_active=True)
-    if request.user.is_authenticated and user_team:
-        base_qs = base_qs.filter(
-            Q(is_global=True) |
-            Q(team_assignments__team=user_team, team_assignments__is_active=True)
-        ).distinct()
-    else:
-        base_qs = base_qs.filter(is_global=True)
-
-    active_missions = base_qs.filter(show_on_home=True).order_by(
-        'home_order', '-created_at'
-    )
-    all_missions = base_qs.order_by('title')
-
-    completed_today_ids = []
-    pending_request_ids = []
-    answered_daily_ids = []
-    my_requested_missions = []
-    requested_mission_ids = []
-
-    if request.user.is_authenticated:
-        completed_today_ids = list(
-            MissionCompletion.objects.filter(
-                user=request.user, completed_at__date=today
-            ).values_list('mission_id', flat=True)
-        )
-
-        pending_request_ids = list(
-            MissionRequest.objects.filter(
-                user=request.user,
-                status__in=['pending', 'approved'],
-                requested_at__date=today,
-            ).values_list('mission_id', flat=True)
-        )
-
-        answered_daily_ids = list(
-            DailyQuestionAnswer.objects.filter(
-                user=request.user,
-                daily_question__publish_date=today,
-            ).values_list('daily_question_id', flat=True)
-        )
-
-        my_requested_missions = (
-            MissionRequest.objects.filter(
-                user=request.user,
-                requested_at__date=today,
-            )
-            .select_related('mission')
-            .order_by('-requested_at')
-        )
-        requested_mission_ids = [mr.mission_id for mr in my_requested_missions]
-
-    active_missions = active_missions.exclude(id__in=requested_mission_ids)
-
-    daily_questions = DailyQuestion.objects.filter(
-        is_active=True, publish_date=today
-    )
-    total_daily = daily_questions.count()
-    unanswered_daily = (
-        max(0, total_daily - len(answered_daily_ids))
-        if request.user.is_authenticated else total_daily
-    )
-
-    context = {
-        'active_missions': active_missions,
-        'all_missions': all_missions,
-        'completed_today_ids': completed_today_ids,
-        'pending_request_ids': pending_request_ids,
-        'my_requested_missions': my_requested_missions,
-        'total_daily': total_daily,
-        'unanswered_daily': unanswered_daily,
-        'user_team': user_team,
-    }
+    context = get_home_context(request.user)
     return render(request, 'missions/home.html', context)
 
 
@@ -348,36 +161,7 @@ def request_mission(request, mission_id):
 
 @login_required
 def competition_list(request):
-    """لیست مسابقات — فعال، به‌زودی، پایان‌یافته"""
-    now = timezone.now()
-
-    active_competitions = Competition.objects.filter(
-        status='active',
-        start_date__lte=now,
-        end_date__gte=now,
-    ).order_by('end_date')
-
-    upcoming_competitions = Competition.objects.filter(
-        status__in=['upcoming', 'draft'],
-        start_date__gt=now,
-    ).order_by('start_date')
-
-    finished_competitions = Competition.objects.filter(
-        Q(status='finished') | Q(end_date__lt=now)
-    ).order_by('-end_date')[:10]
-
-    user_reg_ids = list(
-        CompetitionRegistration.objects.filter(
-            user=request.user
-        ).values_list('competition_id', flat=True)
-    )
-
-    context = {
-        'active_competitions': active_competitions,
-        'upcoming_competitions': upcoming_competitions,
-        'finished_competitions': finished_competitions,
-        'user_reg_ids': user_reg_ids,
-    }
+    context = get_competition_list_context(request.user)
     return render(request, 'missions/competition_list.html', context)
 
 
@@ -690,114 +474,7 @@ def finish_competition(request, competition_id):
 
 @login_required
 def profile(request):
-    user = request.user
-
-    rank, total_users = get_profile_rank(user)
-
-    transactions = PointTransaction.objects.filter(user=user)
-    total_earned = transactions.aggregate(s=Sum('points'))['s'] or 0
-    total_coins_earned = transactions.aggregate(s=Sum('coins'))['s'] or 0
-    total_count = transactions.count()
-
-    month_options = get_user_months_shamsi(user)
-
-    selected_month = request.GET.get('month', '')
-    if not selected_month and month_options:
-        selected_month = month_options[0]['value']
-
-    valid_values = [opt['value'] for opt in month_options]
-    if selected_month and selected_month not in valid_values:
-        selected_month = valid_values[0] if valid_values else ''
-
-    month_total = 0
-    month_coins = 0
-    month_breakdown = []
-    selected_month_label = ''
-
-    if selected_month:
-        start_dt, end_dt, label = get_shamsi_month_range(selected_month)
-        selected_month_label = label
-
-        month_qs = transactions.filter(
-            created_at__gte=start_dt,
-            created_at__lt=end_dt,
-        )
-
-        agg = month_qs.aggregate(
-            p=Sum('points'),
-            c=Sum('coins'),
-        )
-        month_total = agg['p'] or 0
-        month_coins = agg['c'] or 0
-
-        by_type = month_qs.values('transaction_type').annotate(
-            total=Sum('points'),
-            total_coins=Sum('coins'),
-            count=Count('id'),
-        ).order_by('-total')
-
-        type_labels = dict(PointTransaction.TRANSACTION_TYPES)
-        for row in by_type:
-            month_breakdown.append({
-                'code': row['transaction_type'],
-                'label': type_labels.get(row['transaction_type'], row['transaction_type']),
-                'total': row['total'] or 0,
-                'total_coins': row['total_coins'] or 0,
-                'count': row['count'],
-            })
-
-    pending_requests = MissionRequest.objects.filter(
-        user=user, status='pending'
-    ).select_related('mission')
-    # مجموع پاداش‌های در انتظار (با در نظر گرفتن override تیمی)
-    pending_points = 0
-    pending_coins = 0
-    for r in pending_requests:
-        p, c = r.mission.get_rewards_for_team(r.team)
-        pending_points += p
-        pending_coins += c
-    pending_count = pending_requests.count()
-
-    completions_count, completions_10, registrations = get_profile_history(user)
-
-    team_leaderboard = []
-    user_team = get_user_team(user)
-
-    if selected_month:
-        start_dt, end_dt, label = get_shamsi_month_range(selected_month)
-
-        user_month_points = {
-            row['user']: row['total']
-            for row in PointTransaction.objects.filter(
-                created_at__gte=start_dt, created_at__lt=end_dt
-            ).values('user').annotate(total=Sum('points'))
-        }
-
-        team_leaderboard = get_profile_team_leaderboard(user_month_points, user_team)
-
-    context = {
-        'rank': rank,
-        'total_users': total_users,
-        'total_earned': total_earned,
-        'total_coins_earned': total_coins_earned,
-        'total_count': total_count,
-        'pending_points': pending_points,
-        'pending_coins': pending_coins,
-        'pending_count': pending_count,
-        'completions_count': completions_count,
-        'month_options': month_options,
-        'selected_month': selected_month,
-        'selected_month_label': selected_month_label,
-        'month_total': month_total,
-        'month_coins': month_coins,
-        'month_breakdown': month_breakdown,
-        'month_transactions_count': sum(m['count'] for m in month_breakdown),
-        'completions': completions_10,
-        'registrations': registrations,
-        'pending_requests': pending_requests[:5],
-        'team_leaderboard': team_leaderboard,
-        'user_team': user_team,
-    }
+    context = get_profile_context(request.user, request.GET.get('month', ''))
     return render(request, 'missions/profile.html', context)
 
 
@@ -824,54 +501,7 @@ def archive(request):
 
 @login_required
 def league_list(request):
-    """
-    صفحه لیگ‌ها با دو بخش:
-    - لیگ من: تیمی که کاربر در آن عضو است
-    - سایر لیگ‌ها: بقیه تیم‌ها با امتیاز ماهانه
-    """
-    user = request.user
-
-    month_options = get_user_months_shamsi(user)
-    selected_month = request.GET.get('month', '')
-
-    if not selected_month:
-        if month_options:
-            selected_month = month_options[0]['value']
-        else:
-            today_j = jdatetime.date.fromgregorian(date=timezone.localdate())
-            selected_month = f"{today_j.year}-{today_j.month:02d}"
-
-    valid_values = [opt['value'] for opt in month_options]
-    if selected_month not in valid_values:
-        try:
-            get_shamsi_month_range(selected_month)
-        except Exception:
-            if month_options:
-                selected_month = month_options[0]['value']
-            else:
-                today_j = jdatetime.date.fromgregorian(date=timezone.localdate())
-                selected_month = f"{today_j.year}-{today_j.month:02d}"
-
-    start_dt, end_dt, label = get_shamsi_month_range(selected_month)
-
-    user_month_points = {}
-    for row in PointTransaction.objects.filter(
-        created_at__gte=start_dt,
-        created_at__lt=end_dt,
-    ).values('user').annotate(total=Sum('points')):
-        user_month_points[row['user']] = row['total'] or 0
-
-    user_team = get_user_team(user)
-
-    my_team_data, all_teams = get_league_rankings(user, user_team, user_month_points)
-
-    context = {
-        'selected_month': selected_month,
-        'selected_month_label': label,
-        'month_options': month_options,
-        'my_team_data': my_team_data,
-        'all_teams': all_teams,
-    }
+    context = get_league_context(request.user, request.GET.get('month', ''))
     return render(request, 'missions/league_list.html', context)
 
 
@@ -881,21 +511,7 @@ def league_list(request):
 
 @login_required
 def daily_questions_page(request):
-    today = timezone.localdate()
-    daily_questions = DailyQuestion.objects.filter(
-        is_active=True, publish_date=today
-    ).select_related('question')
-
-    answered_ids = list(
-        DailyQuestionAnswer.objects.filter(
-            user=request.user, daily_question__in=daily_questions
-        ).values_list('daily_question_id', flat=True)
-    )
-
-    context = {
-        'daily_questions': daily_questions,
-        'answered_ids': answered_ids,
-    }
+    context = get_daily_question_context(request.user)
     return render(request, 'missions/daily_questions.html', context)
 
 
@@ -947,41 +563,7 @@ def answer_daily(request, dq_id):
 
 @login_required
 def treasure_box(request):
-    """صفحه فروشگاه صندوق گنج"""
-    user = request.user
-
-    items = TreasureItem.objects.filter(is_active=True).select_related('category')
-    categories = TreasureCategory.objects.filter(is_active=True)
-
-    category_slug = request.GET.get('category', '')
-    active_category = None
-    if category_slug:
-        try:
-            active_category = categories.get(slug=category_slug)
-            items = items.filter(category=active_category)
-        except TreasureCategory.DoesNotExist:
-            pass
-
-    items = items.order_by('-is_featured', '-created_at')
-
-    purchases = TreasurePurchase.objects.filter(
-        user=user
-    ).select_related('item').order_by('-purchased_at')[:20]
-
-    total_spent = TreasurePurchase.objects.filter(
-        user=user
-    ).aggregate(s=Sum('item_price'))['s'] or 0
-    total_bought = TreasurePurchase.objects.filter(user=user).count()
-
-    context = {
-        'items': items,
-        'categories': categories,
-        'active_category': active_category,
-        'category_slug': category_slug,
-        'purchases': purchases,
-        'total_spent': total_spent,
-        'total_bought': total_bought,
-    }
+    context = get_storefront_context(request.user, request.GET.get('category', ''))
     return render(request, 'missions/treasure_box.html', context)
 
 
