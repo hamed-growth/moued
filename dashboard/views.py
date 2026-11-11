@@ -1,3 +1,4 @@
+from apps.teams.selectors.staff import get_staff_team_list_context, get_staff_team_detail_context
 from apps.backoffice.selectors.overview import get_dashboard_context
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
@@ -157,38 +158,14 @@ def user_toggle_active(request, user_id):
 
 @staff_required
 def teams_list(request):
-    teams = Team.objects.select_related('manager').annotate(
-        members_count=Count('members', distinct=True),
-        total_points_sum=Sum('members__user__total_points'),
-    ).order_by('-total_points_sum')
-
-    context = {'teams': teams}
+    context = get_staff_team_list_context()
     return render(request, 'dashboard/teams.html', context)
 
 
 @staff_required
 def team_detail(request, team_id):
     team = get_object_or_404(Team, id=team_id)
-
-    members = (
-        TeamMember.objects
-        .filter(team=team)
-        .select_related('user')
-        .order_by('-user__total_points')
-    )
-
-    # ماموریت‌های موجود و وضعیت فعال‌سازی برای این تیم
-    missions = Mission.objects.filter(is_active=True).select_related('category').order_by('title')
-    active_team_mission_ids = set(
-        TeamMission.objects.filter(team=team, is_active=True).values_list('mission_id', flat=True)
-    )
-
-    context = {
-        'team': team,
-        'members': members,
-        'missions': missions,
-        'active_team_mission_ids': active_team_mission_ids,
-    }
+    context = get_staff_team_detail_context(team)
     return render(request, 'dashboard/team_detail.html', context)
 
 

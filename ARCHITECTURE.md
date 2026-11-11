@@ -56,3 +56,7 @@ Checkout owns atomic debit/reservation/ledger/purchase. Mission review owns pend
 The optional internal model split was deferred: it would not resolve coupled save side effects and would expand initialization/serialization risk. Daily answer rewards, competition admission, mission reversal and wallet centralization were not forced through unresolved policy and compatibility issues.
 
 See [domain boundaries](docs/DOMAIN_BOUNDARIES.md), [migration verification](docs/MIGRATION_REPORT.md), [API integration](docs/API_READINESS.md), [unresolved risks](docs/TECHNICAL_DEBT.md), and [executed results](docs/FINAL_MODERNIZATION_REPORT.md). Older phase reports are historical evidence, not the current module layout.
+
+## Incremental continuation
+
+Staff team list/detail reads now live in `apps/teams/selectors/staff.py`. See [incremental migration](docs/INCREMENTAL_MIGRATION.md); current suite: 81 passing tests.
