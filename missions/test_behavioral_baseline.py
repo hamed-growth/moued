@@ -98,6 +98,33 @@ class BehavioralBaseline(TestCase):
         self.assert_balance(7, 0)
         self.assertEqual(PointTransaction.objects.filter(user=self.user).count(), 1)
 
+    def test_play_requires_registration_and_starts_existing_participant(self):
+        self.client.force_login(self.user)
+        contest = self.competition()
+        CompetitionQuestion.objects.create(competition=contest, question=self.question())
+        play = reverse("missions:competition_play", args=[contest.pk])
+        self.assertRedirects(
+            self.client.get(play),
+            reverse("missions:competition_detail", args=[contest.pk]),
+            fetch_redirect_response=False,
+        )
+        self.post("missions:register_competition", contest.pk)
+        response = self.client.get(play)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context["total_remaining"], 1)
+        registration = CompetitionRegistration.objects.get(competition=contest, user=self.user)
+        self.assertIsNotNone(registration.started_at)
+
+    def test_start_twice_keeps_original_start_time(self):
+        self.client.force_login(self.user)
+        contest = self.competition()
+        first = self.post("missions:start_competition", contest.pk)
+        second = self.post("missions:start_competition", contest.pk)
+        self.assertEqual(first.status_code, 200)
+        self.assertEqual(second.status_code, 200)
+        self.assertEqual(first.json()["started_at"], second.json()["started_at"])
+        self.assertEqual(CompetitionRegistration.objects.filter(competition=contest).count(), 1)
+
     def test_competition_registration_repeat_keeps_one_record(self):
         self.client.force_login(self.user)
         contest = self.competition()

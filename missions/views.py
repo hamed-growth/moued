@@ -1,3 +1,11 @@
+from apps.backoffice.selectors.archive import get_archive_context
+from apps.competitions.selectors.detail import get_competition_detail_context
+from apps.submissions import MissionTeamAccessDenied, SubmissionRejected
+from apps.competitions.services.participation import (
+    prepare_competition_play, register_participant, start_participation, submit_competition_answer,
+)
+from apps.questions.services.answers import submit_daily_answer
+from apps.missions.services.requests import create_mission_request
 from apps.treasure.selectors.storefront import get_storefront_context
 from apps.missions.selectors.home import get_home_context
 from apps.competitions.selectors.listing import get_competition_list_context
@@ -19,19 +27,15 @@ from django.db import DatabaseError
 from django.utils import timezone
 from django.http import Http404, JsonResponse
 from django.views.decorators.http import require_POST
-from datetime import timedelta
 import logging
 
 from .forms import UserRegisterForm, UserLoginForm
 from .models import (
     Mission,
-    MissionRequest,
     Competition,
     CompetitionQuestion,
     CompetitionRegistration,
-    CompetitionAnswer,
     DailyQuestion,
-    DailyQuestionAnswer,
     TreasureItem,
 )
 from apps.teams.selectors.leagues import get_league_rankings, get_profile_team_leaderboard
@@ -99,6 +103,13 @@ def logout_view(request):
 # ماموریت‌ها
 # =====================================================================
 
+def submission_error_response(error):
+    data = {'success': False, 'message': str(error)}
+    if error.completed:
+        data['is_completed'] = True
+    return JsonResponse(data, status=400)
+
+
 @login_required
 @require_POST
 def request_mission(request, mission_id):
@@ -108,44 +119,12 @@ def request_mission(request, mission_id):
     - بعد از نیمه‌شب، چک «امروز» به‌صورت خودکار ریست می‌شود.
     """
     mission = get_object_or_404(Mission, id=mission_id, is_active=True)
-    user_team = get_user_team(request.user)
-
-    # چک دسترسی: ماموریت باید برای تیم کاربر فعال باشد یا سراسری باشد
-    if not mission.is_global:
-        if not user_team or not mission.team_assignments.filter(
-            team=user_team, is_active=True
-        ).exists():
-            return JsonResponse({
-                'success': False,
-                'message': 'این ماموریت برای تیم شما فعال نیست.'
-            }, status=403)
-
-    if not mission.is_available_now():
-        return JsonResponse({
-            'success': False,
-            'message': 'این ماموریت در این ساعت قابل انجام نیست.'
-        }, status=400)
-
-    if has_completed_today(request.user, mission):
-        return JsonResponse({
-            'success': False,
-            'message': 'شما امروز این ماموریت را انجام داده‌اید.'
-        }, status=400)
-
-    if has_pending_request_today(request.user, mission):
-        return JsonResponse({
-            'success': False,
-            'message': 'شما امروز برای این ماموریت درخواست ثبت کرده‌اید.'
-        }, status=400)
-
-    note = request.POST.get('note', '').strip()
-    mr = MissionRequest.objects.create(
-        user=request.user,
-        mission=mission,
-        team=user_team,
-        note=note or None,
-        status='pending',
-    )
+    try:
+        mr = create_mission_request(request.user, mission, request.POST.get('note', ''))
+    except MissionTeamAccessDenied as exc:
+        return JsonResponse({'success': False, 'message': str(exc)}, status=403)
+    except SubmissionRejected as exc:
+        return submission_error_response(exc)
 
     return JsonResponse({
         'success': True,
@@ -170,32 +149,7 @@ def competition_detail(request, competition_id):
     """صفحه شروع/اطلاعات مسابقه"""
     competition = get_object_or_404(Competition, id=competition_id)
 
-    registration = CompetitionRegistration.objects.filter(
-        user=request.user,
-        competition=competition
-    ).first()
-
-    competition_questions = (
-        competition.competition_questions
-        .select_related('question')
-        .order_by('order')
-    )
-    total_questions = competition_questions.count()
-    available_questions = min(total_questions, competition.max_questions)
-
-    leaderboard = competition.get_leaderboard(limit=10)
-
-    context = {
-        'competition': competition,
-        'registration': registration,
-        'total_questions': total_questions,
-        'available_questions': available_questions,
-        'leaderboard': leaderboard,
-        'is_open': competition.is_open(),
-        'can_register': competition.can_register(),
-        'can_play': competition.can_play(),
-        'is_finished': competition.is_finished(),
-    }
+    context = get_competition_detail_context(competition, request.user)
     return render(request, 'missions/competition_detail.html', context)
 
 
@@ -204,77 +158,22 @@ def competition_play(request, competition_id):
     """صفحه بازی مسابقه — شبیه سوالات روزانه"""
     competition = get_object_or_404(Competition, id=competition_id)
 
-    if not competition.can_play():
-        if competition.is_finished():
-            messages.error(request, 'این مسابقه به پایان رسیده است.')
+    outcome, context = prepare_competition_play(request.user, competition)
+    if outcome:
+        if outcome == 'unavailable':
+            starts_at = competition.start_date.strftime("%Y/%m/%d — %H:%M")
+            messages.warning(request, f'این مسابقه از تاریخ {starts_at} شروع می‌شود.')
         else:
-            messages.warning(
-                request,
-                f'این مسابقه از تاریخ {competition.start_date.strftime("%Y/%m/%d — %H:%M")} شروع می‌شود.'
-            )
+            level, message = {
+                'finished': (messages.ERROR, 'این مسابقه به پایان رسیده است.'),
+                'unregistered': (messages.WARNING, 'ابتدا در مسابقه ثبت‌نام کنید.'),
+                'completed': (messages.INFO, 'شما این مسابقه را به پایان رسانده‌اید.'),
+                'expired': (messages.WARNING, 'زمان مسابقه شما به پایان رسیده است.'),
+                'exhausted': (messages.INFO, 'شما به همه سوالات این مسابقه پاسخ داده‌اید.'),
+            }[outcome]
+            messages.add_message(request, level, message)
         return redirect('missions:competition_detail', competition_id=competition.id)
 
-    registration = CompetitionRegistration.objects.filter(
-        user=request.user,
-        competition=competition
-    ).first()
-
-    if not registration:
-        messages.warning(request, 'ابتدا در مسابقه ثبت‌نام کنید.')
-        return redirect('missions:competition_detail', competition_id=competition.id)
-
-    if registration.is_completed:
-        messages.info(request, 'شما این مسابقه را به پایان رسانده‌اید.')
-        return redirect('missions:competition_detail', competition_id=competition.id)
-
-    if registration.is_time_expired():
-        registration.finish()
-        messages.warning(request, 'زمان مسابقه شما به پایان رسیده است.')
-        return redirect('missions:competition_detail', competition_id=competition.id)
-
-    registration.start()
-
-    all_cqs = list(
-        competition.competition_questions
-        .select_related('question')
-        .order_by('order')
-    )
-
-    answered_qids = set(
-        CompetitionAnswer.objects.filter(
-            registration=registration
-        ).values_list('question_id', flat=True)
-    )
-
-    remaining_cqs = [cq for cq in all_cqs if cq.question_id not in answered_qids]
-
-    remaining_slots = max(0, competition.max_questions - registration.total_answered)
-    questions_to_show = remaining_cqs[:remaining_slots]
-
-    if not questions_to_show:
-        if not registration.is_completed:
-            registration.finish()
-        messages.info(request, 'شما به همه سوالات این مسابقه پاسخ داده‌اید.')
-        return redirect('missions:competition_detail', competition_id=competition.id)
-
-    time_remaining = 0
-    if competition.time_limit_minutes > 0 and registration.started_at:
-        deadline = registration.started_at + timedelta(
-            minutes=competition.time_limit_minutes
-        )
-        remaining = (deadline - timezone.now()).total_seconds()
-        time_remaining = max(0, int(remaining))
-
-    context = {
-        'competition': competition,
-        'registration': registration,
-        'competition_questions': questions_to_show,
-        'total_remaining': len(questions_to_show),
-        'time_remaining': time_remaining,
-        'initial_score': registration.score,
-        'initial_correct': registration.total_correct,
-        'initial_answered': registration.total_answered,
-    }
     return render(request, 'missions/competition_play.html', context)
 
 
@@ -284,23 +183,10 @@ def start_competition(request, competition_id):
     """شروع رسمی مسابقه — ثبت started_at"""
     competition = get_object_or_404(Competition, id=competition_id)
 
-    if not competition.can_play():
-        return JsonResponse({
-            'success': False,
-            'message': 'این مسابقه در حال حاضر قابل بازی نیست.'
-        }, status=400)
-
-    registration, created = CompetitionRegistration.objects.get_or_create(
-        user=request.user, competition=competition
-    )
-
-    if registration.is_completed:
-        return JsonResponse({
-            'success': False,
-            'message': 'شما قبلاً این مسابقه را تمام کرده‌اید.'
-        }, status=400)
-
-    registration.start()
+    try:
+        registration = start_participation(request.user, competition)
+    except SubmissionRejected as exc:
+        return submission_error_response(exc)
 
     return JsonResponse({
         'success': True,
@@ -315,14 +201,11 @@ def register_competition(request, competition_id):
     """ثبت‌نام در مسابقه — حتی قبل از شروع"""
     competition = get_object_or_404(Competition, id=competition_id)
 
-    if not competition.can_register():
-        messages.error(request, 'امکان ثبت‌نام در این مسابقه وجود ندارد.')
+    try:
+        created = register_participant(request.user, competition)
+    except SubmissionRejected as exc:
+        messages.error(request, str(exc))
         return redirect('missions:competition_detail', competition_id=competition.id)
-
-    registration, created = CompetitionRegistration.objects.get_or_create(
-        user=request.user,
-        competition=competition
-    )
 
     if created:
         messages.success(
@@ -342,100 +225,17 @@ def submit_answer(request, competition_id, question_id):
     """ثبت پاسخ به سوال مسابقه — با کنترل زمان و محدودیت تعداد"""
     competition = get_object_or_404(Competition, id=competition_id)
 
-    if not competition.can_play():
-        return JsonResponse({
-            'success': False,
-            'message': 'این مسابقه در حال حاضر قابل بازی نیست.'
-        }, status=400)
-
-    if not competition.is_open():
-        return JsonResponse({
-            'success': False,
-            'message': 'این مسابقه در حال برگزاری نیست.'
-        }, status=400)
-
-    competition_question = get_object_or_404(
-        CompetitionQuestion,
-        competition=competition,
-        question_id=question_id
-    )
-    question = competition_question.question
-
-    registration = CompetitionRegistration.objects.filter(
-        user=request.user,
-        competition=competition
-    ).first()
-
-    if not registration:
-        return JsonResponse({
-            'success': False,
-            'message': 'ابتدا در مسابقه ثبت‌نام کنید.'
-        }, status=400)
-
-    if registration.is_completed:
-        return JsonResponse({
-            'success': False,
-            'message': 'شما این مسابقه را به پایان رسانده‌اید.'
-        }, status=400)
-
-    if registration.is_time_expired():
-        registration.finish()
-        return JsonResponse({
-            'success': False,
-            'message': 'زمان مجاز شما به پایان رسیده است.',
-            'is_completed': True,
-        }, status=400)
-
-    registration.start()
-
-    if registration.total_answered >= competition.max_questions:
-        registration.finish()
-        return JsonResponse({
-            'success': False,
-            'message': 'به حداکثر تعداد سوال رسیده‌اید.',
-            'is_completed': True,
-        }, status=400)
-
-    if CompetitionAnswer.objects.filter(
-        registration=registration, question=question
-    ).exists():
-        return JsonResponse({
-            'success': False,
-            'message': 'قبلاً به این سوال پاسخ داده‌اید.'
-        }, status=400)
-
     try:
-        selected_option = int(request.POST.get('option', 0))
-    except (ValueError, TypeError):
-        return JsonResponse({
-            'success': False,
-            'message': 'گزینه نامعتبر است.'
-        }, status=400)
-
-    if selected_option not in (1, 2, 3, 4):
-        return JsonResponse({
-            'success': False,
-            'message': 'گزینه نامعتبر است.'
-        }, status=400)
-
-    points = competition_question.get_points()
-    answer = CompetitionAnswer.objects.create(
-        registration=registration,
-        question=question,
-        selected_option=selected_option,
-        is_correct=(selected_option == question.correct_option),
-        points_awarded=points if selected_option == question.correct_option else 0,
-    )
-
-    registration.add_result(answer.is_correct, answer.points_awarded)
-
-    if registration.total_answered >= competition.max_questions:
-        registration.finish()
+        answer, registration = submit_competition_answer(request.user, competition, question_id, request.POST.get('option', 0))
+    except CompetitionQuestion.DoesNotExist as exc:
+        raise Http404('No CompetitionQuestion matches the given query.') from exc
+    except SubmissionRejected as exc:
+        return submission_error_response(exc)
 
     return JsonResponse({
         'success': True,
         'is_correct': answer.is_correct,
-        'correct_option': question.correct_option,
+        'correct_option': answer.question.correct_option,
         'total_correct': registration.total_correct,
         'total_answered': registration.total_answered,
         'score': registration.score,
@@ -484,14 +284,7 @@ def profile(request):
 
 @login_required
 def archive(request):
-    now = timezone.now()
-    finished_missions = Mission.objects.filter(is_active=False).order_by('-created_at')[:30]
-    finished_competitions = Competition.objects.filter(end_date__lt=now).order_by('-end_date')[:30]
-
-    context = {
-        'finished_missions': finished_missions,
-        'finished_competitions': finished_competitions,
-    }
+    context = get_archive_context()
     return render(request, 'missions/archive.html', context)
 
 
@@ -520,33 +313,10 @@ def daily_questions_page(request):
 def answer_daily(request, dq_id):
     dq = get_object_or_404(DailyQuestion, id=dq_id, is_active=True)
 
-    if dq.publish_date != timezone.localdate():
-        return JsonResponse({
-            'success': False,
-            'message': 'این سوال مربوط به امروز نیست.'
-        }, status=400)
-
-    if DailyQuestionAnswer.objects.filter(
-        user=request.user, daily_question=dq
-    ).exists():
-        return JsonResponse({
-            'success': False,
-            'message': 'شما قبلاً به این سوال پاسخ داده‌اید.'
-        }, status=400)
-
     try:
-        option = int(request.POST.get('option', 0))
-    except (ValueError, TypeError):
-        return JsonResponse({'success': False, 'message': 'گزینه نامعتبر'}, status=400)
-
-    if option not in (1, 2, 3, 4):
-        return JsonResponse({'success': False, 'message': 'گزینه نامعتبر'}, status=400)
-
-    answer = DailyQuestionAnswer.objects.create(
-        user=request.user,
-        daily_question=dq,
-        selected_option=option,
-    )
+        answer = submit_daily_answer(request.user, dq, request.POST.get('option', 0))
+    except SubmissionRejected as exc:
+        return submission_error_response(exc)
 
     return JsonResponse({
         'success': True,

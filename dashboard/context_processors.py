@@ -1,3 +1,6 @@
+from apps.backoffice.selectors.badges import get_staff_badges
+
+
 def dashboard_badges(request):
     """
     تعداد آیتم‌های در انتظار (برای نمایش badge روی منو).
@@ -7,9 +10,4 @@ def dashboard_badges(request):
     if not (request.user.is_staff or request.user.is_superuser):
         return {}
 
-    from missions.models import MissionRequest, TreasurePurchase
-
-    return {
-        'dash_pending_requests': MissionRequest.objects.filter(status='pending').count(),
-        'dash_pending_purchases': TreasurePurchase.objects.filter(status='pending').count(),
-    }
+    return get_staff_badges()

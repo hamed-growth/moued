@@ -2,7 +2,6 @@ from django.db import models, transaction
 from django.contrib.auth.models import AbstractUser
 from django.utils import timezone
 from django.core.exceptions import ValidationError
-from django.db.models import Case, Sum, Count, Q, F, Value, When
 from datetime import timedelta
 
 
@@ -24,20 +23,9 @@ class User(AbstractUser):
 
     def add_rewards(self, points=0, coins=0):
         """افزودن امتیاز و/یا سکه به کاربر و به‌روزرسانی خودکار روزهای فعالیت"""
-        if points:
-            self.total_points += points
-        if coins:
-            self.total_coins += coins
+        from apps.wallet.services.balances import add_rewards
 
-        today = timezone.now().date()
-        if self.last_activity_date != today:
-            if self.last_activity_date == today - timedelta(days=1):
-                self.activity_streak += 1
-            else:
-                self.activity_streak = 1
-            self.last_activity_date = today
-
-        self.save()
+        add_rewards(self, points=points, coins=coins)
 
     def __str__(self):
         return self.username
@@ -323,24 +311,9 @@ class MissionCompletion(models.Model):
         with transaction.atomic():
             self.points_awarded, self.coins_awarded = self.mission.get_rewards_for_team(self.team)
             super().save(*args, **kwargs)
-            today = timezone.now().date()
-            User.objects.filter(pk=self.user_id).update(
-                total_points=F('total_points') + self.points_awarded,
-                total_coins=F('total_coins') + self.coins_awarded,
-                last_activity_date=today,
-                activity_streak=Case(
-                    When(last_activity_date=today, then=F('activity_streak')),
-                    When(last_activity_date=today - timedelta(days=1), then=F('activity_streak') + 1),
-                    default=Value(1),
-                ),
-            )
-            PointTransaction.objects.create(
-                user_id=self.user_id,
-                transaction_type='mission',
-                title=f"ماموریت: {self.mission.title}",
-                points=self.points_awarded,
-                coins=self.coins_awarded,
-            )
+            from apps.missions.services.completion import award_mission_completion
+
+            award_mission_completion(self)
 
     def __str__(self):
         return f"{self.user.username} - {self.mission.title}"
@@ -780,16 +753,9 @@ class DailyQuestionAnswer(models.Model):
         super().save(*args, **kwargs)
 
         if is_new:
-            if self.is_correct:
-                self.user.add_points(self.points_awarded)
-                PointTransaction.objects.create(
-                    user=self.user,
-                    transaction_type='daily_question',
-                    title=f"پاسخ صحیح به سوال روزانه: {self.daily_question.question.text[:40]}",
-                    points=self.points_awarded
-                )
-            else:
-                self.user.add_points(0)
+            from apps.questions.services.rewards import award_daily_answer
+
+            award_daily_answer(self)
 
     def __str__(self):
         status = "✓" if self.is_correct else "✗"
@@ -922,14 +888,9 @@ class TreasurePurchase(models.Model):
         ordering = ['-purchased_at']
 
     def deliver(self, admin_note=None):
-        if self.status == 'delivered':
-            return False
-        self.status = 'delivered'
-        self.delivered_at = timezone.now()
-        if admin_note:
-            self.admin_note = admin_note
-        self.save()
-        return True
+        from apps.treasure.services.delivery import deliver_purchase
+
+        return deliver_purchase(self, admin_note)
 
     def __str__(self):
         return f"{self.user.username} → {self.item_name} ({self.item_price} امتیاز)"
