@@ -1,16 +1,17 @@
 import { Navigate, Outlet, useLocation } from 'react-router'
+import { Alert, Box, Button, CircularProgress, Paper, Stack } from '@mui/material'
 import { useAuth } from '../model/use-auth'
 
 function SessionState() {
   const { status, refresh } = useAuth()
-  if (status === 'loading') return <main className="page-shell" role="status">در حال بررسی نشست...</main>
+  if (status === 'loading') return <Box component="main" className="page-shell" role="status"><Stack alignItems="center" spacing={2}><CircularProgress /><span>در حال بررسی نشست...</span></Stack></Box>
   return (
-    <main className="page-shell">
-      <div className="welcome" role="alert">
-        <p>وضعیت ورود قابل بررسی نیست. اتصال را بررسی کنید.</p>
-        <button type="button" onClick={() => refresh()}>تلاش دوباره</button>
-      </div>
-    </main>
+    <Box component="main" className="page-shell">
+      <Paper className="welcome" variant="outlined"><Stack spacing={2}>
+        <Alert severity="error" role="alert">وضعیت ورود قابل بررسی نیست. اتصال را بررسی کنید.</Alert>
+        <Button variant="contained" type="button" onClick={() => refresh()}>تلاش دوباره</Button>
+      </Stack></Paper>
+    </Box>
   )
 }
 

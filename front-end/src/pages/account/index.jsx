@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router'
+import { Alert, Box, Button, Link, Paper, Stack, Typography } from '@mui/material'
+import { Link as RouterLink, useNavigate } from 'react-router'
 import { useAuth } from '../../features/auth'
 
 export function AccountPage() {
@@ -21,14 +22,16 @@ export function AccountPage() {
   }
 
   return (
-    <main className="page-shell">
-      <section className="welcome" aria-labelledby="account-title">
-        <h1 id="account-title">حساب من</h1>
-        <p>نام کاربری: {user.username}</p>
-        {error && <p role="alert">{error}</p>}
-        <button type="button" onClick={handleLogout} disabled={busy}>{busy ? 'در حال خروج...' : 'خروج'}</button>
-        <Link to="/home">صفحهٔ اصلی</Link>
-      </section>
-    </main>
+    <Box component="main" className="page-shell">
+      <Paper component="section" className="welcome" variant="outlined" aria-labelledby="account-title">
+        <Stack spacing={2}>
+          <Typography id="account-title" component="h1" variant="h4">حساب من</Typography>
+          <Typography>نام کاربری: {user.username}</Typography>
+          {error && <Alert severity="error" role="alert">{error}</Alert>}
+          <Button variant="contained" type="button" onClick={handleLogout} disabled={busy}>{busy ? 'در حال خروج...' : 'خروج'}</Button>
+          <Link component={RouterLink} to="/home">صفحهٔ اصلی</Link>
+        </Stack>
+      </Paper>
+    </Box>
   )
 }
