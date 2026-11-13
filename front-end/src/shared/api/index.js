@@ -15,7 +15,9 @@ function normalizeBaseUrl(value) {
 const API_BASE_URL = normalizeBaseUrl(import.meta.env.VITE_API_BASE_URL)
 
 function apiUrl(path) {
-  const endpoint = String(path).replace(/^\/+|\/+$/g, '').replace(/\/{2,}/g, '/')
+  // Django endpoints require their declared trailing slash for POST requests;
+  // strip only leading separators while joining the configured API prefix.
+  const endpoint = String(path).replace(/^\/+/, '').replace(/\/{2,}/g, '/')
   return `${API_BASE_URL}/${endpoint}`
 }
 

@@ -5,7 +5,7 @@ No production database is used by the test settings.
 """
 import json
 
-from django.test import Client, TestCase
+from django.test import Client, TestCase, override_settings
 from django.urls import reverse
 
 from apps.accounts.models import User
@@ -61,6 +61,29 @@ class ApiV1AuthTests(TestCase):
         new_user = User.objects.get(username="new_member")
         self.assertFalse(new_user.is_staff)
         self.assertEqual(new_user.total_coins, 0)
+        self.assertEqual(self.client.get(reverse("api_v1:me")).status_code, 200)
+
+    @override_settings(CSRF_TRUSTED_ORIGINS=["http://localhost:5173"])
+    def test_login_accepts_vite_origin_when_csrf_token_is_present(self):
+        client = Client(enforce_csrf_checks=True)
+        csrf_response = client.get(
+            reverse("api_v1:csrf"), HTTP_HOST="127.0.0.1:8000",
+        )
+        self.assertEqual(csrf_response.status_code, 200)
+        token = client.cookies["csrftoken"].value
+        response = client.post(
+            reverse("api_v1:login"),
+            json.dumps({"username": "apiuser", "password": "Valid-Password-179!"}),
+            content_type="application/json",
+            HTTP_HOST="127.0.0.1:8000",
+            HTTP_ORIGIN="http://localhost:5173",
+            HTTP_X_CSRFTOKEN=token,
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            client.get(reverse("api_v1:me"), HTTP_HOST="127.0.0.1:8000").status_code,
+            200,
+        )
 
 
 class ApiV1ReadTests(TestCase):

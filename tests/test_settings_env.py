@@ -4,6 +4,9 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
+from django.test import SimpleTestCase, override_settings
+
+from mouod.checks import check_required_environment
 from mouod.env import csv_values, env_bool, load_dotenv
 
 
@@ -34,6 +37,22 @@ class EnvironmentSettingsTests(unittest.TestCase):
                 self.assertEqual(os.environ["LOCAL_TEST_FROM_FILE"], " file value ")
                 self.assertEqual(os.environ["LOCAL_TEST_FROM_PROCESS"], "process-value")
                 os.environ.pop("LOCAL_TEST_FROM_FILE", None)
+
+
+class RequiredEnvironmentCheckTests(SimpleTestCase):
+    @override_settings(SECRET_KEY="")
+    def test_missing_secret_key_has_actionable_system_check(self):
+        errors = check_required_environment(None)
+        secret_errors = [issue for issue in errors if issue.id == "mouod.E001"]
+        self.assertEqual(len(secret_errors), 1)
+        self.assertIn("DJANGO_SECRET_KEY", secret_errors[0].hint)
+
+    @override_settings(DEBUG=True, CSRF_TRUSTED_ORIGINS=[])
+    def test_local_debug_without_csrf_origins_has_actionable_warning(self):
+        warnings = check_required_environment(None)
+        csrf_warnings = [issue for issue in warnings if issue.id == "mouod.W001"]
+        self.assertEqual(len(csrf_warnings), 1)
+        self.assertIn("localhost:5173", csrf_warnings[0].hint)
 
 
 if __name__ == "__main__":
