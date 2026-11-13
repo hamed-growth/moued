@@ -1,6 +1,6 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { AuthContext } from './auth-context'
-import { getSession, login, logout, sessionQueryKey } from '../api/session'
+import { getSession, login, logout, register, sessionQueryKey } from '../api/session'
 
 export function AuthProvider({ children }) {
   const queryClient = useQueryClient()
@@ -13,6 +13,12 @@ export function AuthProvider({ children }) {
 
   async function signIn(credentials) {
     const result = await login(credentials)
+    queryClient.setQueryData(sessionQueryKey, result.user)
+    return result.user
+  }
+
+  async function signUp(userData) {
+    const result = await register(userData)
     queryClient.setQueryData(sessionQueryKey, result.user)
     return result.user
   }
@@ -30,6 +36,7 @@ export function AuthProvider({ children }) {
     error: session.error,
     refresh: session.refetch,
     signIn,
+    register: signUp,
     signOut,
   }
 

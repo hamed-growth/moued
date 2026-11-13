@@ -1,22 +1,24 @@
 import { createBrowserRouter, Navigate } from 'react-router'
 import { RouterProvider } from 'react-router/dom'
-import { AuthGuard, GuestGuard } from '../../features/auth'
+import { AuthGuard, EntryRoute, GuestGuard } from '../../features/auth'
 import { HomePage } from '../../pages/home'
 import { LoginPage } from '../../pages/login'
-import { AccountPage } from '../../pages/account'
+import { RegisterPage } from '../../pages/register'
+import { MissionsPage } from '../../pages/missions'
 
 const router = createBrowserRouter([
   {
     Component: GuestGuard,
     children: [
-      { path: '/', Component: LoginPage },
-      { path: '/login', element: <Navigate to="/" replace /> },
+      { path: '/', Component: EntryRoute },
+      { path: '/login', Component: LoginPage },
+      { path: '/register', Component: RegisterPage },
       { path: '/home', Component: HomePage },
     ],
   },
   {
     Component: AuthGuard,
-    children: [{ path: '/account', Component: AccountPage }],
+    children: [{ path: '/missions', Component: MissionsPage }, { path: '/account', Component: MissionsPage }],
   },
   { path: '*', element: <Navigate to="/" replace /> },
 ])

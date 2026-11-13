@@ -17,7 +17,16 @@ function SessionState() {
 
 // Public pages stay visible to both guests and signed-in users.
 export function GuestGuard() {
+  const { status } = useAuth()
+  if (status === 'loading' || status === 'error') return <SessionState />
+  if (status === 'authenticated') return <Navigate to="/missions" replace />
   return <Outlet />
+}
+
+export function EntryRoute() {
+  const { status } = useAuth()
+  if (status === 'loading' || status === 'error') return <SessionState />
+  return <Navigate to={status === 'authenticated' ? '/missions' : '/login'} replace />
 }
 
 export function AuthGuard() {
