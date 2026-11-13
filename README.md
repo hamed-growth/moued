@@ -6,7 +6,7 @@ See [architecture](ARCHITECTURE.md), [domain boundaries](docs/DOMAIN_BOUNDARIES.
 
 ## Environment and verification
 
-Use CPython 3.12 x64 and the locally verified wheels. `requirements.txt` preserves all seven pinned versions and SHA-256 hashes; the Pillow wheel targets Windows AMD64 / CPython 3.12. No additional packages are required.
+Use CPython 3.12 x64 with the locally verified wheels. `requirements.txt` also accepts the Windows AMD64 / CPython 3.15 Pillow wheel hash for installations from PyPI. The offline wheelhouse contains only the CPython 3.12 Pillow wheel and does not contain Django REST framework.
 
 ```powershell
 # Set this to your existing verified Python 3.12 environment.
