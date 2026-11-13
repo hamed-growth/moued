@@ -3,6 +3,7 @@ import { Alert, Button, InputAdornment, Link, Stack, TextField } from '@mui/mate
 import { Controller, useForm } from 'react-hook-form'
 import { Link as RouterLink, useNavigate } from 'react-router'
 import { PasswordVisibilityToggle, useAuth } from '../../features/auth'
+import { AppIcon, ICONS } from '../../shared/ui/app-icon'
 import { AuthLayout } from '../../widgets/auth-layout'
 
 export function RegisterPage() {
@@ -46,7 +47,7 @@ export function RegisterPage() {
             <TextField {...field} className="auth-form__field" label="تکرار رمز عبور" type={showPassword ? 'text' : 'password'} autoComplete="new-password" fullWidth error={!!errors.confirmPassword} helperText={errors.confirmPassword?.message} inputProps={{ dir: 'ltr' }} />
           )} />
           {errors.root && <Alert severity="error" role="alert">{errors.root.message}</Alert>}
-          <Button className="auth-form__submit" variant="contained" type="submit" disabled={isSubmitting} size="large">{isSubmitting ? 'در حال ساخت حساب...' : 'ثبت‌نام'}</Button>
+          <Button className="auth-form__submit" variant="contained" type="submit" disabled={isSubmitting} size="large" startIcon={<AppIcon icon={ICONS.add} size={18} />}>{isSubmitting ? 'در حال ساخت حساب...' : 'ثبت‌نام'}</Button>
         </Stack>
       </form>
     </AuthLayout>

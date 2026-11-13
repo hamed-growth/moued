@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Alert, Box, Button, Paper, Stack, Typography } from '@mui/material'
 import { useNavigate } from 'react-router'
 import { useAuth } from '../../features/auth'
+import { AppIcon, ICONS } from '../../shared/ui/app-icon'
 
 export function MissionsPage() {
   const { user, signOut } = useAuth()
@@ -17,6 +18,6 @@ export function MissionsPage() {
     <Typography color="primary" fontWeight={800} className="brand">موعود</Typography>
     <Box><Typography component="p" color="text.secondary">خوش آمدید{user?.username ? `، ${user.username}` : ''}</Typography><Typography id="missions-title" component="h1" variant="h4">مأموریت‌ها به‌زودی</Typography></Box>
     {error && <Alert severity="error" role="alert">{error}</Alert>}
-    <Button variant="outlined" onClick={handleLogout} disabled={busy}>{busy ? 'در حال خروج...' : 'خروج از حساب'}</Button>
+    <Button variant="outlined" onClick={handleLogout} disabled={busy} startIcon={<AppIcon icon={ICONS.logOut} size={18} />}>{busy ? 'در حال خروج...' : 'خروج از حساب'}</Button>
   </Stack></Paper></Box>
 }
