@@ -1,13 +1,15 @@
-import { Alert, Box, Button, Checkbox, FormControlLabel, IconButton, InputAdornment, Link, Paper, Stack, TextField, Typography } from '@mui/material'
 import { useState } from 'react'
+import { Alert, Button, Checkbox, FormControlLabel, InputAdornment, Link, Stack, TextField } from '@mui/material'
 import { Controller, useForm } from 'react-hook-form'
 import { Link as RouterLink, useLocation, useNavigate } from 'react-router'
-import { useAuth } from '../../features/auth'
+import { PasswordVisibilityToggle, useAuth } from '../../features/auth'
+import { AuthLayout } from '../../widgets/auth-layout'
 
 export function LoginPage() {
   const { signIn } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
+  const [showPassword, setShowPassword] = useState(false)
   const { control, handleSubmit, setError, formState: { errors, isSubmitting } } = useForm({
     defaultValues: { username: '', password: '', remember_me: false },
   })
@@ -23,34 +25,25 @@ export function LoginPage() {
     }
   }
 
-  const [showPassword, setShowPassword] = useState(false)
   return (
-    <Box component="main" className="page-shell">
-      <Paper component="section" className="welcome" variant="outlined" aria-labelledby="login-title">
-        <Stack spacing={3}>
-          <Box><Typography color="primary" fontWeight={800} className="brand">موعود</Typography><Typography id="login-title" component="h1" variant="h4">خوش آمدید</Typography><Typography color="text.secondary">برای ادامه، وارد حساب خود شوید.</Typography></Box>
-          <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate>
-            <Stack spacing={2}>
-              <Controller
-                name="username"
-                control={control}
-                rules={{ required: 'نام کاربری را وارد کنید.' }}
-                render={({ field }) => <TextField {...field} label="نام کاربری یا ایمیل" autoComplete="username" fullWidth error={!!errors.username} helperText={errors.username?.message} inputProps={{ dir: 'auto' }} />}
-              />
-              <Controller
-                name="password"
-                control={control}
-                rules={{ required: 'رمز عبور را وارد کنید.' }}
-                render={({ field }) => <TextField {...field} label="رمز عبور" type={showPassword ? 'text' : 'password'} autoComplete="current-password" fullWidth error={!!errors.password} helperText={errors.password?.message} InputProps={{ endAdornment: <InputAdornment position="end"><IconButton aria-label={showPassword ? 'پنهان کردن رمز عبور' : 'نمایش رمز عبور'} onClick={() => setShowPassword((value) => !value)} edge="end">{showPassword ? 'پنهان' : 'نمایش'}</IconButton></InputAdornment> }} />}
-              />
-              <Controller name="remember_me" control={control} render={({ field }) => <FormControlLabel control={<Checkbox {...field} checked={field.value} />} label="مرا به خاطر بسپار" />} />
-              {errors.root && <Alert severity="error" role="alert">{errors.root.message}</Alert>}
-              <Button variant="contained" type="submit" disabled={isSubmitting} size="large">{isSubmitting ? 'در حال ورود...' : 'ورود'}</Button>
-            </Stack>
-          </Box>
-          <Typography color="text.secondary">حساب ندارید؟ <Link component={RouterLink} to="/register">ثبت‌نام کنید</Link></Typography>
+    <AuthLayout
+      title="خوش اومدی"
+      description="نام کاربری و رمز عبور خودتو وارد کن تا بتونی وارد شی"
+      footer={<>حساب نداری؟ <Link component={RouterLink} to="/register">ثبت‌نام کن</Link></>}
+    >
+      <form className="auth-form" onSubmit={handleSubmit(onSubmit)} noValidate>
+        <Stack spacing={2}>
+          <Controller name="username" control={control} rules={{ required: 'نام کاربری را وارد کنید.' }} render={({ field }) => (
+            <TextField {...field} className="auth-form__field" label="نام کاربری یا ایمیل" placeholder="نام کاربری یا ایمیل خود را وارد کنید" autoComplete="username" fullWidth error={!!errors.username} helperText={errors.username?.message} inputProps={{ dir: 'auto' }} />
+          )} />
+          <Controller name="password" control={control} rules={{ required: 'رمز عبور را وارد کنید.' }} render={({ field }) => (
+            <TextField {...field} className="auth-form__field" label="رمز عبور" placeholder="رمز عبور خود را وارد کنید" type={showPassword ? 'text' : 'password'} autoComplete="current-password" fullWidth error={!!errors.password} helperText={errors.password?.message} inputProps={{ dir: 'ltr' }} InputProps={{ endAdornment: <InputAdornment position="end"><PasswordVisibilityToggle visible={showPassword} onToggle={() => setShowPassword((value) => !value)} /></InputAdornment> }} />
+          )} />
+          <Controller name="remember_me" control={control} render={({ field }) => <FormControlLabel className="auth-form__remember" control={<Checkbox {...field} checked={field.value} size="small" />} label="مرا به خاطر بسپار" />} />
+          {errors.root && <Alert severity="error" role="alert">{errors.root.message}</Alert>}
+          <Button className="auth-form__submit" variant="contained" type="submit" disabled={isSubmitting} size="large">{isSubmitting ? 'در حال ورود...' : 'ورود'}</Button>
         </Stack>
-      </Paper>
-    </Box>
+      </form>
+    </AuthLayout>
   )
 }

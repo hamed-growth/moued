@@ -9,7 +9,7 @@ export const theme = createTheme(
       background: { default: '#f7f8f4', paper: '#ffffff' },
       text: { primary: '#182421', secondary: '#53635e' },
     },
-    typography: { fontFamily: 'Vazirmatn, Tahoma, sans-serif' },
+    typography: { fontFamily: 'Vazir, Tahoma, sans-serif' },
   },
   faIR,
 )
