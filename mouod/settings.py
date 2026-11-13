@@ -28,7 +28,9 @@ SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env_bool(os.environ.get("DJANGO_DEBUG", "false"))
 
-ALLOWED_HOSTS = csv_values(os.environ.get("DJANGO_ALLOWED_HOSTS", ""))
+ALLOWED_HOSTS = csv_values(
+    os.environ.get("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1")
+)
 CSRF_TRUSTED_ORIGINS = csv_values(os.environ.get("DJANGO_CSRF_TRUSTED_ORIGINS", ""))
 
 

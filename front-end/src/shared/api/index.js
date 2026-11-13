@@ -7,6 +7,18 @@ export class ApiError extends Error {
   }
 }
 
+function normalizeBaseUrl(value) {
+  const path = (value || '').trim().replace(/^\/+|\/+$/g, '').replace(/\/{2,}/g, '/') || 'api/v1'
+  return `/${path}`
+}
+
+const API_BASE_URL = normalizeBaseUrl(import.meta.env.VITE_API_BASE_URL)
+
+function apiUrl(path) {
+  const endpoint = String(path).replace(/^\/+|\/+$/g, '').replace(/\/{2,}/g, '/')
+  return `${API_BASE_URL}/${endpoint}`
+}
+
 function csrfToken() {
   const cookie = document.cookie.split('; ').find((part) => part.startsWith('csrftoken='))
   return cookie ? decodeURIComponent(cookie.slice('csrftoken='.length)) : null
@@ -20,7 +32,7 @@ export async function apiRequest(path, { method = 'GET', body, signal } = {}) {
     if (token) headers['X-CSRFToken'] = token
   }
 
-  const response = await fetch(`/api/v1/${path}`, {
+  const response = await fetch(apiUrl(path), {
     method,
     credentials: 'same-origin',
     headers,
