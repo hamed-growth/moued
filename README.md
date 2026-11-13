@@ -6,6 +6,12 @@ See [architecture](ARCHITECTURE.md), [domain boundaries](docs/DOMAIN_BOUNDARIES.
 
 ## Environment and verification
 
+For local development, copy `.env.example` to `.env` and replace
+`DJANGO_SECRET_KEY` with a private random value. Django loads `.env` from the
+repository root; variables already set in the process environment take
+precedence. `DJANGO_ALLOWED_HOSTS` and `DJANGO_CSRF_TRUSTED_ORIGINS` accept
+comma-separated values. Keep `.env` out of version control.
+
 Use CPython 3.12 x64 with the locally verified wheels. `requirements.txt` also accepts the Windows AMD64 / CPython 3.15 Pillow wheel hash for installations from PyPI. The offline wheelhouse contains only the CPython 3.12 Pillow wheel and does not contain Django REST framework.
 
 ```powershell
