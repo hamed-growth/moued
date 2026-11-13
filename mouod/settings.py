@@ -38,8 +38,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'missions',
-    'dashboard',
+    'apps.web.apps.WebConfig',
+    'apps.backoffice.apps.DashboardConfig',
+    'rest_framework',
+    'apps.api.apps.ApiConfig',
 ]
 
 MIDDLEWARE = [
@@ -68,7 +70,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'dashboard.context_processors.dashboard_badges',
+                'apps.backoffice.context_processors.dashboard_badges',
             ],
         },
     },
@@ -97,6 +99,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
     {
         'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'OPTIONS': {'min_length': 10},
     },
     {
         'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
@@ -119,6 +122,9 @@ USE_I18N = True
 USE_TZ = True
 
 AUTH_USER_MODEL = 'missions.User'
+LOGIN_URL = '/'
+LOGIN_REDIRECT_URL = '/dashboard/'
+LOGOUT_REDIRECT_URL = '/'
 
 
 # Static files (CSS, JavaScript, Images)
@@ -126,7 +132,7 @@ AUTH_USER_MODEL = 'missions.User'
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [
-    BASE_DIR / "missions" / "static",
+    BASE_DIR / "apps" / "web" / "static",
 ]
 
 # ============ Media (فایل‌های آپلودی) ============
@@ -141,4 +147,12 @@ MAILERS = {
     'default': {
         'BACKEND': 'django.core.mail.backends.console.EmailBackend',
     },
+}
+
+# JSON-only, session-authenticated API. Keep frontend same-origin (or proxy /api/).
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": ["rest_framework.authentication.SessionAuthentication"],
+    "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.IsAuthenticated"],
+    "DEFAULT_RENDERER_CLASSES": ["rest_framework.renderers.JSONRenderer"],
+    "DEFAULT_PARSER_CLASSES": ["rest_framework.parsers.JSONParser"],
 }

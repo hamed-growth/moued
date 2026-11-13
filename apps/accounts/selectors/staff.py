@@ -1,10 +1,11 @@
 """Account queries used by authorized staff."""
 from django.db.models import Q
 
-from missions.models import (
-    CompetitionRegistration, MissionCompletion, MissionRequest,
-    PointTransaction, Team, TeamMember, User,
-)
+from apps.accounts.models import User
+from apps.competitions.models import CompetitionRegistration
+from apps.missions.models import MissionCompletion, MissionRequest
+from apps.teams.models import Team, TeamMember
+from apps.wallet.models import PointTransaction
 
 
 def get_staff_user_detail_context(user):

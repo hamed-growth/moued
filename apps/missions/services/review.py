@@ -3,7 +3,7 @@
 from django.db import transaction
 from django.utils import timezone
 
-from missions.models import MissionCompletion, MissionRequest
+from apps.missions.models import MissionCompletion, MissionRequest
 
 
 def _review_pending(mission_request, status, admin_user, admin_note):

@@ -1,6 +1,6 @@
 """Team ranking queries over caller-supplied monthly point totals."""
 
-from missions.models import Team
+from apps.teams.models import Team
 
 
 def get_profile_team_leaderboard(user_month_points, user_team):

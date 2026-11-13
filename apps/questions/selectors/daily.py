@@ -1,6 +1,6 @@
 """Today's active questions and the current user's answered IDs."""
 from django.utils import timezone
-from missions.models import DailyQuestion, DailyQuestionAnswer
+from apps.questions.models import DailyQuestion, DailyQuestionAnswer
 
 def get_daily_question_context(user):
     today = timezone.localdate()

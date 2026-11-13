@@ -1,7 +1,7 @@
 """Report queries for authorized dashboard staff."""
 from django.db.models import Count
 
-from missions.models import Competition
+from apps.competitions.models import Competition
 
 
 def get_staff_competitions_list_context():

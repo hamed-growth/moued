@@ -1,0 +1,8 @@
+{% extends 'parents/base.html' %}
+{% block title %}داشبورد | باشگاه موعود{% endblock %}
+{% block content %}
+<div class="dashboard"><section class="card" aria-labelledby="dashboard-title">
+  <h1 id="dashboard-title">من داشبورد هستم</h1>
+  <form method="post" action="{% url 'missions:logout' %}">{% csrf_token %}{% include 'components/button.html' with label='خروج از حساب' type='submit' variant='ghost' %}</form>
+</section></div>
+{% endblock %}

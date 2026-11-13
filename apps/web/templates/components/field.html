@@ -1,0 +1,28 @@
+<div class="auth-field{% if field.errors %} auth-field--invalid{% endif %}" data-field="{{ name }}" data-state="{% if field.errors %}invalid{% else %}idle{% endif %}">
+  <label class="sr-only" for="{{ field.id_for_label }}">{{ placeholder }}</label>
+  <div class="auth-field__control">
+    <svg class="auth-field__leading icon" aria-hidden="true"><use href="#icon-{{ icon }}"></use></svg>
+    <input id="{{ field.id_for_label }}" name="{{ name }}" type="{{ type }}" placeholder="{{ placeholder }}"
+      aria-label="{{ placeholder }}" aria-describedby="{{ field.id_for_label }}-error{% if password_rule %} {{ field.id_for_label }}-rule{% endif %}"
+      {% if field.errors %}aria-invalid="true"{% endif %}
+      autocomplete="{{ autocomplete }}" autocapitalize="none" spellcheck="false" dir="ltr"
+      {% if inputmode %}inputmode="{{ inputmode }}"{% endif %}
+      {% if type != 'password' and field.value %}value="{{ field.value }}"{% endif %} required>
+    <svg class="auth-field__status auth-field__status--valid icon" aria-hidden="true"><use href="#icon-check-circle"></use></svg>
+    <svg class="auth-field__status auth-field__status--invalid icon" aria-hidden="true"><use href="#icon-alert-circle"></use></svg>
+    {% if type == 'password' %}
+      <button class="auth-field__toggle" type="button" data-password-toggle="{{ field.id_for_label }}" aria-label="نمایش گذرواژه" aria-pressed="false">
+        <svg class="icon auth-field__eye" aria-hidden="true"><use href="#icon-eye"></use></svg>
+        <svg class="icon auth-field__eye-off" aria-hidden="true"><use href="#icon-eye-off"></use></svg>
+      </button>
+    {% endif %}
+  </div>
+  {% if password_rule %}<p id="{{ field.id_for_label }}-rule" class="auth-field__rule">حداقل ۱۰ نویسه</p>{% endif %}
+  <p id="{{ field.id_for_label }}-error" class="auth-field__error" role="alert">{% if field.errors %}{{ field.errors.0 }}{% endif %}</p>
+  {% if password_rule %}
+    <div class="auth-strength" data-password-strength hidden>
+      <div class="auth-strength__segments" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+      <span class="auth-strength__label" data-strength-label></span>
+    </div>
+  {% endif %}
+</div>

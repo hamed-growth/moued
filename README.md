@@ -1,8 +1,8 @@
 # Imam Zaman
 
-Persian Django application for teams, missions, daily questions, competitions and a points-funded treasure shop. Python domains live under `apps/`; the registered Django applications remain `missions` and `dashboard`. All 19 domain models, including `missions.User`, retain their original identities.
+Persian Django application for teams, missions, daily questions, competitions and a points-funded treasure shop. Domain code lives under `apps/`. Django loads `apps.web` and `apps.backoffice` with their original registry labels, `missions` and `dashboard`. All 19 models, including `missions.User`, retain their database identities.
 
-See [architecture](ARCHITECTURE.md), [domain boundaries](docs/DOMAIN_BOUNDARIES.md), [development](docs/DEVELOPMENT.md), and the [modernization report](docs/FINAL_MODERNIZATION_REPORT.md).
+See [architecture](ARCHITECTURE.md), [domain boundaries](docs/DOMAIN_BOUNDARIES.md), [development](docs/DEVELOPMENT.md), and the [layout migration report](docs/LAYOUT_MIGRATION.md).
 
 ## Environment and verification
 
@@ -16,6 +16,6 @@ $python = 'C:\path\outside-project\env\Scripts\python.exe'
 & $python -B manage.py test --settings=mouod.test_settings -v 2
 ```
 
-The test settings use temporary media and a disposable file-backed SQLite database, including for independent-connection concurrency tests. They never use the original database. The current verified suite has 78 tests: 71 restored historical tests and seven added contract tests.
+The test settings use temporary media and a disposable file-backed SQLite database, including for independent-connection concurrency tests. They never use the original database. The current verified suite has 90 tests under `tests/`.
 
 Run a browser preview only from an independent project copy, with an SQLite Backup API copy of the database and copied media. See the development guide. The default settings are not production-ready. Passing tests do not resolve the known application defects listed in [technical debt](docs/TECHNICAL_DEBT.md).

@@ -1,5 +1,8 @@
 # Model and migration verification
 
+> Historical checkpoint. The [current layout and verification](LAYOUT_MIGRATION.md) supersede its package paths.
+
+
 No schema migration, model ownership change or migration rewrite was made. All 19 application models remain in `missions.models`, app label `missions`; `AUTH_USER_MODEL` remains `missions.User`. Registered applications remain Django contrib apps, missions and dashboard. Domain packages under `apps/` are not installed apps.
 
 The pre-edit runtime snapshot records every model's table, serialized fields (including FK/M2M targets), options, bases and managers; the URL inventory; Admin model registrations; installed apps; and migration dependency inventory. `missions/contract_baseline.json` retains the identity/route contract for automated checks. Before/after runtime snapshots match exactly. A separate AST comparison confirms the only model source changes are four local service import targets.

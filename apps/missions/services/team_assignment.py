@@ -1,4 +1,4 @@
-from missions.models import TeamMission
+from apps.missions.models import TeamMission
 
 
 def toggle_team_assignment(team, mission):

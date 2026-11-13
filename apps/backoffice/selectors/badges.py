@@ -1,4 +1,5 @@
-from missions.models import MissionRequest, TreasurePurchase
+from apps.missions.models import MissionRequest
+from apps.treasure.models import TreasurePurchase
 
 
 def get_staff_badges():

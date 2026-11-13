@@ -1,4 +1,4 @@
-from missions.models import CompetitionAnswer, CompetitionRegistration
+from apps.competitions.models import CompetitionAnswer, CompetitionRegistration
 
 
 def get_competition_detail_context(competition, user):

@@ -22,8 +22,8 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('missions.urls')),
-    path('dashboard/', include('dashboard.urls', namespace='dashboard')),
+    path('api/v1/', include('apps.api.urls')), 
+    path('', include('apps.web.urls')),
 ]
 
 if settings.DEBUG:

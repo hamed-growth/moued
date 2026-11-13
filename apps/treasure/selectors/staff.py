@@ -1,7 +1,7 @@
 """Report queries for authorized dashboard staff."""
 from django.db.models import Count
 
-from missions.models import TreasureItem, TreasurePurchase
+from apps.treasure.models import TreasureItem, TreasurePurchase
 
 
 def get_staff_treasure_list_context():

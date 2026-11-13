@@ -1,5 +1,8 @@
 # Final modernization report
 
+> Historical checkpoint. The [current layout and verification](LAYOUT_MIGRATION.md) supersede its package paths.
+
+
 Status: **SAFE PYTHON MODULARIZATION COMPLETED**. This is not model-ownership migration, a complete extraction of every legacy write path, or production/API deployment approval. Optional model splitting and policy-sensitive workflows are explicitly deferred.
 
 ## Original and implemented architecture

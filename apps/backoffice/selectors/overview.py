@@ -2,8 +2,14 @@
 from datetime import timedelta
 from django.db.models import Sum
 from django.utils import timezone
-from missions.models import (User, Team, Mission, Competition, MissionRequest,
-    TreasurePurchase, PointTransaction)
+import jdatetime
+from common.calendar import get_shamsi_month_range
+from apps.accounts.models import User
+from apps.competitions.models import Competition
+from apps.missions.models import Mission, MissionRequest
+from apps.teams.models import Team
+from apps.treasure.models import TreasurePurchase
+from apps.wallet.models import PointTransaction
 
 def get_dashboard_context():
     """صفحه اصلی داشبورد — آمار کلی"""
@@ -33,7 +39,15 @@ def get_dashboard_context():
     }
 
     # ۱۰ کاربر برتر
-    top_users = User.objects.filter(is_active=True).order_by('-total_points')[:10]
+    jalali_today = jdatetime.date.fromgregorian(date=today)
+    month_start, month_end, _ = get_shamsi_month_range(f'{jalali_today.year}-{jalali_today.month:02d}')
+    from django.db.models import Q
+    top_users = User.objects.filter(is_active=True).annotate(
+        month_points=Sum('transactions__points', filter=Q(
+            transactions__created_at__gte=month_start,
+            transactions__created_at__lt=month_end,
+        )),
+    ).order_by('-month_points', 'pk')[:10]
 
     # آخرین درخواست‌های در انتظار
     pending_requests = (

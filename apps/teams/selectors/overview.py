@@ -2,7 +2,7 @@
 import jdatetime
 from django.utils import timezone
 from django.db.models import Sum
-from missions.models import PointTransaction
+from apps.wallet.models import PointTransaction
 from .membership import get_user_team
 from .leagues import get_league_rankings
 from apps.wallet.selectors.history import get_user_months_shamsi

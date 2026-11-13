@@ -4,9 +4,29 @@ from datetime import timedelta
 
 from django.utils import timezone
 
-from missions.models import CompetitionAnswer, CompetitionQuestion, CompetitionRegistration
+from apps.competitions.models import (
+    CompetitionAnswer,
+    CompetitionQuestion,
+    CompetitionRegistration,
+)
 from apps.competitions.selectors.detail import get_remaining_questions
 from apps.submissions import SubmissionRejected
+
+
+def start_registration(registration):
+    if not registration.started_at:
+        registration.started_at = timezone.now()
+        registration.save(update_fields=['started_at'])
+
+
+def record_registration_result(registration, is_correct, points):
+    registration.total_answered += 1
+    if is_correct:
+        registration.total_correct += 1
+        registration.score += points
+    else:
+        registration.total_wrong += 1
+    registration.save(update_fields=['total_answered', 'total_correct', 'total_wrong', 'score'])
 
 
 def submit_competition_answer(user, competition, question_id, raw_option):
@@ -37,7 +57,7 @@ def submit_competition_answer(user, competition, question_id, raw_option):
         registration.finish()
         raise SubmissionRejected('زمان مجاز شما به پایان رسیده است.', completed=True)
 
-    registration.start()
+    start_registration(registration)
 
     if registration.total_answered >= competition.max_questions:
         registration.finish()
@@ -65,7 +85,7 @@ def submit_competition_answer(user, competition, question_id, raw_option):
         points_awarded=points if selected_option == question.correct_option else 0,
     )
 
-    registration.add_result(answer.is_correct, answer.points_awarded)
+    record_registration_result(registration, answer.is_correct, answer.points_awarded)
 
     if registration.total_answered >= competition.max_questions:
         registration.finish()
@@ -91,7 +111,7 @@ def prepare_competition_play(user, competition):
         registration.finish()
         return 'expired', None
 
-    registration.start()
+    start_registration(registration)
 
     questions_to_show = get_remaining_questions(competition, registration)
 
@@ -129,7 +149,7 @@ def start_participation(user, competition):
     )
     if registration.is_completed:
         raise SubmissionRejected('شما قبلاً این مسابقه را تمام کرده‌اید.')
-    registration.start()
+    start_registration(registration)
     return registration
 
 

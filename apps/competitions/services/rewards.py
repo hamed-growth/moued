@@ -1,26 +1,16 @@
 """Atomic competition payouts. Callers own authorization and request validation."""
 
-from datetime import timedelta
-
 from django.db import transaction
-from django.db.models import Case, F, Value, When
 from django.utils import timezone
 
-from missions.models import Competition, CompetitionRegistration, PointTransaction, User
+from apps.competitions.models import Competition, CompetitionRegistration
+from apps.wallet.services.balances import credit_balance
+from apps.wallet.services.ledger import record_transaction
 
 
 def _award_competition_points(user_id, points, title):
-    today = timezone.now().date()
-    User.objects.filter(pk=user_id).update(
-        total_points=F('total_points') + points,
-        last_activity_date=today,
-        activity_streak=Case(
-            When(last_activity_date=today, then=F('activity_streak')),
-            When(last_activity_date=today - timedelta(days=1), then=F('activity_streak') + 1),
-            default=Value(1),
-        ),
-    )
-    PointTransaction.objects.create(
+    credit_balance(user_id, points=points)
+    record_transaction(
         user_id=user_id, transaction_type='competition', title=title, points=points,
     )
 

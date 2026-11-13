@@ -1,0 +1,51 @@
+{% extends 'parents/base.html' %}
+{% load static %}
+{% block title %}ورود به باشگاه موعود{% endblock %}
+{% block styles %}<link rel="stylesheet" href="{% static 'css/auth.css' %}?v=5">{% endblock %}
+{% block scripts %}<script type="module" src="{% static 'js/auth.js' %}?v=4"></script>{% endblock %}
+{% block content %}
+<div class="login-page">
+  <div class="login-shell">
+    <aside class="login-story" aria-label="درباره باشگاه موعود">
+      <div class="login-brand">
+        <span class="login-brand__mark" aria-hidden="true">
+          <svg viewBox="0 0 48 48" fill="none"><path d="M33 8c-10 2-17 11-15 21 1 5 4 8 8 11C16 41 7 34 6 24 5 13 14 4 25 5c3 0 6 1 8 3Z" fill="currentColor"/><circle cx="37" cy="19" r="3" fill="currentColor"/></svg>
+        </span>
+        <span>باشگاه موعود</span>
+      </div>
+      <div class="login-story__content">
+        <span class="login-story__eyebrow">مسیر کارهای خوب</span>
+        <h2>از همین‌جا<br>دوباره شروع کن.</h2>
+        <p>با ورود به حساب خودت، ادامهٔ مسیرت در باشگاه موعود را ببین.</p>
+        <div class="login-story__path" aria-hidden="true"><span></span><span></span><span></span></div>
+      </div>
+      <p class="login-story__footer">هر قدم کوچک، ارزشمند است.</p>
+    </aside>
+
+    <section class="login-panel" aria-labelledby="login-title">
+      <div class="login-panel__inner">
+        <span class="login-panel__mobile-brand">باشگاه موعود</span>
+        <div class="login-panel__intro">
+          <h1 id="login-title">خوش برگشتی</h1>
+          <p>نام کاربری و گذرواژه‌ات را وارد کن.</p>
+        </div>
+
+        <form class="auth-form{% if form.errors %} auth-form--error{% endif %}" method="post" action="{% url 'missions:home' %}" data-auth-form novalidate>
+          {% csrf_token %}
+          <input type="hidden" name="next" value="{{ next }}">
+          {% if form.errors %}{% include 'components/alert.html' with kind='error' message='نام کاربری یا گذرواژه درست نیست. دوباره تلاش کن.' %}{% endif %}
+          {% include 'components/field.html' with field=form.username name='username' type='text' icon='user' placeholder='نام کاربری یا ایمیل' autocomplete='username' %}
+          {% include 'components/field.html' with field=form.password name='password' type='password' icon='lock' placeholder='گذرواژه' autocomplete='current-password' %}
+          <div class="auth-form__options">
+            <label class="auth-form__remember">{{ form.remember_me }}<span>مرا به خاطر بسپار</span></label>
+            <span class="auth-form__forgot" aria-disabled="true" title="بازیابی گذرواژه هنوز فعال نیست">فراموشی گذرواژه <small>(به‌زودی)</small></span>
+          </div>
+          {% include 'components/button.html' with label='ورود به باشگاه' type='submit' icon='log-in' %}
+        </form>
+
+        <p class="login-panel__switch">حساب نداری؟ <a href="{% url 'missions:register' %}">ثبت‌نام کن</a></p>
+      </div>
+    </section>
+  </div>
+</div>
+{% endblock %}

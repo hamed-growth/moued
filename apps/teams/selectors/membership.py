@@ -1,5 +1,5 @@
 """Read the existing single-team membership relation."""
-from missions.models import TeamMember
+from apps.teams.models import TeamMember
 
 def get_user_team(user):
     """تیم کاربر (یا None)"""

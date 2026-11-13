@@ -1,6 +1,6 @@
 """Submission workflow for the missions domain."""
 
-from missions.models import MissionRequest
+from apps.missions.models import MissionRequest
 from apps.submissions import SubmissionRejected, MissionTeamAccessDenied
 from apps.teams.selectors.membership import get_user_team
 from apps.missions.selectors.eligibility import has_completed_today, has_pending_request_today

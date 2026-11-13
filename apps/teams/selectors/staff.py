@@ -1,6 +1,7 @@
 """Team read models for authorized staff; HTTP access checks stay in dashboard."""
 from django.db.models import Count, Sum
-from missions.models import Team, TeamMember, Mission, TeamMission
+from apps.missions.models import Mission, TeamMission
+from apps.teams.models import Team, TeamMember
 
 
 def get_staff_team_list_context():

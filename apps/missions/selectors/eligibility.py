@@ -1,7 +1,7 @@
 """Current mission visibility and daily eligibility queries."""
 from django.db.models import Q
 from django.utils import timezone
-from missions.models import Mission, MissionCompletion, MissionRequest
+from apps.missions.models import Mission, MissionCompletion, MissionRequest
 from apps.teams.selectors.membership import get_user_team
 
 def get_user_available_missions(user):

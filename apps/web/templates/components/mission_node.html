@@ -1,0 +1,9 @@
+{% load persian_numbers %}<li class="path-item path-item--{{ node.state }}{% if node.current %} path-item--current{% endif %}">
+  {% if node.current %}<span class="path-item__friend">{% include 'components/character_slot.html' with size='md' %}</span>{% endif %}
+  <button class="path-node" type="button" data-mission-id="{{ node.mission.pk }}" data-state="{{ node.state }}" data-can-submit="{% if node.state == 'available' or node.retry_allowed %}true{% else %}false{% endif %}" data-title="{{ node.mission.title }}" data-description="{{ node.mission.description|default:'' }}" data-points="{{ node.mission.points }}" data-time="{{ node.time_label }}" data-day="{{ day.iso }}" aria-label="{{ node.mission.title }}، {{ node.state_label }}، {{ node.mission.points|fa_digits }} امتیاز">
+    <span class="path-node__circle" aria-hidden="true"><svg class="icon"><use href="#icon-{% if node.state == 'approved' %}check-circle{% elif node.state == 'pending' %}clock{% elif node.state == 'rejected' %}alert-circle{% elif node.state == 'missed' %}x-circle{% elif node.state == 'not_open' %}clock{% elif node.state == 'locked' %}lock{% else %}star{% endif %}"></use></svg></span>
+    <span class="path-node__title">{{ node.mission.title }}</span>
+    <span class="path-node__meta">+{{ node.mission.points|fa_digits }} · {% if node.state == 'approved' %}تأیید شد{% elif node.state == 'pending' %}در انتظار تأیید{% elif node.state == 'rejected' %}دوباره تلاش کن{% elif node.state == 'missed' %}از دست رفت{% elif node.state == 'not_open' %}از ساعت {{ node.mission.start_time|time:'H:i'|fa_digits }}{% elif node.state == 'locked' %}به‌زودی باز می‌شود{% else %}{{ node.time_label }}{% endif %}</span>
+  </button>
+  {% if node.current %}<span class="path-item__start">شروع</span>{% endif %}
+</li>

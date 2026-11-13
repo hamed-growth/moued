@@ -1,7 +1,7 @@
 """Report queries for authorized dashboard staff."""
 from django.db.models import Q, Sum
 
-from missions.models import PointTransaction
+from apps.wallet.models import PointTransaction
 
 
 def get_staff_transactions_list_context(ttype, q):

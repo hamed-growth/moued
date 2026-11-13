@@ -1,7 +1,7 @@
 """Competition lists preserving date windows, limits and ordering."""
 from django.db.models import Q
 from django.utils import timezone
-from missions.models import Competition, CompetitionRegistration
+from apps.competitions.models import Competition, CompetitionRegistration
 
 def get_competition_list_context(user):
     """لیست مسابقات — فعال، به‌زودی، پایان‌یافته"""

@@ -1,7 +1,8 @@
 """Homepage mission and daily-question read model, including anonymous visibility."""
 from django.db.models import Q
 from django.utils import timezone
-from missions.models import Mission, MissionCompletion, MissionRequest, DailyQuestion, DailyQuestionAnswer
+from apps.missions.models import Mission, MissionCompletion, MissionRequest
+from apps.questions.models import DailyQuestion, DailyQuestionAnswer
 from apps.teams.selectors.membership import get_user_team
 
 def get_home_context(user):

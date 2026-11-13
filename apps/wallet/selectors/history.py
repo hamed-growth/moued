@@ -3,7 +3,7 @@ from collections import OrderedDict
 import jdatetime
 from django.db.models import Sum
 from django.db.models.functions import TruncMonth
-from missions.models import PointTransaction
+from apps.wallet.models import PointTransaction
 from common.calendar import get_persian_month_name
 
 def get_user_months_shamsi(user, limit=24):

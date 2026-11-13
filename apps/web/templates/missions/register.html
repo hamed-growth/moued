@@ -1,0 +1,47 @@
+{% extends 'parents/base.html' %}
+{% load static %}
+{% block title %}ثبت‌نام در باشگاه موعود{% endblock %}
+{% block styles %}<link rel="stylesheet" href="{% static 'css/auth.css' %}?v=5">{% endblock %}
+{% block scripts %}<script type="module" src="{% static 'js/auth.js' %}?v=4"></script>{% endblock %}
+{% block content %}
+<div class="login-page">
+  <div class="login-shell login-shell--register">
+    <aside class="login-story" aria-label="درباره باشگاه موعود">
+      <div class="login-brand">
+        <span class="login-brand__mark" aria-hidden="true">
+          <svg viewBox="0 0 48 48" fill="none"><path d="M33 8c-10 2-17 11-15 21 1 5 4 8 8 11C16 41 7 34 6 24 5 13 14 4 25 5c3 0 6 1 8 3Z" fill="currentColor"/><circle cx="37" cy="19" r="3" fill="currentColor"/></svg>
+        </span>
+        <span>باشگاه موعود</span>
+      </div>
+      <div class="login-story__content">
+        <span class="login-story__eyebrow">مسیر کارهای خوب</span>
+        <h2>اولین قدمت<br>از همین‌جا شروع می‌شود.</h2>
+        <p>حساب خودت را بساز و برای فعالیت‌های باشگاه آماده شو.</p>
+        <div class="login-story__path" aria-hidden="true"><span></span><span></span><span></span></div>
+      </div>
+      <p class="login-story__footer">هر قدم کوچک، ارزشمند است.</p>
+    </aside>
+
+    <section class="login-panel" aria-labelledby="register-title">
+      <div class="login-panel__inner login-panel__inner--register">
+        <span class="login-panel__mobile-brand">باشگاه موعود</span>
+        <div class="login-panel__intro">
+          <h1 id="register-title">به باشگاه بپیوند</h1>
+          <p>چند قدم کوتاه تا شروع مسیرت مانده است.</p>
+        </div>
+
+        <form class="auth-form{% if form.errors %} auth-form--error{% endif %}" method="post" action="{% url 'missions:register' %}" data-auth-form novalidate>
+          {% csrf_token %}
+          {% if form.errors %}{% include 'components/alert.html' with kind='error' message='اطلاعات را بررسی کن و دوباره تلاش کن.' %}{% endif %}
+          {% include 'components/field.html' with field=form.username name='username' type='text' icon='user' placeholder='نام کاربری' autocomplete='username' %}
+          {% include 'components/field.html' with field=form.email name='email' type='email' icon='mail' placeholder='ایمیل' autocomplete='email' inputmode='email' %}
+          {% include 'components/field.html' with field=form.password name='password' type='password' icon='lock' placeholder='گذرواژه' autocomplete='new-password' password_rule=True %}
+          {% include 'components/button.html' with label='ساخت حساب' type='submit' icon='arrow-left' %}
+        </form>
+
+        <p class="login-panel__switch">حساب داری؟ <a href="{% url 'missions:home' %}">وارد شو</a></p>
+      </div>
+    </section>
+  </div>
+</div>
+{% endblock %}

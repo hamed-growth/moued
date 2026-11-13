@@ -17,8 +17,8 @@ This refactoring preserves these issues; none is declared fixed.
 | Default login redirect | `/accounts/login/` has no configured route |
 | Archive template | Existing authenticated archive rendering lacks `missions/archive.html` |
 | Daily question template | Synthetic question fixture reproduces `NoReverseMatch` for `leaderboard`, before and after modernization |
-| Daily answer reward save hook | Insert and reward writes are not one newly hardened service; preserve until separately covered/reviewed |
-| Direct administrative balance/model editing | Not all writes flow through a shared wallet; do not claim a centralized ledger |
+| Daily answer transaction scope | The grading and reward service preserves the existing sequence of answer, balance and ledger writes. A failure between writes needs a separate policy and transaction review. |
+| Direct administrative balance/model editing | Admin can edit balances and ledger rows directly. The wallet services own writes made by the automated reward and checkout workflows. |
 | Duplicate treasure route | Preserved deliberately as part of the external URL inventory |
 
 ## Performance evidence and opportunities

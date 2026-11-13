@@ -1,5 +1,8 @@
 # Incremental migration — staff team reads
 
+> Historical checkpoint. The [current layout and verification](LAYOUT_MIGRATION.md) supersede its package paths.
+
+
 Completed the first incremental step after the initial modernization: moved dashboard team-list and team-detail query construction into apps/teams/selectors/staff.py. Staff authorization, object lookup/404, route names, templates and context keys remain in dashboard views unchanged. No write operations or financial policy changed.
 
 Baseline: 78 tests passed. Three new HTTP characterization tests passed before extraction; the final complete suite passed 81 tests with no system-check issues using mouod.test_settings and its temporary database/media. Coverage includes counts, ordering, empty teams, member/assignment scoping, inactive missions, unauthorized users and missing teams. Original database, media and migration hashes remained identical.

@@ -1,0 +1,21 @@
+{% extends 'parents/base.html' %}{% load static persian_numbers %}
+{% block title %}مأموریت‌ها | باشگاه موعود{% endblock %}
+{% block styles %}<link rel="stylesheet" href="{% static 'css/missions.css' %}">{% endblock %}
+{% block scripts %}<script type="module" src="{% static 'js/missions.js' %}"></script>{% endblock %}
+{% block content %}
+<div class="path-page" data-login-url="{% url 'missions:home' %}">
+  <header class="path-header" id="path-header">
+    <div class="path-header__main">{% include 'components/character_slot.html' with size='sm' %}<div><h1>مأموریت‌ها</h1><small>{{ request.user.username }}، مسیر امروزت اینجاست</small></div></div>
+    <div class="path-header__stats" aria-label="آمار تو">
+      <span aria-label="امتیاز تأیید شده"><svg class="icon" aria-hidden="true"><use href="#icon-star"></use></svg><b data-count="{{ summary.points }}">{{ summary.points|fa_digits }}</b></span>
+      <span aria-label="امتیاز در انتظار تأیید"><svg class="icon" aria-hidden="true"><use href="#icon-clock"></use></svg><b data-pending data-count="{{ summary.pending }}">{{ summary.pending|fa_digits }}</b></span>
+      <span aria-label="روزهای پیاپی فعال"><svg class="icon" aria-hidden="true"><use href="#icon-flame"></use></svg><b data-count="{{ summary.streak }}">{{ summary.streak|fa_digits }}</b></span>
+    </div>
+    <div class="path-header__progress"><span>{{ summary.completed|fa_digits }} از {{ summary.total|fa_digits }} مأموریت امروز</span><progress max="{{ summary.total|default:1 }}" value="{{ summary.completed }}"></progress></div>
+  </header>
+  <div class="path-scroll" id="path-scroll"><div id="path-top" class="path-sentinel" aria-hidden="true"></div><div id="path-days">{% include 'components/mission_days.html' with days=days %}</div><div id="path-bottom" class="path-sentinel" aria-hidden="true"></div></div>
+  <button class="path-today" id="back-today" type="button" hidden>برگرد به امروز</button>
+  {% include 'components/mission_sheet.html' %}
+  <div id="path-toast" class="path-toast" role="status" hidden></div>
+</div>
+{% endblock %}

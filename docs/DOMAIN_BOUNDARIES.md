@@ -1,35 +1,23 @@
 # Domain boundaries
 
-These are Python packages, not newly registered Django apps. `missions` owns every domain model and migration. `AUTH_USER_MODEL` remains `missions.User`. Database tables, content types, permissions and relationships are unchanged.
+| Domain | Owns |
+| --- | --- |
+| Accounts | User, authentication forms and views, profile and staff account operations |
+| Teams | Team, TeamMember, membership and rankings |
+| Missions | MissionCategory, Mission, TeamMission, MissionRequest, MissionCompletion and request/review/reward flows |
+| Questions | Question, DailyQuestion, DailyQuestionAnswer and daily submissions |
+| Competitions | Competition, CompetitionQuestion, CompetitionRegistration, CompetitionAnswer, participation, prizes and staff status changes |
+| Wallet | PointTransaction, balance writes, ledger entries and reporting |
+| Treasure | TreasureCategory, TreasureItem, TreasurePurchase, checkout and fulfillment |
+| Backoffice | Staff authorization, dashboard routing, shared operational reads and templates |
+| Web | Django registry, migration history, public routing, Admin discovery and shared UI assets |
 
-| Package | Implemented responsibility | Remaining legacy responsibility |
-| --- | --- | --- |
-| `apps.accounts` | Profile rank, history and profile overview selectors | Authentication/registration forms and views; custom User |
-| `apps.teams` | Membership lookup, profile/team rankings, monthly league context | Membership writes and dashboard team operations |
-| `apps.missions` | Pending review services, eligibility selectors, homepage read model | Request HTTP validation and creation; completion reward save hook; stale-save guard |
-| `apps.questions` | Today's questions and user-specific answered IDs | Daily answer validation, creation and reward save hook |
-| `apps.competitions` | Atomic finishing/finalization and competition list selector | Answer admission, scoring, registration/start and time limits |
-| `apps.wallet` | Existing monthly ledger history query | No centralized writer: User balances, PointTransaction, domain payouts and legacy daily reward writes remain authoritative |
-| `apps.treasure` | Atomic checkout, typed purchase errors and storefront queries | Fulfillment through the existing purchase model and staff interfaces |
-| `apps.backoffice` | Dashboard overview statistics and queues | Staff decorators, request parsing, messages and operation authorization |
-| `common.calendar` | Existing Jalali names and month boundaries | Naive boundaries intentionally preserve existing timezone behavior |
+Views and Admin validate transport input and enforce access. Services receive explicit arguments and coordinate changes to model state. Selectors build reads for a caller that has already checked access. Domain models, services and selectors stay independent of the views and Admin modules. The architecture tests enforce these import boundaries.
 
-## Dependency direction
+Domain model classes use the existing Django label `missions` so that Python code ownership and database identity can evolve independently. Model hooks delegate to services through local imports when an operation has to run for both direct model callers and HTTP/Admin callers.
 
-Views → domain selectors/services → Django ORM and `missions.models`.
+Checkout owns the transaction for conditional stock and point updates, the purchase and the ledger entry. Mission review owns the pending-only claim and calls completion inside the same transaction. Competition finish and finalization keep their conditional writes and prize logic. All four workflows delegate balance and ledger writes to the wallet. Daily answers use the existing instance-based balance update, while mission and competition rewards use SQL increments.
 
-Accounts overview uses team selectors, wallet history and calendar utilities. Team overview uses wallet history and calendar utilities. Mission homepage uses team membership and the existing daily-question models. Backoffice reads models across domains; it owns no reward rules.
+The completion and daily answer save hooks pass Django's base save to their services. The services decide when to grade or award a record. Competition registration methods delegate starting and recording a result to the participation service. Admin status edits and bulk actions use the competition management service.
 
-Domain code does not import views, dashboard, templates, HTTP helpers or the legacy service/selector exports. A static contract test examines top-level and nested imports and checks domain import cycles. `missions.models` has four intentional local imports into mission/competition services. This runtime delegation returns to already-loaded models; no service calls the model wrapper that invoked it.
-
-## Authorization and transactions
-
-Services receive explicit model instances or IDs, not requests. Callers must authorize the subject and operation first. Selectors assume the supplied user is an authorized subject; they are not a substitute for permission checks. Dashboard overview is staff data and must never be exposed by an unguarded API.
-
-Treasure checkout retains its active-item read before the atomic block, conditional F-expression debit, price/stock recheck, inventory reservation, ledger and purchase. It returns `(purchase, point_balance)`; insufficient points includes `shortfall`, stock errors are distinct, and database exceptions propagate after rollback. Coins are unchanged.
-
-Mission review claims persisted pending status before creating a completion. The completion save hook still owns reward calculation, balance/streak and ledger writes inside the transaction. Successful review synchronizes the instance; a lost claim returns false. Reopening is not introduced.
-
-Competition finish and finalization retain conditional write claims and atomic payouts. Finish refreshes the registration even after a lost claim; finalization updates the supplied competition on success. Ranking remains correct-count descending, finish-time ascending; unfinished eligibility is unchanged.
-
-Legacy `missions.services.*` and `missions.selectors.*` explicitly re-export the same function and exception objects. There is one authoritative implementation per moved operation. Historical view helpers remain importable as aliases. New internal callers use domain paths directly.
+The service refactor passed 90 tests before and after the change, including a stale Admin edit after finalization and a daily answer edit that regrades without paying again. The 39 HTTP snapshots matched, and Django's migration dry run found no schema changes. The [technical debt register](TECHNICAL_DEBT.md) tracks existing policy and concurrency issues.

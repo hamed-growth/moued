@@ -1,0 +1,5 @@
+<button class="button{% if variant %} button--{{ variant }}{% endif %}" type="{{ type|default:'button' }}"{% if disabled %} disabled{% endif %}>
+  {% if icon %}<svg class="button__icon icon" aria-hidden="true"><use href="#icon-{{ icon }}"></use></svg>{% endif %}
+  <span class="button__label">{{ label }}</span>
+  <svg class="button__loader icon" aria-hidden="true"><use href="#icon-loader"></use></svg>
+</button>

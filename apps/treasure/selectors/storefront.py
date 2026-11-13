@@ -1,6 +1,6 @@
 """Storefront inventory and purchases scoped to the authorized user."""
 from django.db.models import Sum
-from missions.models import TreasureItem, TreasureCategory, TreasurePurchase
+from apps.treasure.models import TreasureCategory, TreasureItem, TreasurePurchase
 
 def get_storefront_context(user, category_slug=""):
     """صفحه فروشگاه صندوق گنج"""
@@ -23,7 +23,7 @@ def get_storefront_context(user, category_slug=""):
     ).select_related('item').order_by('-purchased_at')[:20]
 
     total_spent = TreasurePurchase.objects.filter(
-        user=user
+        user=user, status__in=['pending', 'delivered']
     ).aggregate(s=Sum('item_price'))['s'] or 0
     total_bought = TreasurePurchase.objects.filter(user=user).count()
 

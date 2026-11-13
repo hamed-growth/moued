@@ -1,0 +1,5 @@
+<section class="mission-day{% if day.today %} mission-day--today{% endif %}" data-day="{{ day.iso }}" {% if day.today %}id="today"{% endif %} aria-labelledby="day-{{ day.iso }}">
+  <h2 class="mission-day__heading" id="day-{{ day.iso }}"><span>{{ day.label }}</span>{% if day.relative %}<small>{{ day.relative }}</small>{% endif %}</h2>
+  {% if day.nodes %}<ol class="mission-day__nodes">{% for node in day.nodes %}{% include 'components/mission_node.html' with node=node day=day %}{% endfor %}</ol>
+  {% else %}<div class="mission-day__empty">{% include 'components/character_slot.html' with size='sm' %}<p>{% if day.today %}امروز مأموریتی نداریم، استراحت کن.{% else %}برای این روز مأموریتی ثبت نشده است.{% endif %}</p></div>{% endif %}
+</section>

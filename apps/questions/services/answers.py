@@ -1,6 +1,6 @@
 """Submission workflow for the questions domain."""
 
-from missions.models import DailyQuestionAnswer
+from apps.questions.models import DailyQuestionAnswer
 from apps.submissions import SubmissionRejected
 from django.utils import timezone
 

@@ -1,6 +1,7 @@
 """Profile read model scoped to a caller-authorized user."""
 from django.db.models import Sum, Count
-from missions.models import PointTransaction, MissionRequest
+from apps.missions.models import MissionRequest
+from apps.wallet.models import PointTransaction
 from .profiles import get_profile_rank, get_profile_history
 from apps.teams.selectors.membership import get_user_team
 from apps.teams.selectors.leagues import get_profile_team_leaderboard

@@ -1,7 +1,7 @@
 """Report queries for authorized dashboard staff."""
 from django.db.models import Count
 
-from missions.models import Mission, MissionCategory, MissionRequest
+from apps.missions.models import Mission, MissionCategory, MissionRequest
 
 
 def get_staff_missions_list_context():

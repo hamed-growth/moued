@@ -1,6 +1,7 @@
 from django.utils import timezone
 
-from missions.models import Competition, Mission
+from apps.competitions.models import Competition
+from apps.missions.models import Mission
 
 
 def get_archive_context():

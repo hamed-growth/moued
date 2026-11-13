@@ -2,7 +2,7 @@
 from django.db.models import Count
 from django.utils import timezone
 
-from missions.models import DailyQuestion, Question
+from apps.questions.models import DailyQuestion, Question
 
 
 def get_staff_questions_list_context(q):

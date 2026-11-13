@@ -1,0 +1,21 @@
+{% load static %}
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>{% block title %}باشگاه موعود{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'css/tokens.css' %}?v=5">
+  <link rel="stylesheet" href="{% static 'css/base.css' %}?v=3">
+  <link rel="stylesheet" href="{% static 'css/components.css' %}?v=5">
+  {% block styles %}{% endblock %}
+  <script type="module" src="{% static 'js/ui.js' %}"></script>
+  {% block scripts %}{% endblock %}
+</head>
+<body>
+  {% include 'components/icons.svg.html' %}
+  <a class="skip-link" href="#main">رفتن به محتوای اصلی</a>
+  <main id="main" tabindex="-1">{% block content %}{% endblock %}</main>
+</body>
+</html>

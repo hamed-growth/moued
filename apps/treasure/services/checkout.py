@@ -3,10 +3,12 @@
 from django.db import transaction
 from django.db.models import F, Q
 
-from missions.models import PointTransaction, TreasureItem, TreasurePurchase, User
+from apps.treasure.models import TreasureItem, TreasurePurchase
+from apps.wallet.services.balances import try_debit_coins
+from apps.wallet.services.ledger import record_transaction
 
 
-class InsufficientPoints(Exception):
+class InsufficientCoins(Exception):
     def __init__(self, shortfall):
         self.shortfall = shortfall
         super().__init__(shortfall)
@@ -24,10 +26,7 @@ def purchase_treasure_item(user, item_id):
 
     with transaction.atomic():
         # Start with a write so SQLite doesn't have to upgrade a read transaction.
-        debited = User.objects.filter(pk=user.pk, total_points__gte=item.price).update(
-            total_points=F('total_points') - item.price,
-        )
-        user.refresh_from_db(fields=['total_points'])
+        debited = try_debit_coins(user, item.price)
         if debited:
             # NULL - 1 remains NULL. Recheck availability and the price used for the debit.
             reserved = TreasureItem.objects.filter(
@@ -37,21 +36,22 @@ def purchase_treasure_item(user, item_id):
             if not reserved:
                 raise OutOfStock
 
-            PointTransaction.objects.create(
-                user=user,
+            record_transaction(
+                user_id=user.pk,
                 transaction_type='treasure',
                 title=f"خرید از صندوق گنج: {item.name}",
-                points=-item.price,
-                coins=0,
+                points=0,
+                coins=-item.price,
             )
             purchase = TreasurePurchase.objects.create(
                 user=user,
                 item=item,
                 item_name=item.name,
                 item_price=item.price,
+                currency='coins',
                 status='pending',
             )
 
     if not debited:
-        raise InsufficientPoints(item.price - user.total_points)
-    return purchase, user.total_points
+        raise InsufficientCoins(item.price - user.total_coins)
+    return purchase, user.total_coins

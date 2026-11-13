@@ -1,0 +1,48 @@
+:root{
+  --core-primary-300:#a4e9ba;--core-primary-500:#347d52;--core-primary-700:#205c39;
+  --core-primary-100:#e1f3e6;--core-ink-900:#1b2720;
+  --core-ink-700:#39443e;--core-ink-500:#626b62;
+  --core-neutral-0:#fff;--core-neutral-50:#fcfcf8;
+  --core-neutral-100:#f4f4f0;--core-neutral-300:#d5d8d0;
+  --core-error-700:#a12c3b;
+  --core-error-300:#ff9daa;--core-primary-ring-light:rgb(52 125 82 / .14);
+  --core-primary-ring-dark:rgb(164 233 186 / .2);
+  --surface-page:var(--core-neutral-50);--surface-panel:var(--core-neutral-0);
+  --surface-brand:var(--core-primary-500);--surface-brand-soft:var(--core-primary-100);
+  --text-primary:var(--core-ink-900);--text-secondary:var(--core-ink-700);
+  --text-muted:var(--core-ink-500);--text-on-brand:var(--core-neutral-0);
+  --border-primary:var(--core-neutral-300);--border-error:var(--core-error-700);
+  --action-primary:var(--core-primary-500);--action-primary-edge:var(--core-primary-700);
+  --action-link:var(--core-primary-700);
+  --field-bg:var(--core-neutral-0);--field-placeholder:var(--core-ink-700);
+  --field-icon:var(--core-ink-700);--field-ring:var(--core-primary-ring-light);
+  --field-error:var(--core-error-700);--field-valid:var(--core-primary-700);
+  --control-height-auth:52px;--icon-size:20px;--border-width-field:1.5px;--ring-width:3px;
+  --strength-height:4px;--form-max-width:400px;
+  --path-width:480px;--path-node:68px;--path-node-current:76px;--path-line:3px;
+  --path-pending:#8b620e;--path-rejected:#a12c3b;--path-track:var(--core-neutral-300);
+  --color-primary:#347d52;--color-primary-edge:#205c39;--color-primary-soft:#e1f3e6;
+  --color-secondary:#9a633e;--color-secondary-edge:#754626;
+  --color-success:#176b50;--color-error:#a12c3b;--color-warning:#895500;--color-info:#245e91;
+  --neutral-0:#fff;--neutral-50:#fcfcf8;--neutral-100:#f4f4f0;--neutral-200:#e8e8e1;
+  --neutral-300:#d5d8d0;--neutral-500:#626b62;--neutral-700:#39443e;--neutral-900:#1b2720;
+  --color-page:var(--neutral-50);--color-surface:var(--neutral-0);--color-ink:var(--neutral-900);--color-on-primary:var(--neutral-0);
+  --color-muted:var(--neutral-700);--color-border:var(--neutral-300);--color-focus:var(--color-primary);
+  --font-family:Vazir,Tahoma,sans-serif;--type-display:2.25rem;--type-title:1.5rem;--type-body:1rem;--type-caption:.875rem;
+  --space-1:4px;--space-2:8px;--space-3:12px;--space-4:16px;--space-5:20px;--space-6:24px;--space-8:32px;--space-12:48px;--space-16:64px;--space-20:80px;
+  --radius-sm:12px;--radius-md:16px;--radius-lg:24px;--radius-full:999px;
+  --border-width:2px;--edge-width:5px;--control-height:48px;
+  --motion-fast:120ms;--motion-base:200ms;--motion-slow:350ms;
+  --ease-spring:cubic-bezier(.22,1.2,.36,1);--ease-out:cubic-bezier(.22,1,.36,1)
+}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]){
+  --surface-page:#181818;--surface-panel:#1f1f1f;--surface-brand:#193c28;--surface-brand-soft:#272727;
+  --text-primary:#fff;--text-secondary:#d2d6d2;--text-muted:#c1c9c1;--text-on-brand:#fff;
+  --border-primary:#555b55;--action-primary:#75d895;--action-primary-edge:#347d52;--action-link:#a4e9ba;
+  --field-bg:#1f1f1f;--field-placeholder:#d2d6d2;--field-icon:#d2d6d2;
+  --field-ring:var(--core-primary-ring-dark);--field-error:var(--core-error-300);--field-valid:var(--core-primary-300);
+  --color-page:#181818;--color-surface:#1f1f1f;--color-ink:#fff;--color-muted:#d2d6d2;--color-border:#555b55;
+  --color-primary:#75d895;--color-primary-edge:#347d52;--color-primary-soft:#193c28;--color-focus:#a4e9ba;--color-on-primary:#1b2720;
+  --neutral-100:#272727;--neutral-200:#313131
+}}
+:root[data-theme=dark]{--surface-page:#181818;--surface-panel:#1f1f1f;--surface-brand:#193c28;--surface-brand-soft:#272727;--text-primary:#fff;--text-secondary:#d2d6d2;--text-muted:#c1c9c1;--text-on-brand:#fff;--border-primary:#555b55;--action-primary:#75d895;--action-primary-edge:#347d52;--action-link:#a4e9ba;--field-bg:#1f1f1f;--field-placeholder:#d2d6d2;--field-icon:#d2d6d2;--field-ring:var(--core-primary-ring-dark);--field-error:var(--core-error-300);--field-valid:var(--core-primary-300);--color-page:#181818;--color-surface:#1f1f1f;--color-ink:#fff;--color-muted:#d2d6d2;--color-border:#555b55;--color-primary:#75d895;--color-primary-edge:#347d52;--color-primary-soft:#193c28;--color-focus:#a4e9ba;--color-on-primary:#1b2720;--neutral-100:#272727;--neutral-200:#313131}
