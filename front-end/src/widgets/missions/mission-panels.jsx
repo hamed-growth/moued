@@ -52,15 +52,6 @@ function MonthProgressCard({ activeDays, monthDays }) {
   </section>
 }
 
-function NearestRewardCard({ activeDays }) {
-  const daysLeft = 7 - (activeDays % 7 || 0)
-  return <section className="mission-side-card mission-nearest-card">
-    <div className="mission-nearest-card__chest"><TreasureChest state="closed" size={69} /></div>
-    <div><span className="mission-eyebrow">جایزهٔ بعدی</span><h3>صندوق هفتگی</h3><p>با تکمیل {daysLeft.toLocaleString('fa-IR')} روز دیگر</p></div>
-    <AppIcon icon={ICONS.chevronLeft} size={16} />
-  </section>
-}
-
 function MissionDetailCard({ mission, status, canSubmit, dateLabel, isToday, onStart, onBack }) {
   const [label, tone] = STATUS_COPY[status] || STATUS_COPY.available
   return <section className="mission-detail-card" aria-labelledby="mission-detail-title">
@@ -75,11 +66,13 @@ function MissionDetailCard({ mission, status, canSubmit, dateLabel, isToday, onS
   </section>
 }
 
-function MonthReviewCard({ month }) {
+function MonthReviewCard({ month, summary }) {
   const days = month.dates.length
+  const active = summary.activeDays || 0
+  const percent = Math.round(active / days * 100)
   return <section className="mission-review-card">
     <header><span className="mission-review-card__icon"><AppIcon icon={ICONS.calendarDays} size={21} /></span><div><span className="mission-eyebrow">مرور ماهانه</span><h3>{month.title}</h3></div><span className="mission-status-chip is-approved">تکمیل‌شده</span></header>
-    <div className="mission-review-card__progress"><div><b>پیشرفت ماه</b><strong>{days.toLocaleString('fa-IR')} از {days.toLocaleString('fa-IR')} روز</strong></div><span className="mission-progress"><Box component="i" sx={{ width: '100%' }} /></span><small>۱۰۰٪</small></div>
+    <div className="mission-review-card__progress"><div><b>پیشرفت ماه</b><strong>{days.toLocaleString('fa-IR')} از {days.toLocaleString('fa-IR')} روز</strong></div><span className="mission-progress"><Box component="i" sx={{ width: `${percent}%` }} /></span><small>۱۰۰٪</small></div>
     <h4>نتایج این ماه</h4>
     <div className="mission-review-stats"><span><AppIcon icon={ICONS.star} size={19} /><b>+۴۰۰</b><small>امتیاز</small></span><span><AppIcon icon={ICONS.coins} size={19} /><b>+۱۵۰</b><small>سکه</small></span><span><AppIcon icon={ICONS.flame} size={19} /><b>{days.toLocaleString('fa-IR')}</b><small>روز فعال</small></span></div>
   </section>
@@ -100,12 +93,12 @@ function CelebrationCard({ mission, activeDays, monthDays, onClaim, onBack }) {
   </section>
 }
 
-export function MissionSidePanel({ view, user, level, todayMissions, todayStatuses, selectedMission, selectedStatus, canSubmit, month, activeDays, monthDays, dateLabel, isToday, onSelectMission, onStart, onClaim, onBack }) {
+export function MissionSidePanel({ view, user, level, todayMissions, todayStatuses, selectedMission, selectedStatus, canSubmit, month, activeDays, monthDays, dateLabel, isToday, onSelectMission, onStart, onClaim, onBack, summary }) {
   return <div className="mission-side-panel">
     <GreetingCard user={user} level={level} />
-    {view === 'overview' && <><TodayOverview missions={todayMissions} statuses={todayStatuses} onMissionSelect={onSelectMission} /><MonthProgressCard activeDays={activeDays} monthDays={monthDays} /><NearestRewardCard activeDays={activeDays} /></>}
+    {view === 'overview' && <><TodayOverview missions={todayMissions} statuses={todayStatuses} onMissionSelect={onSelectMission} /><MonthProgressCard activeDays={activeDays} monthDays={monthDays} /></>}
     {view === 'detail' && selectedMission && <MissionDetailCard mission={selectedMission} status={selectedStatus} canSubmit={canSubmit} dateLabel={dateLabel} isToday={isToday} onStart={onStart} onBack={onBack} />}
-    {view === 'archive' && <MonthReviewCard month={month} />}
+    {view === 'archive' && <MonthReviewCard month={month} summary={summary} />}
     {view === 'reward' && selectedMission && <CelebrationCard mission={selectedMission} activeDays={activeDays} monthDays={monthDays} onClaim={onClaim} onBack={onBack} />}
   </div>
 }

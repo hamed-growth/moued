@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Box } from '@mui/material'
 import { AppIcon, ICONS } from '../../shared/ui/app-icon'
 
@@ -29,9 +29,8 @@ export function AnimatedNumber({ value, animateFromZero = false }) {
   return <span>{display.toLocaleString('fa-IR')}</span>
 }
 
-export function StatsBar({ hearts, points, coins, streak }) {
+export function StatsBar({ points, coins, streak }) {
   const values = [
-    { label: 'جان', value: hearts, icon: ICONS.heart, tone: 'heart' },
     { label: 'امتیاز', value: points, icon: ICONS.star, tone: 'points' },
     { label: 'سکه', value: coins, icon: ICONS.coins, tone: 'coins' },
     { label: 'روز متوالی', value: streak, icon: ICONS.flame, tone: 'streak' },

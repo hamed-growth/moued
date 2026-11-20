@@ -1,7 +1,8 @@
+import { useMissions } from '../../entities/mission/model/use-missions'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Alert, Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Drawer, Snackbar, useMediaQuery } from '@mui/material'
 import { Link as RouterLink, useNavigate } from 'react-router'
-import { DEMO_MISSIONS, DEMO_PROFILE, formatPersianDate, getCurrentPersianMonth, getDemoMissionStatus, getTehranTime, getTehranTodayISO, isMissionInTime, TODAY_MISSION_IDS } from '../../entities/mission'
+import { formatPersianDate, getCurrentPersianMonth, getTehranTodayISO } from '../../entities/mission'
 import { useAuth } from '../../features/auth'
 import { AppIcon, ICONS } from '../../shared/ui/app-icon'
 import { MissionJourney, MissionMobileNav, MissionSidePanel, MissionSidebar, StatsBar } from '../../widgets/missions'
@@ -12,15 +13,12 @@ export function MissionsPage() {
   const { user, signOut } = useAuth()
   const navigate = useNavigate()
   const isMobile = useMediaQuery('(max-width: 1023px)')
-  const [todayISO] = useState(() => getTehranTodayISO())
-  const [time, setTime] = useState(() => getTehranTime())
+  const [todayISO, setTodayISO] = useState(() => getTehranTodayISO())
   const currentMonth = useMemo(() => getCurrentPersianMonth(todayISO), [todayISO])
   const [month, setMonth] = useState(() => currentMonth)
   const [selectedISO, setSelectedISO] = useState(todayISO)
   const [view, setView] = useState('overview')
   const [selectedMissionId, setSelectedMissionId] = useState(null)
-  const [submissions, setSubmissions] = useState({})
-  const [profile, setProfile] = useState(DEMO_PROFILE)
   const [mobilePanelOpen, setMobilePanelOpen] = useState(false)
   const [startDialogOpen, setStartDialogOpen] = useState(false)
   const [logoutBusy, setLogoutBusy] = useState(false)
@@ -29,18 +27,15 @@ export function MissionsPage() {
   const pathRef = useRef(null)
 
   const isCurrentMonth = month.firstISO === currentMonth.firstISO
-  const todayMissions = TODAY_MISSION_IDS.map((id) => DEMO_MISSIONS.find((mission) => mission.id === id)).filter(Boolean)
-  const todayStatuses = Object.fromEntries(todayMissions.map((mission) => {
-    const submitted = submissions[`${todayISO}|${mission.id}`]
-    return [mission.id, submitted?.status || submitted || getDemoMissionStatus(todayISO, mission.id, todayISO, true)]
-  }))
-  const selectedMission = DEMO_MISSIONS.find((mission) => mission.id === selectedMissionId) || null
-  const currentSelectedStatus = selectedMission
-    ? submissions[`${selectedISO}|${selectedMission.id}`]?.status || submissions[`${selectedISO}|${selectedMission.id}`] || getDemoMissionStatus(selectedISO, selectedMission.id, todayISO, isCurrentMonth)
-    : 'available'
-  const selectedStatus = view === 'reward' ? 'completed' : currentSelectedStatus
-  const canSubmit = Boolean(selectedMission && isCurrentMonth && selectedISO === todayISO
-    && ['available', 'rejected'].includes(currentSelectedStatus) && isMissionInTime(selectedMission, time))
+  const { calendar, submit } = useMissions(user?.id, month)
+  const days = calendar.data?.days || []
+  const todayMissions = days.find((day) => day.date === todayISO)?.missions || []
+  const selectedMissions = days.find((day) => day.date === selectedISO)?.missions || []
+  const todayStatuses = Object.fromEntries(todayMissions.map((mission) => [mission.id, mission.status]))
+  const selectedMission = selectedMissions.find((mission) => mission.id === selectedMissionId) || null
+  const selectedStatus = selectedMission?.status || 'locked'
+  const profile = calendar.data?.summary || { points: 0, coins: 0, streak: 0, activeDays: 0 }
+  const canSubmit = Boolean(selectedMission?.can_submit && selectedISO === todayISO && !submit.isPending && !calendar.isError)
   useEffect(() => {
     const path = pathRef.current
     const today = path?.querySelector('[data-today="true"]')
@@ -59,7 +54,7 @@ export function MissionsPage() {
   }, [month.firstISO])
 
   useEffect(() => {
-    const interval = window.setInterval(() => setTime(getTehranTime()), 60_000)
+    const interval = window.setInterval(() => setTodayISO(getTehranTodayISO()), 60_000)
     return () => window.clearInterval(interval)
   }, [])
 
@@ -72,6 +67,7 @@ export function MissionsPage() {
   }
 
   function openMission(mission) {
+    setSelectedISO(todayISO)
     setSelectedMissionId(mission.id)
     setView('detail')
     if (isMobile) setMobilePanelOpen(true)
@@ -92,8 +88,8 @@ export function MissionsPage() {
   function selectDay(iso) {
     setSelectedISO(iso)
     if (isCurrentMonth) {
-      const mission = DEMO_MISSIONS.find((item) => item.id === 'daily-learning')
-      setSelectedMissionId(mission.id)
+      const mission = days.find((day) => day.date === iso)?.missions[0]
+      setSelectedMissionId(mission?.id ?? null)
       setView('detail')
     } else {
       setView('archive')
@@ -118,27 +114,16 @@ export function MissionsPage() {
     if (canSubmit) setStartDialogOpen(true)
   }
 
-  function completeMission() {
+  async function completeMission() {
     if (!selectedMission || !canSubmit) return
-    setStartDialogOpen(false)
-    setView('reward')
-    if (isMobile) setMobilePanelOpen(true)
-  }
-
-  function claimReward() {
-    if (!selectedMission) return
-    setSubmissions((previous) => ({ ...previous, [`${todayISO}|${selectedMission.id}`]: { status: 'approved' } }))
-    setProfile((previous) => ({
-      ...previous,
-      points: previous.points + selectedMission.points,
-      coins: previous.coins + selectedMission.coins,
-      streak: previous.streak + 1,
-      activeDays: Math.min(month.dates.length, previous.activeDays + 1),
-    }))
-    setNotice(`+${selectedMission.points.toLocaleString('fa-IR')} امتیاز و +${selectedMission.coins.toLocaleString('fa-IR')} سکه دریافت شد.`)
-    setView('overview')
-    setSelectedMissionId(null)
-    setMobilePanelOpen(false)
+    setError('')
+    try {
+      await submit.mutateAsync({ id: selectedMission.id })
+      setStartDialogOpen(false)
+      setNotice('??????? ??? ?? ? ?? ?????? ????? ???? ???.')
+    } catch (cause) {
+      setError(cause.message || '??? ??????? ????? ???.')
+    }
   }
 
   async function handleLogout() {
@@ -154,21 +139,24 @@ export function MissionsPage() {
   }
 
   const panel = <MissionSidePanel
-    view={view} user={user} level={profile.level} todayMissions={todayMissions} todayStatuses={todayStatuses}
+    view={view} user={user} level="" todayMissions={todayMissions} todayStatuses={todayStatuses}
     selectedMission={selectedMission} selectedStatus={selectedStatus} canSubmit={canSubmit}
-    month={month} activeDays={profile.activeDays} monthDays={currentMonth.dates.length}
-    onSelectMission={openMission} onStart={startMission} onClaim={claimReward}
+    month={month} activeDays={profile.activeDays} monthDays={month.dates.length}
+    onSelectMission={openMission} onStart={startMission}
     dateLabel={formatPersianDate(selectedISO, { day: 'numeric', month: 'long' })} isToday={selectedISO === todayISO}
-    onBack={openOverview}
+    onBack={openOverview} summary={profile}
   />
 
   return <Box component="div" className="missions-app" sx={missionsSx}>
     <MissionSidebar onLogout={handleLogout} busy={logoutBusy} onHome={openOverview} />
     <main className="missions-main">
-      <div className="mission-mobile-statsbar"><StatsBar hearts={profile.hearts} points={profile.points} coins={profile.coins} streak={profile.streak} /></div>
+      <div className="mission-mobile-statsbar"><StatsBar points={profile.points} coins={profile.coins} streak={profile.streak} /></div>
       <header className="mission-mobile-header">
         <RouterLink className="mission-brand" to="/missions"><span className="mission-brand__mark"><AppIcon icon={ICONS.route} size={21} /></span><span>موعود<small>مأموریت‌های من</small></span></RouterLink>
       </header>
+      {calendar.isPending && <Alert severity="info">?? ??? ?????? ???????????</Alert>}
+      {calendar.isError && <Alert severity="error" action={<Button onClick={() => calendar.refetch()}>???? ??????</Button>}>{calendar.error.message}</Alert>}
+      {calendar.isSuccess && !selectedMissions.length && <Alert severity="info">???????? ???? ??? ??? ????? ????.</Alert>}
       {error && <Alert className="mission-global-error" severity="error" role="alert">{error}</Alert>}
       <h1 className="mission-sr-only">مأموریت‌ها</h1>
       <div className="mission-path-toolbar">
@@ -177,12 +165,12 @@ export function MissionsPage() {
       </div>
       <MissionJourney
         month={month} todayISO={todayISO} selectedISO={selectedISO}
-        isCurrentMonth={isCurrentMonth} isArchive={isArchiveMonth} isMobile={isMobile}
+        isCurrentMonth={isCurrentMonth} isArchive={isArchiveMonth} isMobile={isMobile} days={days}
         onSelect={selectDay} onSelectChest={selectChest} scrollRef={pathRef}
       />
     </main>
     <aside className="mission-insights">
-      <StatsBar hearts={profile.hearts} points={profile.points} coins={profile.coins} streak={profile.streak} />
+      <StatsBar points={profile.points} coins={profile.coins} streak={profile.streak} />
       <div className="mission-desktop-panel">{panel}</div>
     </aside>
     <MissionMobileNav onHome={openOverview} />

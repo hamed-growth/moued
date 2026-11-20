@@ -1,3 +1,6 @@
+from django.db import transaction
+from django.db.models import F
+from apps.accounts.models import User
 """Submission workflow for the missions domain."""
 
 from apps.missions.models import MissionRequest
@@ -6,7 +9,10 @@ from apps.teams.selectors.membership import get_user_team
 from apps.missions.selectors.eligibility import has_completed_today, has_pending_request_today
 
 
+@transaction.atomic
 def create_mission_request(user, mission, note):
+    # Serialize submissions for one user before checking daily duplicates.
+    User.objects.filter(pk=user.pk).update(total_points=F("total_points"))
     user_team = get_user_team(user)
 
     # چک دسترسی: ماموریت باید برای تیم کاربر فعال باشد یا سراسری باشد

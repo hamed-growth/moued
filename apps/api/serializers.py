@@ -86,7 +86,7 @@ class MissionRequestSerializer(serializers.ModelSerializer):
     class Meta:
         model = MissionRequest
         fields = (
-            "id", "mission", "status", "note", "requested_at",
+            "id", "user_id", "mission", "status", "note", "admin_note", "requested_at",
             "reviewed_at", "points_awarded", "coins_awarded",
         )
         read_only_fields = fields

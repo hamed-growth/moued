@@ -23,9 +23,9 @@ function getDateLabel(iso) {
   }).format(new Date(`${iso}T12:00:00Z`))
 }
 
-export function MissionJourney({ month, todayISO, selectedISO, isCurrentMonth, isArchive, onSelect, onSelectChest, scrollRef, isMobile }) {
+export function MissionJourney({ month, todayISO, selectedISO, isCurrentMonth, isArchive, onSelect, onSelectChest, scrollRef, isMobile, days = [] }) {
   const pathHeight = Math.max(PATH_ROW_HEIGHT, month.dates.length * PATH_ROW_HEIGHT)
-  const currentDay = getPersianParts(todayISO).day
+  const currentDay = days.filter((day) => day.missions.length && day.missions.every((mission) => mission.status === 'approved')).length + 1
   const amplitude = isMobile ? 5.55 : 7.25
   const path = makePath(month.dates.length, amplitude)
 
@@ -34,13 +34,15 @@ export function MissionJourney({ month, todayISO, selectedISO, isCurrentMonth, i
       <Box component="div" className="mission-day-path" key={month.firstISO} sx={{ height: pathHeight }}>
         <svg className="mission-day-path__line" viewBox={`0 0 100 ${pathHeight}`} preserveAspectRatio="none" aria-hidden="true">
           <path className="mission-day-path__track" d={path} />
-          <Box component="path" className="mission-day-path__progress" d={path} pathLength="1" sx={{ '--mission-progress-offset': 1 - (isArchive ? 1 : (currentDay - 1) / Math.max(month.dates.length - 1, 1)) }} />
+          <Box component="path" className="mission-day-path__progress" d={path} pathLength="1" sx={{ '--mission-progress-offset': 1 - ((currentDay - 1) / Math.max(month.dates.length - 1, 1)) }} />
         </svg>
         {month.dates.map((iso, index) => {
           const date = getPersianParts(iso).day
           const today = isCurrentMonth && iso === todayISO
-          const state = isArchive || (isCurrentMonth && date < currentDay) ? 'completed' : today ? 'current' : 'locked'
-          const rewardDay = date % 7 === 0
+          const missions = days.find((day) => day.date === iso)?.missions || []
+          const completed = missions.length > 0 && missions.every((mission) => mission.status === 'approved')
+          const state = completed ? 'completed' : today ? 'current' : iso < todayISO ? 'missed' : 'locked'
+          const rewardDay = false
           const chestState = isArchive || (isCurrentMonth && date < currentDay) ? 'open' : rewardDay && date === 28 ? 'ready' : 'closed'
           const weekday = new Intl.DateTimeFormat('fa-IR', { timeZone: 'Asia/Tehran', weekday: 'long' }).format(new Date(`${iso}T12:00:00Z`))
           const position = 50 + (index % 8 === 1 ? amplitude : index % 8 === 3 || index % 8 === 7 ? -amplitude : 0)
