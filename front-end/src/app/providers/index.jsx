@@ -9,7 +9,6 @@ import { theme } from '../theme'
 
 const queryClient = new QueryClient()
 const rtlCache = createCache({ key: 'muirtl', stylisPlugins: [prefixer, rtlPlugin] })
-
 export function AppProviders({ children }) {
   return (
     <CacheProvider value={rtlCache}>

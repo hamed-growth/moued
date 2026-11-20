@@ -5,6 +5,7 @@ import { HomePage } from '../../pages/home'
 import { LoginPage } from '../../pages/login'
 import { RegisterPage } from '../../pages/register'
 import { MissionsPage } from '../../pages/missions'
+import { AccountPage } from '../../pages/account'
 
 const router = createBrowserRouter([
   {
@@ -18,7 +19,7 @@ const router = createBrowserRouter([
   },
   {
     Component: AuthGuard,
-    children: [{ path: '/missions', Component: MissionsPage }, { path: '/account', Component: MissionsPage }],
+    children: [{ path: '/missions', Component: MissionsPage }, { path: '/account', Component: AccountPage }],
   },
   { path: '*', element: <Navigate to="/" replace /> },
 ])

@@ -21,4 +21,4 @@ API جنگو زیر `/api/v1/` قرار دارد و از session و CSRF است�
 
 چهار مسیر CSRF، ورود، ثبت‌نام و خروج در `entities/auth/api/endpoints.js` داخل شیء `authEndpoints` تعریف شده‌اند. `authService` در همان entity درخواست‌ها را اجرا می‌کند و پیش از عملیات POST کوکی CSRF می‌گیرد. `features/auth` این service را فقط از public API یعنی `entities/auth/index.js` مصرف می‌کند.
 
-رابط فعلی با MUI ساخته شده است. `app/theme` رنگ‌ها، فونت، جهت RTL و متن‌های فارسی `faIR` را تعریف می‌کند؛ `app/providers` کش Emotion با افزونهٔ RTL را نصب می‌کند. فرم ورود از React Hook Form و `Controller` برای فیلدهای MUI استفاده می‌کند.
+رابط فعلی با MUI ساخته شده است. `app/theme` رنگ‌ها، فونت و متن‌های فارسی `faIR` را تعریف می‌کند و رابط با جهت پیش‌فرض چپ‌به‌راست نمایش داده می‌شود. فرم ورود از React Hook Form و `Controller` برای فیلدهای MUI استفاده می‌کند.
